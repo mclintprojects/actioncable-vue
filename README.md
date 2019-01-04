@@ -91,6 +91,10 @@ new Vue({
 });
 ```
 
+##### Important
+
+> ActionCableVue automatically uses your ActionCable server channel name if you do not pass in a specific channel name to use in your `channels`. It will also **override** clashing channel names.
+
 ###### 2. Subscribing to the same channel but multiple rooms
 
 ```javascript
@@ -108,12 +112,8 @@ new Vue({
 		}
 	},
 	mounted() {
-		this.$cable.subscribe({ channel: 'ChatChannel', room: 'public', 'chat_channel_public' });
+		this.$cable.subscribe({ channel: 'ChatChannel', room: 'public'}, 'chat_channel_public' });
 		this.$cable.subscribe({ channel: 'ChatChannel', 'private' }, 'chat_channel_private');
 	}
 });
 ```
-
-##### Important
-
-> ActionCableVue automatically uses your ActionCable server channel name if you do not pass in a specific channel name to use in your `channels`. It will also **override** clashing channel names.
