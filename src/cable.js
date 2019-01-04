@@ -1,6 +1,7 @@
 import actioncable from 'actioncable';
 import Logger from './logger';
 import Mixin from './mixin';
+import { connect } from 'tls';
 
 export default class Cable {
 	_logger = null;
@@ -17,9 +18,11 @@ export default class Cable {
 			debugLevel: 'error'
 		};
 		this._logger = new Logger(debug, debugLevel);
+
+		this._connect(options.connection);
 	}
 
-	connect(url) {
+	_connect(url) {
 		if (typeof url == 'string') {
 			this._cable = actioncable.createConsumer(url);
 		} else throw new Error('Connection URL needs to be of type String.');
