@@ -2,9 +2,9 @@ import actioncable from 'actioncable';
 import Mixin from './mixin';
 
 export default class Cable {
-	cable = null;
-	channels = { subscriptions: {} };
-	components = {};
+	_cable = null;
+	_channels = { subscriptions: {} };
+	_components = {};
 
 	constructor(Vue) {
 		Vue.prototype.$cable = this;
@@ -12,15 +12,15 @@ export default class Cable {
 	}
 
 	connect(url) {
-		this.cable = actioncable.createConsumer(url);
+		this._cable = actioncable.createConsumer(url);
 	}
 
 	subscribe(subscription) {
-		if (this.cable) {
+		if (this._cable) {
 			const that = this;
-			this.channels.subscriptions[
+			this._channels.subscriptions[
 				subscription.channel
-			] = this.cable.subscriptions.create(subscription, {
+			] = this._cable.subscriptions.create(subscription, {
 				connected() {
 					that._fireChannelEvent(subscription.channel, that._channelConnected);
 				},
@@ -48,52 +48,51 @@ export default class Cable {
 	}
 
 	perform(channelName, action, data) {
-		console.log(this.channels);
-		const subscription = this.channels.subscriptions[channelName];
+		const subscription = this._channels.subscriptions[channelName];
 		if (subscription) {
 			subscription.perform(action, data);
 		}
 	}
 
 	_channelConnected(channel) {
-		channel.connected.call(this.components[channel._uid]);
+		channel.connected.call(this._components[channel._uid]);
 	}
 
 	_channelDisconnected(channel) {
-		channel.disconnected.call(this.components[channel._uid]);
+		channel.disconnected.call(this._components[channel._uid]);
 	}
 
 	_subscriptionRejected(channel) {
-		channel.rejected.call(this.components[channel._uid]);
+		channel.rejected.call(this._components[channel._uid]);
 	}
 
 	_channelReceived(channel, data) {
-		channel.received.call(this.components[channel._uid], data);
+		channel.received.call(this._components[channel._uid], data);
 	}
 
 	_addChannel(name, value, component) {
 		value._uid = component._uid;
-		this.channels[name] = value;
+		this._channels[name] = value;
 		this._addComponent(component);
 		console.log('adding channel: ' + name);
 	}
 
 	_addComponent(component) {
-		if (!this.components[component._uid]) {
-			this.components[component._uid] = component;
+		if (!this._components[component._uid]) {
+			this._components[component._uid] = component;
 		}
 	}
 
 	_removeChannel(name) {
-		const uid = this.channels[name]._uid;
-		delete this.channels[name];
-		delete this.channels.subscriptions[name];
-		delete this.components[uid];
+		const uid = this._channels[name]._uid;
+		delete this._channels[name];
+		delete this._channels.subscriptions[name];
+		delete this._components[uid];
 	}
 
 	_fireChannelEvent(channelName, callback, data) {
-		if (this.channels.hasOwnProperty(channelName)) {
-			const channel = this.channels[channelName];
+		if (this._channels.hasOwnProperty(channelName)) {
+			const channel = this._channels[channelName];
 			callback.call(this, channel, data);
 		}
 	}
