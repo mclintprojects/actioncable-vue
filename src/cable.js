@@ -1,7 +1,6 @@
 import actioncable from 'actioncable';
 import Logger from './logger';
 import Mixin from './mixin';
-import { connect } from 'tls';
 
 export default class Cable {
 	_logger = null;
@@ -13,23 +12,14 @@ export default class Cable {
 		Vue.prototype.$cable = this;
 		Vue.mixin(Mixin);
 
-		const { debug, debugLevel } = options || {
+		const { debug, debugLevel, connectionUrl } = options || {
 			debug: false,
-			debugLevel: 'error'
+			debugLevel: 'error',
+			connectionUrl: null
 		};
+
 		this._logger = new Logger(debug, debugLevel);
-
-		this._connect(options.connectionUrl);
-	}
-
-	_connect(url) {
-		if (typeof url == 'string') {
-			this._cable = actioncable.createConsumer(url);
-		} else {
-			throw new Error(
-				'Connection URL needs to be a valid Action Cable websocket server URL.'
-			);
-		}
+		this._connect(connectionUrl);
 	}
 
 	subscribe(subscription, name) {
@@ -55,26 +45,26 @@ export default class Cable {
 			});
 		} else {
 			throw new Error(
-				`ActionCableVue not initialized. Please call 'this.$cable.connect(url)' first.`
+				`ActionCableVue not initialized.`
 			);
 		}
 	}
 
 	perform(channelName, action, data) {
 		this._logger.log(
-			`Performing action: '${action}' on channel '${channelName}'.`,
+			`Performing action '${action}' on channel '${channelName}'.`,
 			'info'
 		);
 		const subscription = this._channels.subscriptions[channelName];
 		if (subscription) {
 			subscription.perform(action, data);
 			this._logger.log(
-				`Performed: '${action}' on channel '${channelName}'.`,
+				`Performed '${action}' on channel '${channelName}'.`,
 				'info'
 			);
 		} else {
 			this._logger.log(
-				`Could not perform action: '${action}' on channel '${channelName}'.`
+				`Could not perform action '${action}' on channel '${channelName}'.`
 			);
 		}
 	}
@@ -116,25 +106,37 @@ export default class Cable {
 		this._logger.log(`Message received on channel '${channel._name}'.`, 'info');
 	}
 
+	_connect(url) {
+		if (typeof url == 'string') 
+			this._cable = actioncable.createConsumer(url);
+		else {
+			throw new Error(
+				'Connection URL needs to be a valid Action Cable websocket server URL.'
+			);
+		}
+	}
+
 	_addChannel(name, value, component) {
 		value._uid = component._uid;
 		value._name = name;
+
 		this._channels[name] = value;
 		this._addComponent(component);
 	}
 
 	_addComponent(component) {
-		if (!this._components[component._uid]) {
+		if (!this._components[component._uid])
 			this._components[component._uid] = component;
-		}
 	}
 
 	_removeChannel(name) {
 		const uid = this._channels[name]._uid;
-		delete this._channels[name];
+
 		this._channels.subscriptions[name].unsubscribe();
+		delete this._channels[name];
 		delete this._channels.subscriptions[name];
 		delete this._components[uid];
+
 		this._logger.log(`Unsubscribing from channel '${name}'.`, 'info');
 	}
 
