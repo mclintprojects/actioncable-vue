@@ -36,7 +36,7 @@ new Vue({
 | **Parameters** | **Type** | **Default** | **Required** | **Description**                                                           |
 | -------------- | -------- | ----------- | ------------ | ------------------------------------------------------------------------- |
 | debug          | Boolean  | `false`     | Optional     | Enable logging for debug                                                  |
-| debugLevel     | String   | `error`     | Optional     | The debug level required for debug info. Either `info`, `error`, or `all` |
+| debugLevel     | String   | `error`     | Optional     | Debug level required for logging. Either `info`, `error`, or `all` |
 | connectionUrl  | String   | `null`      | Required     | ActionCable websocket server url                                          |
 
 #### 🌈 Component Level Usage

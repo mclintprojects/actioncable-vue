@@ -6,8 +6,16 @@ export default class Cable {
 	_logger = null;
 	_cable = null;
 	_channels = { subscriptions: {} };
-	_components = {};
+	_contexts = {};
 
+	/**
+	 * ActionCableVue $cable entry point
+	 * @param {Object} Vue
+	 * @param {Object} options - ActionCableVue options
+	 * @param {string} options.connectionUrl - ActionCable server websocket URL
+	 * @param {boolean} options.debug - Enable logging for debug
+	 * @param {string} options.debugLevel - Debug level required for logging. Either `info`, `error`, or `all`
+	 */
 	constructor(Vue, options) {
 		Vue.prototype.$cable = this;
 		Vue.mixin(Mixin);
@@ -22,6 +30,13 @@ export default class Cable {
 		this._connect(connectionUrl);
 	}
 
+	/**
+	 * Subscribes to an Action Cable server channel
+	 * @param {Object} subscription
+	 * @param {string} subscription.channel - The name of the Action Cable server channel
+	 * @param {string} subscription.room - The room in the Action Cable server channel to subscribe to
+	 * @param {string} name - A custom channel name to be used in component
+	 */
 	subscribe(subscription, name) {
 		if (this._cable) {
 			const that = this;
@@ -44,12 +59,16 @@ export default class Cable {
 				}
 			});
 		} else {
-			throw new Error(
-				`ActionCableVue not initialized.`
-			);
+			throw new Error(`ActionCableVue not initialized.`);
 		}
 	}
 
+	/**
+	 * Perform an action in an Action Cable server channel
+	 * @param {string} channelName - The name of the Action Cable server channel / The custom name chosen for the component channel
+	 * @param {string} action - The action to call in the Action Cable server channel
+	 * @param {Object} data - The data to pass along with the call to the action
+	 */
 	perform(channelName, action, data) {
 		this._logger.log(
 			`Performing action '${action}' on channel '${channelName}'.`,
@@ -69,13 +88,21 @@ export default class Cable {
 		}
 	}
 
+	/**
+	 * Unsubscribes from an Action Cable server channel
+	 * @param {string} channelName - The name of the Action Cable server channel / The custom name chosen for the component channel
+	 */
 	unsubscribe(channelName) {
 		this._removeChannel(channelName);
 	}
 
+	/**
+	 * Called when a subscription to an Action Cable server channel successfully completes. Calls connected on the component channel
+	 * @param {Object} channel - The component channel
+	 */
 	_channelConnected(channel) {
 		if (channel.connected)
-			channel.connected.call(this._components[channel._uid]);
+			channel.connected.call(this._contexts[channel._uid].context);
 
 		this._logger.log(
 			`Successfully connected to channel '${channel._name}'.`,
@@ -83,9 +110,13 @@ export default class Cable {
 		);
 	}
 
+	/**
+	 * Called when a subscription to an Action Cable server channel disconnects. Calls disconnected on the component channel
+	 * @param {Object} channel - The component channel
+	 */
 	_channelDisconnected(channel) {
 		if (channel.disconnected)
-			channel.disconnected.call(this._components[channel._uid]);
+			channel.disconnected.call(this._contexts[channel._uid].context);
 
 		this._logger.log(
 			`Successfully disconnected from channel '${channel._name}'.`,
@@ -93,22 +124,34 @@ export default class Cable {
 		);
 	}
 
+	/**
+	 * Called when a subscription to an Action Cable server channel is rejected by the server. Calls rejected on the component channel
+	 * @param {Object} channel - The component channel
+	 */
 	_subscriptionRejected(channel) {
-		if (channel.rejected) channel.rejected.call(this._components[channel._uid]);
+		if (channel.rejected)
+			channel.rejected.call(this._contexts[channel._uid].context);
 
 		this._logger.log(`Subscription rejected for channel '${channel._name}'.`);
 	}
 
+	/**
+	 * Called when a message from an Action Cable server channel is received. Calls received on the component channel
+	 * @param {Object} channel - The component channel
+	 */
 	_channelReceived(channel, data) {
 		if (channel.received)
-			channel.received.call(this._components[channel._uid], data);
+			channel.received.call(this._contexts[channel._uid].context, data);
 
 		this._logger.log(`Message received on channel '${channel._name}'.`, 'info');
 	}
 
+	/**
+	 * Connects to an Action Cable server
+	 * @param {string} url - The websocket URL of the Action Cable server.
+	 */
 	_connect(url) {
-		if (typeof url == 'string') 
-			this._cable = actioncable.createConsumer(url);
+		if (typeof url == 'string') this._cable = actioncable.createConsumer(url);
 		else {
 			throw new Error(
 				'Connection URL needs to be a valid Action Cable websocket server URL.'
@@ -116,30 +159,54 @@ export default class Cable {
 		}
 	}
 
-	_addChannel(name, value, component) {
-		value._uid = component._uid;
+	/**
+	 * Component mounted. Retrieves component channels for later use
+	 * @param {string} name - Component channel name
+	 * @param {Object} value - The component channel object itself
+	 * @param {component} context - The execution context of the component the channel was created in
+	 */
+	_addChannel(name, value, context) {
+		value._uid = context._uid;
 		value._name = name;
 
 		this._channels[name] = value;
-		this._addComponent(component);
+		this._addContext(context);
 	}
 
-	_addComponent(component) {
-		if (!this._components[component._uid])
-			this._components[component._uid] = component;
+	/**
+	 * Adds a component to a cache. Component is then used to bind `this` in the component channel to the Vue component's execution context
+	 * @param {Object} component - The Vue component execution context being added
+	 */
+	_addContext(context) {
+		if (!this._contexts[component._uid]) {
+			this._contexts[component._uid] = { context, users: 1 };
+		} else {
+			++this._contexts[component._uid].users;
+		}
 	}
 
+	/**
+	 * Component is destroyed. Removes component's channels, subscription and cached execution context.
+	 */
 	_removeChannel(name) {
 		const uid = this._channels[name]._uid;
 
 		this._channels.subscriptions[name].unsubscribe();
 		delete this._channels[name];
 		delete this._channels.subscriptions[name];
-		delete this._components[uid];
+
+		--this._contexts[uid].users;
+		if (this._contexts[uid].users <= 0) delete this._contexts[uid];
 
 		this._logger.log(`Unsubscribing from channel '${name}'.`, 'info');
 	}
 
+	/**
+	 * Fires the event triggered by the Action Cable subscription on the component channel
+	 * @param {string} channelName - The name of the Action Cable server channel / The custom name chosen for the component channel
+	 * @param {Function} callback - The component channel event to call
+	 * @param {Object} data - The data passed from the Action Cable server channel
+	 */
 	_fireChannelEvent(channelName, callback, data) {
 		if (this._channels.hasOwnProperty(channelName)) {
 			const channel = this._channels[channelName];
