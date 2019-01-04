@@ -8,14 +8,19 @@ export default class Cable {
 	_channels = { subscriptions: {} };
 	_components = {};
 
-	constructor(Vue, { debug }) {
+	constructor(Vue, options) {
 		Vue.prototype.$cable = this;
 		Vue.mixin(Mixin);
-		this._logger = new Logger(debug);
+
+		const { debug, debugLevel } = options || {
+			debug: false,
+			debugLevel: 'error'
+		};
+		this._logger = new Logger(debug, debugLevel);
 	}
 
 	connect(url) {
-		if (typeof url == string) {
+		if (typeof url == 'string') {
 			this._cable = actioncable.createConsumer(url);
 		} else throw new Error('Connection URL needs to be of type String.');
 	}
@@ -57,43 +62,62 @@ export default class Cable {
 	}
 
 	perform(channelName, action, data) {
-		_logger.log(`Performing action: '${action}' on channel '${channelName}'.`);
+		this._logger.log(
+			`Performing action: '${action}' on channel '${channelName}'.`,
+			'info'
+		);
 		const subscription = this._channels.subscriptions[channelName];
 		if (subscription) {
 			subscription.perform(action, data);
-			_logger.log(`Performed: '${action}' on channel '${channelName}'.`);
+			this._logger.log(
+				`Performed: '${action}' on channel '${channelName}'.`,
+				'info'
+			);
 		} else {
-			_logger.log(
+			this._logger.log(
 				`Could not perform action: '${action}' on channel '${channelName}'.`
 			);
 		}
 	}
 
 	_channelConnected(channel) {
-		channel.connected.call(this._components[channel._uid]);
-		_logger.log(`Successfully connected to channel '${channel}.'`);
+		if (channel.connected) {
+			channel.connected.call(this._components[channel._uid]);
+			this._logger.log(
+				`Successfully connected to channel '${channel}.'`,
+				'info'
+			);
+		}
 	}
 
 	_channelDisconnected(channel) {
-		channel.disconnected.call(this._components[channel._uid]);
-		_logger.log(`Successfully disconnected from channel '${channel}'.`);
+		if (channel.disconnected) {
+			channel.disconnected.call(this._components[channel._uid]);
+			this._logger.log(
+				`Successfully disconnected from channel '${channel}'.`,
+				'info'
+			);
+		}
 	}
 
 	_subscriptionRejected(channel) {
-		channel.rejected.call(this._components[channel._uid]);
-		_logger.log(`Subscription rejected for channel '${channel}'.`);
+		if (channel.rejected) {
+			channel.rejected.call(this._components[channel._uid]);
+			this._logger.log(`Subscription rejected for channel '${channel}'.`);
+		}
 	}
 
 	_channelReceived(channel, data) {
-		channel.received.call(this._components[channel._uid], data);
-		_logger.log(`Message received on channel '${channel}'.`);
+		if (channel.received) {
+			channel.received.call(this._components[channel._uid], data);
+			this._logger.log(`Message received on channel '${channel}'.`, 'info');
+		}
 	}
 
 	_addChannel(name, value, component) {
 		value._uid = component._uid;
 		this._channels[name] = value;
 		this._addComponent(component);
-		_logger.log('adding channel: ' + name);
 	}
 
 	_addComponent(component) {
@@ -107,6 +131,10 @@ export default class Cable {
 		delete this._channels[name];
 		delete this._channels.subscriptions[name];
 		delete this._components[uid];
+		this._logger.log(
+			`Disconnecting from subscription to channel '${name}'.`,
+			'info'
+		);
 	}
 
 	_fireChannelEvent(channelName, callback, data) {
