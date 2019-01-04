@@ -81,41 +81,41 @@ export default class Cable {
 	}
 
 	_channelConnected(channel) {
-		if (channel.connected) {
+		if (channel.connected)
 			channel.connected.call(this._components[channel._uid]);
-			this._logger.log(
-				`Successfully connected to channel '${channel}.'`,
-				'info'
-			);
-		}
+
+		this._logger.log(
+			`Successfully connected to channel '${channel._name}'.`,
+			'info'
+		);
 	}
 
 	_channelDisconnected(channel) {
-		if (channel.disconnected) {
+		if (channel.disconnected)
 			channel.disconnected.call(this._components[channel._uid]);
-			this._logger.log(
-				`Successfully disconnected from channel '${channel}'.`,
-				'info'
-			);
-		}
+
+		this._logger.log(
+			`Successfully disconnected from channel '${channel._name}'.`,
+			'info'
+		);
 	}
 
 	_subscriptionRejected(channel) {
-		if (channel.rejected) {
-			channel.rejected.call(this._components[channel._uid]);
-			this._logger.log(`Subscription rejected for channel '${channel}'.`);
-		}
+		if (channel.rejected) channel.rejected.call(this._components[channel._uid]);
+
+		this._logger.log(`Subscription rejected for channel '${channel._name}'.`);
 	}
 
 	_channelReceived(channel, data) {
-		if (channel.received) {
+		if (channel.received)
 			channel.received.call(this._components[channel._uid], data);
-			this._logger.log(`Message received on channel '${channel}'.`, 'info');
-		}
+
+		this._logger.log(`Message received on channel '${channel._name}'.`, 'info');
 	}
 
 	_addChannel(name, value, component) {
 		value._uid = component._uid;
+		value._name = name;
 		this._channels[name] = value;
 		this._addComponent(component);
 	}

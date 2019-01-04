@@ -1,7 +1,9 @@
 import Cable from './cable';
 
-export default class ActionCableVue {
-	install(Vue) {
-		new Cable(Vue);
+const ActionCableVue = {
+	install(Vue, options) {
+		new Cable(Vue, options);
 	}
-}
+};
+
+export default ActionCableVue;
