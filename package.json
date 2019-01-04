@@ -6,6 +6,14 @@
 	"directories": {
 		"doc": "docs"
 	},
+	"keywords": [
+		"actioncable",
+		"vue",
+		"vuejs",
+		"rails",
+		"realtime",
+		"websocket"
+	],
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
@@ -18,5 +26,8 @@
 	"bugs": {
 		"url": "https://github.com/mclintprojects/actioncable-vue/issues"
 	},
-	"homepage": "https://github.com/mclintprojects/actioncable-vue#readme"
+	"homepage": "https://github.com/mclintprojects/actioncable-vue#readme",
+	"dependencies": {
+		"actioncable": "^5.2.2"
+	}
 }
