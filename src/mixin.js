@@ -5,5 +5,12 @@ export default {
 				this.$cable._addChannel(entry[0], entry[1]);
 			});
 		}
+	},
+	destroyed() {
+		if (this.$options.channels) {
+			Object.keys(this.$options.channels).forEach(key =>
+				this.$cable._removeChannel(key)
+			);
+		}
 	}
 };

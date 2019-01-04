@@ -74,6 +74,11 @@ export default class Cable {
 		console.log('adding channel: ' + name);
 	}
 
+	_removeChannel(name) {
+		delete this.channels[name];
+		delete this.channels.subscriptions[name];
+	}
+
 	_fireChannelEvent(channelName, callback, data) {
 		if (this.channels.hasOwnProperty(channelName)) {
 			const channel = this.channels[channelName];
