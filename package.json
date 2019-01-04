@@ -3,15 +3,12 @@
 	"version": "1.0.0",
 	"description": "A Vue plugin that makes integrating ActionCable easy.",
 	"main": "dist/actioncablevue.js",
-	"directories": {
-		"doc": "docs"
-	},
 	"keywords": [
 		"actioncable",
 		"vue",
 		"vuejs",
 		"rails",
-		"realtime",
+		"real-time",
 		"websocket"
 	],
 	"scripts": {
