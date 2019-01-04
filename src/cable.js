@@ -19,42 +19,38 @@ export default class Cable {
 		};
 		this._logger = new Logger(debug, debugLevel);
 
-		this._connect(options.connection);
+		this._connect(options.connectionUrl);
 	}
 
 	_connect(url) {
 		if (typeof url == 'string') {
 			this._cable = actioncable.createConsumer(url);
-		} else throw new Error('Connection URL needs to be of type String.');
+		} else {
+			throw new Error(
+				'Connection URL needs to be a valid Action Cable websocket server URL.'
+			);
+		}
 	}
 
-	subscribe(subscription) {
+	subscribe(subscription, name) {
 		if (this._cable) {
 			const that = this;
+			const channelName = name || subscription.channel;
+
 			this._channels.subscriptions[
-				subscription.channel
+				channelName
 			] = this._cable.subscriptions.create(subscription, {
 				connected() {
-					that._fireChannelEvent(subscription.channel, that._channelConnected);
+					that._fireChannelEvent(channelName, that._channelConnected);
 				},
 				disconnected() {
-					that._fireChannelEvent(
-						subscription.channel,
-						that._channelDisconnected
-					);
+					that._fireChannelEvent(channelName, that._channelDisconnected);
 				},
 				rejected() {
-					that._fireChannelEvent(
-						subscription.channel,
-						that._subscriptionRejected
-					);
+					that._fireChannelEvent(channelName, that._subscriptionRejected);
 				},
 				received(data) {
-					that._fireChannelEvent(
-						subscription.channel,
-						that._channelReceived,
-						data
-					);
+					that._fireChannelEvent(channelName, that._channelReceived, data);
 				}
 			});
 		} else {
@@ -81,6 +77,10 @@ export default class Cable {
 				`Could not perform action: '${action}' on channel '${channelName}'.`
 			);
 		}
+	}
+
+	unsubscribe(channelName) {
+		this._removeChannel(channelName);
 	}
 
 	_channelConnected(channel) {
@@ -132,12 +132,10 @@ export default class Cable {
 	_removeChannel(name) {
 		const uid = this._channels[name]._uid;
 		delete this._channels[name];
+		this._channels.subscriptions[name].unsubscribe();
 		delete this._channels.subscriptions[name];
 		delete this._components[uid];
-		this._logger.log(
-			`Disconnecting from subscription to channel '${name}'.`,
-			'info'
-		);
+		this._logger.log(`Unsubscribing from channel '${name}'.`, 'info');
 	}
 
 	_fireChannelEvent(channelName, callback, data) {

@@ -23,7 +23,7 @@ import ActionCableVue from 'actioncable-vue';
 Vue.use(ActionCableVue, {
 	debug: true,
 	debugLevel: 'error',
-	connection: 'ws://localhost:5000/api/cable'
+	connectionUrl: 'ws://localhost:5000/api/cable'
 });
 
 new Vue({
@@ -33,10 +33,11 @@ new Vue({
 }).$mount('#app');
 ```
 
-| **Parameters** | **Type** | **Default** | **Required** | **Description**          |
-| -------------- | -------- | ----------- | ------------ | ------------------------ |
-| debug          | Boolean  | `false`     | Optional     | Enable logging for debug |
-| connection     | String   | `null`      | Required     | Websocket server url     |
+| **Parameters** | **Type** | **Default** | **Required** | **Description**                                                           |
+| -------------- | -------- | ----------- | ------------ | ------------------------------------------------------------------------- |
+| debug          | Boolean  | `false`     | Optional     | Enable logging for debug                                                  |
+| debugLevel     | String   | `error`     | Optional     | The debug level required for debug info. Either `info`, `error`, or `all` |
+| connectionUrl  | String   | `null`      | Required     | ActionCable websocket server url                                          |
 
 #### 🌈 Component Level Usage
 
@@ -44,6 +45,11 @@ new Vue({
 
 ```javascript
 new Vue({
+	data() {
+		return {
+			message: 'Hello world'
+		};
+	},
 	channels: {
 		ChatChannel: {
 			connected() {},
@@ -53,13 +59,62 @@ new Vue({
 		}
 	},
 	methods: {
-		clickButton: function(data) {
-			// $socket is socket.io-client instance
-			this.$socket.emit('emit_method', data);
+		sendMessage: function() {
+			this.$cable.perform('ChatChannel', 'send_message', {
+				content: this.message
+			});
 		}
 	},
 	mounted() {
-		this.$cable.subscribe({ channel: ChatChannel, room: 'public' });
+		this.$cable.subscribe({ channel: 'ChatChannel', room: 'public' });
 	}
 });
 ```
+
+#### Subscriptions
+
+###### 1. Subscribing to a channel
+
+Requires that you have an object defined in your `channels` matching the action cable server channel name you passed for the subscription.
+
+```javascript
+new Vue({
+	channels: {
+		ChatChannel: {
+			connected() {
+				console.log('I am connected.');
+			}
+		}
+	},
+	mounted() {
+		this.$cable.subscribe({ channel: 'ChatChannel' });
+	}
+});
+```
+
+###### 2. Subscribing to the same channel but multiple rooms
+
+```javascript
+new Vue({
+	channels: {
+		'chat_channel_public': {
+			connected() {
+				console.log('I am connected to the public chat channel.');
+			}
+		},
+		'chat_channel_private': {
+			connected() {
+				console.log('I am connected to the private chat channel.');
+			}
+		}
+	},
+	mounted() {
+		this.$cable.subscribe({ channel: 'ChatChannel', room: 'public', 'chat_channel_public' });
+		this.$cable.subscribe({ channel: 'ChatChannel', 'private' }, 'chat_channel_private');
+	}
+});
+```
+
+##### Important
+
+> ActionCableVue automatically uses your ActionCable server channel name if you do not pass in a specific channel name to use in your `channels`. It will also **override** clashing channel names.
