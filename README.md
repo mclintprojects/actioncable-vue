@@ -2,7 +2,6 @@
   <a href="https://www.npmjs.com/package/actioncable-vue"><img src="https://img.shields.io/npm/v/actioncable-vue.svg"/> <img src="https://img.shields.io/npm/dt/actioncable-vue.svg"/></a>
   <a href="https://github.com/vuejs/awesome-vue"><img src="https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg"/></a>
   <a href="https://vuejs.org/"><img src="https://img.shields.io/badge/vue-2.x-brightgreen.svg"/></a>
-  <a href="http://packagequality.com/#?package=actioncable-vue"><img src="http://npm.packagequality.com/shield/actioncable-vue.svg"/></a>
   <a href="https://github.com/MetinSeylan/Vue-Socket.io/"><img src="https://img.shields.io/npm/l/actioncable-vue.svg"/></a>
   <a href="https://github.com/MetinSeylan/Vue-Socket.io/"><img src="https://img.shields.io/github/stars/MetinSeylan/Vue-Socket.io.svg"/></a>
 </p>
@@ -33,11 +32,11 @@ new Vue({
 }).$mount('#app');
 ```
 
-| **Parameters** | **Type** | **Default** | **Required** | **Description**                                                           |
-| -------------- | -------- | ----------- | ------------ | ------------------------------------------------------------------------- |
-| debug          | Boolean  | `false`     | Optional     | Enable logging for debug                                                  |
+| **Parameters** | **Type** | **Default** | **Required** | **Description**                                                    |
+| -------------- | -------- | ----------- | ------------ | ------------------------------------------------------------------ |
+| debug          | Boolean  | `false`     | Optional     | Enable logging for debug                                           |
 | debugLevel     | String   | `error`     | Optional     | Debug level required for logging. Either `info`, `error`, or `all` |
-| connectionUrl  | String   | `null`      | Required     | ActionCable websocket server url                                          |
+| connectionUrl  | String   | `null`      | Required     | ActionCable websocket server url                                   |
 
 #### 🌈 Component Level Usage
 
