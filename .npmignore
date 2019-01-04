@@ -1,0 +1,17 @@
+.DS_Store
+src/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.map
+
+# Editor directories and files
+.idea
+.vscode
+.bitmap
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+.github/

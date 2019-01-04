@@ -2,7 +2,7 @@
 	"name": "actioncable-vue",
 	"version": "1.0.0",
 	"description": "A Vue plugin that makes integrating ActionCable easy.",
-	"main": "dist/index.js",
+	"main": "dist/actioncablevue.js",
 	"directories": {
 		"doc": "docs"
 	},
