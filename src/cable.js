@@ -1,9 +1,13 @@
 import actioncable from 'actioncable';
+import Mixin from './mixin';
 
 export default class Cable {
+	cable = null;
+	channels = { subscriptions: {} };
+
 	constructor(Vue) {
-		this.vueInstance = Vue;
 		Vue.prototype.$cable = this;
+		Vue.mixin(Mixin);
 	}
 
 	connect(url) {
@@ -11,39 +15,69 @@ export default class Cable {
 	}
 
 	subscribe(subscription) {
-		actioncable.subscriptions.create(subscription, {
-			connected() {
-				this._channelConnected(subscription.channel);
-			},
-			disconnected() {
-				this._channelDisconnected(subscription.channel);
-			},
-			rejected() {
-				this._subscriptionRejected(subscription.channel);
-			},
-			received(data) {
-				this._channelReceived(subscription.channel, data);
-			}
-		});
+		if (this.cable) {
+			const that = this;
+			this.channels.subscriptions[
+				subscription.name
+			] = this.cable.subscriptions.create(subscription, {
+				connected() {
+					that._fireChannelEvent(subscription.channel, that._channelConnected);
+				},
+				disconnected() {
+					that._fireChannelEvent(
+						subscription.channel,
+						that._channelDisconnected
+					);
+				},
+				rejected() {
+					that._fireChannelEvent(
+						subscription.channel,
+						that._subscriptionRejected
+					);
+				},
+				received(data) {
+					that._fireChannelEvent(
+						subscription.channel,
+						that._channelReceived,
+						data
+					);
+				}
+			});
+		}
 	}
 
-	_channelConnected(name) {
-		const channel = this.vueInstance.channels[name];
-		if (channel) channel.connected();
+	perform(channelName, action, data) {
+		const subscription = this.channels.subscriptions[channelName];
+		if (subscription) {
+			subscription.perform(action, data);
+		}
 	}
 
-	_channelDisconnected(name) {
-		const channel = this.vueInstance.channels[name];
-		if (channel) channel.disconnected();
+	_channelConnected(channel) {
+		channel.connected();
 	}
 
-	_subscriptionRejected(name) {
-		const channel = this.vueInstance.channels[name];
-		if (channel) channel.rejected();
+	_channelDisconnected(channel) {
+		channel.disconnected();
 	}
 
-	_channelReceived(name, data) {
-		const channel = this.vueInstance.channels[name];
-		if (channel) channel.received(data);
+	_subscriptionRejected(channel) {
+		channel.rejected();
+	}
+
+	_channelReceived(channel, data) {
+		channel.received(data);
+	}
+
+	_addChannel(name, value) {
+		this.channels[name] = value;
+		console.log('adding channel: ' + name);
+	}
+
+	_fireChannelEvent(channelName, callback, data) {
+		if (this.channels.hasOwnProperty(channelName)) {
+			const channel = this.channels[channelName];
+			callback(channel, data);
+		}
 	}
 }

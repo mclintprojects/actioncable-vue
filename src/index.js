@@ -1,7 +1,7 @@
 import Cable from './cable';
 
-export default (ActionCableVue = {
+export default class ActionCableVue {
 	install(Vue) {
 		new Cable(Vue);
 	}
-});
+}
