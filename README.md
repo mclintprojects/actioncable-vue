@@ -113,7 +113,7 @@ new Vue({
 	},
 	mounted() {
 		this.$cable.subscribe({ channel: 'ChatChannel', room: 'public'}, 'chat_channel_public' });
-		this.$cable.subscribe({ channel: 'ChatChannel', 'private' }, 'chat_channel_private');
+		this.$cable.subscribe({ channel: 'ChatChannel', room: 'private' }, 'chat_channel_private');
 	}
 });
 ```
