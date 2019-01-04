@@ -163,7 +163,7 @@ export default class Cable {
 	 * Component mounted. Retrieves component channels for later use
 	 * @param {string} name - Component channel name
 	 * @param {Object} value - The component channel object itself
-	 * @param {component} context - The execution context of the component the channel was created in
+	 * @param {Object} context - The execution context of the component the channel was created in
 	 */
 	_addChannel(name, value, context) {
 		value._uid = context._uid;
@@ -175,13 +175,13 @@ export default class Cable {
 
 	/**
 	 * Adds a component to a cache. Component is then used to bind `this` in the component channel to the Vue component's execution context
-	 * @param {Object} component - The Vue component execution context being added
+	 * @param {Object} context - The Vue component execution context being added
 	 */
 	_addContext(context) {
-		if (!this._contexts[component._uid]) {
-			this._contexts[component._uid] = { context, users: 1 };
+		if (!this._contexts[context._uid]) {
+			this._contexts[context._uid] = { context, users: 1 };
 		} else {
-			++this._contexts[component._uid].users;
+			++this._contexts[context._uid].users;
 		}
 	}
 
