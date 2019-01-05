@@ -65,25 +65,27 @@ export default class Cable {
 
 	/**
 	 * Perform an action in an Action Cable server channel
-	 * @param {string} channelName - The name of the Action Cable server channel / The custom name chosen for the component channel
-	 * @param {string} action - The action to call in the Action Cable server channel
-	 * @param {Object} data - The data to pass along with the call to the action
+	 * @param {Object} whatToDo
+	 * @param {string} whatToDo.channel - The name of the Action Cable server channel / The custom name chosen for the component channel
+	 * @param {string} whatToDo.action - The action to call in the Action Cable server channel
+	 * @param {Object} whatToDo.data - The data to pass along with the call to the action
 	 */
-	perform(channelName, action, data) {
+	perform(whatToDo) {
+		const { channel, action, data } = whatToDo;
 		this._logger.log(
-			`Performing action '${action}' on channel '${channelName}'.`,
+			`Performing action '${action}' on channel '${channel}'.`,
 			'info'
 		);
-		const subscription = this._channels.subscriptions[channelName];
+		const subscription = this._channels.subscriptions[channel];
 		if (subscription) {
 			subscription.perform(action, data);
 			this._logger.log(
-				`Performed '${action}' on channel '${channelName}'.`,
+				`Performed '${action}' on channel '${channel}'.`,
 				'info'
 			);
 		} else {
 			this._logger.log(
-				`Could not perform action '${action}' on channel '${channelName}'.`
+				`You need to be subscribed to perform action '${action}' on channel '${channel}'.`
 			);
 		}
 	}

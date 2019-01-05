@@ -12,7 +12,8 @@
 		"websocket"
 	],
 	"scripts": {
-		"build": "webpack --mode=production --progress --hide-modules"
+		"build": "webpack --mode=production --progress --hide-modules",
+		"update-lib": "npm run build && npm publish"
 	},
 	"repository": {
 		"type": "git",
