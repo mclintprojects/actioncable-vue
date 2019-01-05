@@ -20,7 +20,7 @@ export default class Logger {
 	log(message, level = 'error') {
 		if (this._debug) {
 			if (this._debugLevel == 'all') console.log(message);
-			else if (level == _this._debugLevel) {
+			else if (level == this._debugLevel) {
 				console.log(message);
 			}
 		}

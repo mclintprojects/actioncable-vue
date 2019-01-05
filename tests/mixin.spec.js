@@ -1,6 +1,6 @@
 import Mixin from '../src/mixin';
 
-describe('mixin', () => {
+describe('Mixin', () => {
 	let _addChannel, _removeChannel, context;
 
 	beforeEach(() => {
