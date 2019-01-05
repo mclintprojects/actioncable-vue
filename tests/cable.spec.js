@@ -39,6 +39,37 @@ describe('Cable', () => {
 		expect(global._channels.subscriptions['ChatChannel']).toBeDefined();
 	});
 
+	test('It should correctly subscribe to channel with custom name', () => {
+		create.mockReturnValue({});
+		cable.subscribe.call(
+			global,
+			{ channel: 'ChatChannel' },
+			'custom_channel_name'
+		);
+		expect(global._cable.subscriptions.create).toBeCalled();
+		expect(global._channels.subscriptions['custom_channel_name']).toBeDefined();
+	});
+
+	test('It should correctly subscribe to same channel with multiple custom names', () => {
+		create.mockReturnValue({});
+		cable.subscribe.call(
+			global,
+			{ channel: 'ChatChannel' },
+			'custom_channel_name'
+		);
+		cable.subscribe.call(
+			global,
+			{ channel: 'ChatChannel' },
+			'custom_channel_name_2'
+		);
+
+		expect(global._cable.subscriptions.create).toBeCalledTimes(2);
+		expect(global._channels.subscriptions['custom_channel_name']).toBeDefined();
+		expect(
+			global._channels.subscriptions['custom_channel_name_2']
+		).toBeDefined();
+	});
+
 	test('It should correctly perform an action on a channel', () => {
 		const perform = jest.fn();
 		const whatToDo = {
