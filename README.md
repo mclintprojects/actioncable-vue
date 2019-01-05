@@ -59,8 +59,10 @@ new Vue({
 	},
 	methods: {
 		sendMessage: function() {
-			this.$cable.perform('ChatChannel', 'send_message', {
-				content: this.message
+			this.$cable.perform({
+				channel: 'ChatChannel',
+				action: 'send_message',
+				data: { content: this.message }
 			});
 		}
 	},
@@ -70,7 +72,7 @@ new Vue({
 });
 ```
 
-#### Subscriptions
+#### ✨ Subscriptions
 
 ###### 1. Subscribing to a channel
 
@@ -93,27 +95,33 @@ new Vue({
 
 ##### Important
 
-> ActionCableVue automatically uses your ActionCable server channel name if you do not pass in a specific channel name to use in your `channels`. It will also **override** clashing channel names.
+> ActionCableVue **automatically** uses your ActionCable server channel name if you do not pass in a specific channel name to use in your `channels`. It will also **override** clashing channel names.
 
-###### 2. Subscribing to the same channel but multiple rooms
+###### 2. Subscribing to the same channel but different rooms
 
 ```javascript
 new Vue({
 	channels: {
-		'chat_channel_public': {
+		chat_channel_public: {
 			connected() {
 				console.log('I am connected to the public chat channel.');
 			}
 		},
-		'chat_channel_private': {
+		chat_channel_private: {
 			connected() {
 				console.log('I am connected to the private chat channel.');
 			}
 		}
 	},
 	mounted() {
-		this.$cable.subscribe({ channel: 'ChatChannel', room: 'public'}, 'chat_channel_public' });
-		this.$cable.subscribe({ channel: 'ChatChannel', room: 'private' }, 'chat_channel_private');
+		this.$cable.subscribe(
+			{ channel: 'ChatChannel', room: 'public' },
+			'chat_channel_public'
+		);
+		this.$cable.subscribe(
+			{ channel: 'ChatChannel', room: 'private' },
+			'chat_channel_private'
+		);
 	}
 });
 ```
@@ -122,15 +130,15 @@ new Vue({
 
 ```javascript
 new Vue({
-	data(){
+	data() {
 		return {
 			user: {
-				id: 7,
+				id: 7
 			}
-		}
+		};
 	},
 	computed: {
-		channelId(){
+		channelId() {
 			return `${this.user.id}_chat_channel`;
 		}
 	},
@@ -142,14 +150,17 @@ new Vue({
 		}
 	},
 	mounted() {
-		this.$cable.subscribe({ channel: 'ChatChannel', room: this.user.id}, this.channelId });
+		this.$cable.subscribe(
+			{ channel: 'ChatChannel', room: this.user.id },
+			this.channelId
+		);
 	}
 });
 ```
 
-#### Unsubscriptions
+#### 🎃 Unsubscriptions
 
-> When your component is destroyed ActionCableVue automatically unsubscribes from any channel you were subscribed to.
+> When your component is **destroyed** ActionCableVue **automatically unsubscribes** from any channel **that component** was subscribed to.
 
 ```javascript
 new Vue({
@@ -164,7 +175,7 @@ new Vue({
 });
 ```
 
-#### Performing an action on your Action Cable server
+#### ♣ Performing an action on your Action Cable server
 
 Requires that you have a method defined in your Rails Action Cable channel whose name matches the action property passed in.
 
@@ -182,7 +193,11 @@ new Vue({
 	},
 	methods: {
 		sendMessage() {
-			this.$cable.perform({ channel: 'ChatChannel', action: 'send_message' });
+			this.$cable.perform({
+				channel: 'ChatChannel',
+				action: 'send_message',
+				data: { content: 'Hi' }
+			});
 		}
 	},
 	mounted() {
