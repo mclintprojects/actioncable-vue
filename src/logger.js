@@ -1,5 +1,11 @@
 export default class Logger {
+	/**
+	 * Enable logging for debug
+	 */
 	_debug;
+	/**
+	 * Debug level required for logging. Either `info`, `error`, or `all`
+	 */
 	_debugLevel;
 
 	/**
