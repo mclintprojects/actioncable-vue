@@ -20,6 +20,12 @@ describe('Cable', () => {
 		};
 		global._logger = { log() {} };
 		global._contexts = {};
+		global._removeChannel = function(name) {
+			cable._removeChannel.call(global, name);
+		};
+		global._addContext = function(context) {
+			cable._addContext.call(global, context);
+		};
 	});
 
 	test('It should initialize correctly if options provided', () => {
@@ -33,6 +39,14 @@ describe('Cable', () => {
 		expect(vue.mixin).toHaveBeenCalled();
 		expect(cable._logger._debug).toBe(true);
 		expect(cable._logger._debugLevel).toBe('error');
+	});
+
+	test('It should not connect if param is not a string', () => {
+		const t = () => {
+			cable._connect({});
+		};
+
+		expect(t).toThrowError();
 	});
 
 	test('It should correctly subscribe to channel', () => {
@@ -88,10 +102,22 @@ describe('Cable', () => {
 		expect(perform).toHaveBeenCalledWith(whatToDo.action, whatToDo.data);
 	});
 
+	test('It should not perform an action if subscription to channel does not exist', () => {
+		const whatToDo = {
+			channel: 'ChatChannel',
+			action: 'send_message',
+			data: { content: 'Hi' }
+		};
+
+		const t = () => {
+			cable.perform.call(global, whatToDo);
+		};
+		expect(t).toThrowError();
+	});
+
 	test('It should correctly fire connected event', () => {
 		const connected = jest.fn();
-		const channel = { _uid: 0, name: 'ChatChannel', connected };
-		global._channels.ChatChannel = channel;
+		global._channels.ChatChannel = { _uid: 0, name: 'ChatChannel', connected };
 		global._contexts[0] = { context: this };
 
 		cable._fireChannelEvent.call(
@@ -105,8 +131,7 @@ describe('Cable', () => {
 
 	test('It should correctly fire rejected event', () => {
 		const rejected = jest.fn();
-		const channel = { _uid: 1, name: 'ChatChannel', rejected };
-		global._channels.ChatChannel = channel;
+		global._channels.ChatChannel = { _uid: 1, name: 'ChatChannel', rejected };
 		global._contexts[1] = { context: this };
 
 		cable._fireChannelEvent.call(
@@ -120,8 +145,11 @@ describe('Cable', () => {
 
 	test('It should correctly fire disconnected event', () => {
 		const disconnected = jest.fn();
-		const channel = { _uid: 2, name: 'ChatChannel', disconnected };
-		global._channels.ChatChannel = channel;
+		global._channels.ChatChannel = {
+			_uid: 2,
+			name: 'ChatChannel',
+			disconnected
+		};
 		global._contexts[2] = { context: this };
 
 		cable._fireChannelEvent.call(
@@ -136,8 +164,7 @@ describe('Cable', () => {
 	test('It should correctly fire received event', () => {
 		const received = jest.fn();
 		const data = { age: 1 };
-		const channel = { _uid: 3, name: 'ChatChannel', received };
-		global._channels.ChatChannel = channel;
+		global._channels.ChatChannel = { _uid: 3, name: 'ChatChannel', received };
 		global._contexts[3] = { context: this };
 
 		cable._fireChannelEvent.call(
@@ -149,5 +176,66 @@ describe('Cable', () => {
 
 		expect(received).toBeCalledTimes(1);
 		expect(received).toHaveBeenCalledWith(data);
+	});
+
+	test('It should correctly unsubscribe from channel', () => {
+		const unsubscribe = jest.fn();
+		const channelName = 'ChatChannel';
+		const channelUid = 3;
+
+		global._channels.ChatChannel = {
+			_uid: channelUid,
+			name: channelName
+		};
+		global._channels.subscriptions[channelName] = { unsubscribe };
+		global._contexts[channelUid] = { users: 1 };
+
+		cable.unsubscribe.call(global, channelName);
+		expect(global._channels[channelName]).toBeUndefined();
+		expect(global._channels.subscriptions[channelName]).toBeUndefined();
+		expect(global._contexts[channelUid]).toBeUndefined();
+		expect(unsubscribe).toBeCalledTimes(1);
+	});
+
+	test('It should not remove context when unsubscribing from channel if users still exist', () => {
+		const unsubscribe = jest.fn();
+		const channelName = 'ChatChannel';
+		const channelUid = 3;
+
+		global._channels.ChatChannel = {
+			_uid: channelUid,
+			name: channelName
+		};
+		global._channels.subscriptions[channelName] = { unsubscribe };
+		global._contexts[channelUid] = { users: 2 };
+
+		cable.unsubscribe.call(global, channelName);
+		expect(global._channels[channelName]).toBeUndefined();
+		expect(global._channels.subscriptions[channelName]).toBeUndefined();
+		expect(global._contexts[channelUid]).toBeDefined();
+		expect(unsubscribe).toBeCalledTimes(1);
+	});
+
+	test('It should correctly add context', () => {
+		const uid = 1;
+		cable._addContext.call(global, { _uid: uid });
+		expect(global._contexts[uid]).toBeDefined();
+		expect(global._contexts[uid].users).toEqual(1);
+
+		cable._addContext.call(global, { _uid: uid });
+		expect(global._contexts[uid].users).toEqual(2);
+	});
+
+	test('It should correctly add channels', () => {
+		const channelName = 'ChatChannel';
+		const uid = 1;
+		const context = { _uid: uid };
+
+		cable._addChannel.call(global, channelName, {}, context);
+		expect(global._channels[channelName]).toBeDefined();
+		expect(global._channels[channelName]._uid).toEqual(uid);
+		expect(global._channels[channelName]._name).toEqual(channelName);
+		expect(global._contexts[uid]).toBeDefined();
+		expect(global._contexts[uid].users).toEqual(1);
 	});
 });

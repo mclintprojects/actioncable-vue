@@ -84,7 +84,7 @@ export default class Cable {
 				'info'
 			);
 		} else {
-			this._logger.log(
+			throw new Error(
 				`You need to be subscribed to perform action '${action}' on channel '${channel}'.`
 			);
 		}
