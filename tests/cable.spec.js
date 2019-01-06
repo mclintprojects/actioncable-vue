@@ -9,6 +9,7 @@ describe('Cable', () => {
 		create = jest.fn();
 
 		cable = new Cable(vue, { connectionUrl: 'ws://localhost:5000/api/cable' });
+
 		global._cable = {
 			subscriptions: {
 				create
@@ -17,6 +18,8 @@ describe('Cable', () => {
 		global._channels = {
 			subscriptions: {}
 		};
+		global._logger = { log() {} };
+		global._contexts = {};
 	});
 
 	test('It should initialize correctly if options provided', () => {
@@ -80,9 +83,71 @@ describe('Cable', () => {
 		global._channels.subscriptions.ChatChannel = {
 			perform
 		};
-		global._logger = { log() {} };
 
 		cable.perform.call(global, whatToDo);
 		expect(perform).toHaveBeenCalledWith(whatToDo.action, whatToDo.data);
+	});
+
+	test('It should correctly fire connected event', () => {
+		const connected = jest.fn();
+		const channel = { _uid: 0, name: 'ChatChannel', connected };
+		global._channels.ChatChannel = channel;
+		global._contexts[0] = { context: this };
+
+		cable._fireChannelEvent.call(
+			global,
+			'ChatChannel',
+			cable._channelConnected
+		);
+
+		expect(connected).toBeCalledTimes(1);
+	});
+
+	test('It should correctly fire rejected event', () => {
+		const rejected = jest.fn();
+		const channel = { _uid: 1, name: 'ChatChannel', rejected };
+		global._channels.ChatChannel = channel;
+		global._contexts[1] = { context: this };
+
+		cable._fireChannelEvent.call(
+			global,
+			'ChatChannel',
+			cable._subscriptionRejected
+		);
+
+		expect(rejected).toBeCalledTimes(1);
+	});
+
+	test('It should correctly fire disconnected event', () => {
+		const disconnected = jest.fn();
+		const channel = { _uid: 2, name: 'ChatChannel', disconnected };
+		global._channels.ChatChannel = channel;
+		global._contexts[2] = { context: this };
+
+		cable._fireChannelEvent.call(
+			global,
+			'ChatChannel',
+			cable._channelDisconnected
+		);
+
+		expect(disconnected).toBeCalledTimes(1);
+	});
+
+	test('It should correctly fire received event', () => {
+		const received = jest.fn();
+		const data = { age: 1 };
+		const channel = { _uid: 3, name: 'ChatChannel', received };
+		global._channels.ChatChannel = channel;
+		global._contexts[3] = { context: this };
+
+		cable._fireChannelEvent.call(
+			global,
+			'ChatChannel',
+			cable._channelReceived,
+			data
+		);
+
+		expect(received).toBeCalledTimes(1);
+		expect(received).toHaveBeenCalledWith(data);
 	});
 });

@@ -35,4 +35,17 @@ describe('Logger', () => {
 		logger.log('Hi -- error', 'error');
 		expect(log).toBeCalledTimes(0);
 	});
+
+	test('It should not log if debug is set to false', () => {
+		const logger = new Logger(false, 'error');
+		logger.log('Hi -- error', 'error');
+		expect(log).toBeCalledTimes(0);
+	});
+
+	test('It should log messages as error by default', () => {
+		const logger = new Logger(true, 'error');
+		logger.log('Hi -- error');
+		expect(log).toBeCalledTimes(1);
+		expect(log).toHaveBeenCalledWith('Hi -- error');
+	});
 });
