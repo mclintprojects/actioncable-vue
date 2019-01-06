@@ -2,6 +2,7 @@
 src/
 tests/
 coverage/
+.travis.yml
 .babelrc
 node_modules/
 npm-debug.log*
