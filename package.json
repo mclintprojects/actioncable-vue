@@ -44,6 +44,7 @@
 		"webpack-cli": "^3.1.2"
 	},
 	"jest": {
-		"testURL": "http://localhost/"
+		"testURL": "http://localhost/",
+		"collectCoverage": true
 	}
 }

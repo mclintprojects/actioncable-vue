@@ -1,4 +1,5 @@
 <p align="center">
+  <a href="https://travis-ci.org/mclintprojects/actioncable-vue"><img src="https://travis-ci.org/mclintprojects/actioncable-vue.svg?branch=master" /></a>
   <a href="https://www.npmjs.com/package/actioncable-vue"><img src="https://img.shields.io/npm/v/actioncable-vue.svg"/> <img src="https://img.shields.io/npm/dt/actioncable-vue.svg"/></a>
   <a href="https://github.com/vuejs/awesome-vue"><img src="https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg"/></a>
   <a href="https://vuejs.org/"><img src="https://img.shields.io/badge/vue-2.x-brightgreen.svg"/></a>

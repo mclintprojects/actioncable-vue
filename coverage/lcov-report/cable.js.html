@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for cable.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="prettify.css" />
+    <link rel="stylesheet" href="base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="index.html">All files</a> cable.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">30.91% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>17/55</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">25% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>6/24</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">30.77% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>4/13</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">30.19% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>16/53</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import actioncable from 'actioncable';
+import Logger from './logger';
+import Mixin from './mixin';
+&nbsp;
+export default class Cable {
+	_logger = null;
+	_cable = null;
+	_channels = { subscriptions: {} };
+	_contexts = {};
+&nbsp;
+	/**
+	 * ActionCableVue $cable entry point
+	 * @param {Object} Vue
+	 * @param {Object} options - ActionCableVue options
+	 * @param {string} options.connectionUrl - ActionCable server websocket URL
+	 * @param {boolean} options.debug - Enable logging for debug
+	 * @param {string} options.debugLevel - Debug level required for logging. Either `info`, `error`, or `all`
+	 */
+	constructor(Vue, options) {
+		Vue.prototype.$cable = this;
+		Vue.mixin(Mixin);
+&nbsp;
+		const { debug, debugLevel, connectionUrl } = options || <span class="branch-1 cbranch-no" title="branch not covered" >{</span>
+			debug: false,
+			debugLevel: 'error',
+			connectionUrl: null
+		};
+&nbsp;
+		this._logger = new Logger(debug, debugLevel);
+		this._connect(connectionUrl);
+	}
+&nbsp;
+	/**
+	 * Subscribes to an Action Cable server channel
+	 * @param {Object} subscription
+	 * @param {string} subscription.channel - The name of the Action Cable server channel
+	 * @param {string} subscription.room - The room in the Action Cable server channel to subscribe to
+	 * @param {string} name - A custom channel name to be used in component
+	 */
+	subscribe(subscription, name) {
+		<span class="missing-if-branch" title="else path not taken" >E</span>if (this._cable) {
+			const that = this;
+			const channelName = name || subscription.channel;
+&nbsp;
+			this._channels.subscriptions[
+				channelName
+			] = this._cable.subscriptions.create(subscription, {
+				connected() {
+<span class="cstat-no" title="statement not covered" >					that._fireChannelEvent(channelName, that._channelConnected);</span>
+				},
+				disconnected() {
+<span class="cstat-no" title="statement not covered" >					that._fireChannelEvent(channelName, that._channelDisconnected);</span>
+				},
+				rejected() {
+<span class="cstat-no" title="statement not covered" >					that._fireChannelEvent(channelName, that._subscriptionRejected);</span>
+				},
+				received(data) {
+<span class="cstat-no" title="statement not covered" >					that._fireChannelEvent(channelName, that._channelReceived, data);</span>
+				}
+			});
+		} else {
+<span class="cstat-no" title="statement not covered" >			throw new Error(`ActionCableVue not initialized.`);</span>
+		}
+	}
+&nbsp;
+	/**
+	 * Perform an action in an Action Cable server channel
+	 * @param {Object} whatToDo
+	 * @param {string} whatToDo.channel - The name of the Action Cable server channel / The custom name chosen for the component channel
+	 * @param {string} whatToDo.action - The action to call in the Action Cable server channel
+	 * @param {Object} whatToDo.data - The data to pass along with the call to the action
+	 */
+	perform(whatToDo) {
+		const { channel, action, data } = whatToDo;
+		this._logger.log(
+			`Performing action '${action}' on channel '${channel}'.`,
+			'info'
+		);
+		const subscription = this._channels.subscriptions[channel];
+		<span class="missing-if-branch" title="else path not taken" >E</span>if (subscription) {
+			subscription.perform(action, data);
+			this._logger.log(
+				`Performed '${action}' on channel '${channel}'.`,
+				'info'
+			);
+		} else {
+<span class="cstat-no" title="statement not covered" >			this._logger.log(</span>
+				`You need to be subscribed to perform action '${action}' on channel '${channel}'.`
+			);
+		}
+	}
+&nbsp;
+	/**
+	 * Unsubscribes from an Action Cable server channel
+	 * @param {string} channelName - The name of the Action Cable server channel / The custom name chosen for the component channel
+	 */
+<span class="fstat-no" title="function not covered" >	un</span>subscribe(channelName) {
+<span class="cstat-no" title="statement not covered" >		this._removeChannel(channelName);</span>
+	}
+&nbsp;
+	/**
+	 * Called when a subscription to an Action Cable server channel successfully completes. Calls connected on the component channel
+	 * @param {Object} channel - The component channel
+	 */
+<span class="fstat-no" title="function not covered" >	_c</span>hannelConnected(channel) {
+<span class="cstat-no" title="statement not covered" >		if (channel.connected)</span>
+<span class="cstat-no" title="statement not covered" >			channel.connected.call(this._contexts[channel._uid].context);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >		this._logger.log(</span>
+			`Successfully connected to channel '${channel._name}'.`,
+			'info'
+		);
+	}
+&nbsp;
+	/**
+	 * Called when a subscription to an Action Cable server channel disconnects. Calls disconnected on the component channel
+	 * @param {Object} channel - The component channel
+	 */
+<span class="fstat-no" title="function not covered" >	_c</span>hannelDisconnected(channel) {
+<span class="cstat-no" title="statement not covered" >		if (channel.disconnected)</span>
+<span class="cstat-no" title="statement not covered" >			channel.disconnected.call(this._contexts[channel._uid].context);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >		this._logger.log(</span>
+			`Successfully disconnected from channel '${channel._name}'.`,
+			'info'
+		);
+	}
+&nbsp;
+	/**
+	 * Called when a subscription to an Action Cable server channel is rejected by the server. Calls rejected on the component channel
+	 * @param {Object} channel - The component channel
+	 */
+<span class="fstat-no" title="function not covered" >	_s</span>ubscriptionRejected(channel) {
+<span class="cstat-no" title="statement not covered" >		if (channel.rejected)</span>
+<span class="cstat-no" title="statement not covered" >			channel.rejected.call(this._contexts[channel._uid].context);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >		this._logger.log(`Subscription rejected for channel '${channel._name}'.`);</span>
+	}
+&nbsp;
+	/**
+	 * Called when a message from an Action Cable server channel is received. Calls received on the component channel
+	 * @param {Object} channel - The component channel
+	 */
+<span class="fstat-no" title="function not covered" >	_c</span>hannelReceived(channel, data) {
+<span class="cstat-no" title="statement not covered" >		if (channel.received)</span>
+<span class="cstat-no" title="statement not covered" >			channel.received.call(this._contexts[channel._uid].context, data);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >		this._logger.log(`Message received on channel '${channel._name}'.`, 'info');</span>
+	}
+&nbsp;
+	/**
+	 * Connects to an Action Cable server
+	 * @param {string} url - The websocket URL of the Action Cable server.
+	 */
+	_connect(url) {
+		<span class="missing-if-branch" title="else path not taken" >E</span>if (typeof url == 'string') this._cable = actioncable.createConsumer(url);
+		else {
+<span class="cstat-no" title="statement not covered" >			throw new Error(</span>
+				'Connection URL needs to be a valid Action Cable websocket server URL.'
+			);
+		}
+	}
+&nbsp;
+	/**
+	 * Component mounted. Retrieves component channels for later use
+	 * @param {string} name - Component channel name
+	 * @param {Object} value - The component channel object itself
+	 * @param {Object} context - The execution context of the component the channel was created in
+	 */
+<span class="fstat-no" title="function not covered" >	_a</span>ddChannel(name, value, context) {
+<span class="cstat-no" title="statement not covered" >		value._uid = context._uid;</span>
+<span class="cstat-no" title="statement not covered" >		value._name = name;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >		this._channels[name] = value;</span>
+<span class="cstat-no" title="statement not covered" >		this._addContext(context);</span>
+	}
+&nbsp;
+	/**
+	 * Adds a component to a cache. Component is then used to bind `this` in the component channel to the Vue component's execution context
+	 * @param {Object} context - The Vue component execution context being added
+	 */
+<span class="fstat-no" title="function not covered" >	_a</span>ddContext(context) {
+<span class="cstat-no" title="statement not covered" >		if (!this._contexts[context._uid]) {</span>
+<span class="cstat-no" title="statement not covered" >			this._contexts[context._uid] = { context, users: 1 };</span>
+		} else {
+<span class="cstat-no" title="statement not covered" >			++this._contexts[context._uid].users;</span>
+		}
+	}
+&nbsp;
+	/**
+	 * Component is destroyed. Removes component's channels, subscription and cached execution context.
+	 */
+<span class="fstat-no" title="function not covered" >	_r</span>emoveChannel(name) {
+		const uid = <span class="cstat-no" title="statement not covered" >this._channels[name]._uid;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >		this._channels.subscriptions[name].unsubscribe();</span>
+<span class="cstat-no" title="statement not covered" >		delete this._channels[name];</span>
+<span class="cstat-no" title="statement not covered" >		delete this._channels.subscriptions[name];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >		--this._contexts[uid].users;</span>
+<span class="cstat-no" title="statement not covered" >		if (this._contexts[uid].users &lt;= 0) <span class="cstat-no" title="statement not covered" >delete this._contexts[uid];</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >		this._logger.log(`Unsubscribing from channel '${name}'.`, 'info');</span>
+	}
+&nbsp;
+	/**
+	 * Fires the event triggered by the Action Cable subscription on the component channel
+	 * @param {string} channelName - The name of the Action Cable server channel / The custom name chosen for the component channel
+	 * @param {Function} callback - The component channel event to call
+	 * @param {Object} data - The data passed from the Action Cable server channel
+	 */
+<span class="fstat-no" title="function not covered" >	_f</span>ireChannelEvent(channelName, callback, data) {
+<span class="cstat-no" title="statement not covered" >		if (this._channels.hasOwnProperty(channelName)) {</span>
+			const channel = <span class="cstat-no" title="statement not covered" >this._channels[channelName];</span>
+<span class="cstat-no" title="statement not covered" >			callback.call(this, channel, data);</span>
+		}
+	}
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sun Jan 06 2019 10:54:37 GMT+0000 (GMT Standard Time)
+</div>
+</div>
+<script src="prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="sorter.js"></script>
+</body>
+</html>
