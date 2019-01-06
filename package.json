@@ -45,6 +45,9 @@
 	},
 	"jest": {
 		"testURL": "http://localhost/",
-		"collectCoverage": true
+		"collectCoverage": true,
+		"coverageReporters": [
+			"json"
+		]
 	}
 }
