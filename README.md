@@ -128,6 +128,7 @@ new Vue({
 ```
 
 ###### 3. Subscribing to a channel with a dynamic name
+Store your channel id in a global object. For the example below, we'll go with *window.channelId*.
 
 ```javascript
 new Vue({
@@ -138,13 +139,13 @@ new Vue({
 			}
 		};
 	},
-	computed: {
-		channelId() {
-			return `${this.user.id}_chat_channel`;
+	watch: {
+		user(user) {
+			window.channelId = `${user.id}_chat_channel`;
 		}
 	},
 	channels: {
-		[this.channelId]: {
+		[window.channelId]: {
 			connected() {
 				console.log("I am connected to a user's chat channel.");
 			}
