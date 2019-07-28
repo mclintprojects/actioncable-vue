@@ -210,3 +210,33 @@ new Vue({
 	}
 });
 ```
+
+#### 💪 Usage with Nuxt.JS
+
+ActionCableVue works just fine with Nuxt.JS. All you need to do is set it up as a client side plugin.
+
+```javascript
+// /plugins/actioncable-vue.js
+
+import Vue from 'vue';
+import ActionCableVue from 'actioncable-vue';
+
+if (process.client) {
+	Vue.use(ActionCableVue, {
+		debug: true,
+		debugLevel: 'all',
+		connectionUrl: process.env.WEBSOCKET_HOST,
+		connectImmediately: true
+	});
+}
+```
+
+Don't forget to register your plugin.
+
+```javascript
+// nuxt.config.js
+/*
+ ** Plugins to load before mounting the App
+ */
+plugins: [{ src: '@/plugins/actioncable-vue', ssr: false }];
+```
