@@ -35,18 +35,54 @@ describe('Cable', () => {
 			debugLevel: 'error'
 		});
 
-		expect(vue.prototype.$cable).toBeDefined();
+		expect(vue.prototype.$cable._cable).toBeDefined();
 		expect(vue.mixin).toHaveBeenCalled();
 		expect(cable._logger._debug).toBe(true);
 		expect(cable._logger._debugLevel).toBe('error');
 	});
 
+	test('It should throw error if options not provided', () => {
+		const fn = () => {
+			cable = new Cable(vue);
+		};
+
+		expect(fn).toThrowError();
+	});
+
+	test('It should not connect immediately if connectImmediately is false', () => {
+		cable = new Cable(vue, {
+			connectionUrl: 'ws://localhost:5000/api/cable',
+			debug: true,
+			debugLevel: 'error',
+			connectImmediately: false
+		});
+
+		expect(vue.prototype.$cable._cable).toBeNull();
+	});
+
+	test('It should connect on first subscription if connectImmediately is false', () => {
+		cable = new Cable(vue, {
+			connectionUrl: 'ws://localhost:5000/api/cable',
+			debug: true,
+			debugLevel: 'error',
+			connectImmediately: false
+		});
+
+		expect(vue.prototype.$cable._cable).toBeNull();
+
+		create.mockReturnValue({});
+		cable.subscribe.call(global, { channel: 'ChatChannel' });
+		expect(vue.prototype.$cable._cable).toBeDefined();
+		expect(global._cable.subscriptions.create).toBeCalled();
+		expect(global._channels.subscriptions['ChatChannel']).toBeDefined();
+	});
+
 	test('It should not connect if param is not a string', () => {
-		const t = () => {
+		const fn = () => {
 			cable._connect({});
 		};
 
-		expect(t).toThrowError();
+		expect(fn).toThrowError();
 	});
 
 	test('It should correctly subscribe to channel', () => {

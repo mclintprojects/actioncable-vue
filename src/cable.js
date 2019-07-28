@@ -7,6 +7,7 @@ export default class Cable {
 	_cable = null;
 	_channels = { subscriptions: {} };
 	_contexts = {};
+	_connectionUrl = null;
 
 	/**
 	 * ActionCableVue $cable entry point
@@ -15,19 +16,23 @@ export default class Cable {
 	 * @param {string} options.connectionUrl - ActionCable server websocket URL
 	 * @param {boolean} options.debug - Enable logging for debug
 	 * @param {string} options.debugLevel - Debug level required for logging. Either `info`, `error`, or `all`
+	 * @param {boolean} options.connectImmediately - Connect immediately or wait until the first subscription.
 	 */
 	constructor(Vue, options) {
 		Vue.prototype.$cable = this;
 		Vue.mixin(Mixin);
 
-		const { debug, debugLevel, connectionUrl } = options || {
+		let { debug, debugLevel, connectionUrl, connectImmediately } = options || {
 			debug: false,
 			debugLevel: 'error',
 			connectionUrl: null
 		};
 
+		this._connectionUrl = connectionUrl;
+		if (connectImmediately !== false) connectImmediately = true;
+
 		this._logger = new Logger(debug, debugLevel);
-		this._connect(connectionUrl);
+		if (connectImmediately) this._connect(this._connectionUrl);
 	}
 
 	/**
@@ -59,7 +64,8 @@ export default class Cable {
 				}
 			});
 		} else {
-			throw new Error(`ActionCableVue not initialized.`);
+			this._connect(this._connectionUrl);
+			this.subscribe(subscription, name);
 		}
 	}
 
@@ -191,16 +197,18 @@ export default class Cable {
 	 * Component is destroyed. Removes component's channels, subscription and cached execution context.
 	 */
 	_removeChannel(name) {
-		const uid = this._channels[name]._uid;
+		if (this._channels.subscriptions[name]) {
+			const uid = this._channels[name]._uid;
 
-		this._channels.subscriptions[name].unsubscribe();
-		delete this._channels[name];
-		delete this._channels.subscriptions[name];
+			this._channels.subscriptions[name].unsubscribe();
+			delete this._channels[name];
+			delete this._channels.subscriptions[name];
 
-		--this._contexts[uid].users;
-		if (this._contexts[uid].users <= 0) delete this._contexts[uid];
+			--this._contexts[uid].users;
+			if (this._contexts[uid].users <= 0) delete this._contexts[uid];
 
-		this._logger.log(`Unsubscribing from channel '${name}'.`, 'info');
+			this._logger.log(`Unsubscribing from channel '${name}'.`, 'info');
+		}
 	}
 
 	/**
