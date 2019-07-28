@@ -23,7 +23,8 @@ import ActionCableVue from 'actioncable-vue';
 Vue.use(ActionCableVue, {
 	debug: true,
 	debugLevel: 'error',
-	connectionUrl: 'ws://localhost:5000/api/cable'
+	connectionUrl: 'ws://localhost:5000/api/cable',
+	connectImmediately: true
 });
 
 new Vue({
@@ -33,11 +34,12 @@ new Vue({
 }).$mount('#app');
 ```
 
-| **Parameters** | **Type** | **Default** | **Required** | **Description**                                                    |
-| -------------- | -------- | ----------- | ------------ | ------------------------------------------------------------------ |
-| debug          | Boolean  | `false`     | Optional     | Enable logging for debug                                           |
-| debugLevel     | String   | `error`     | Optional     | Debug level required for logging. Either `info`, `error`, or `all` |
-| connectionUrl  | String   | `null`      | Required     | ActionCable websocket server url                                   |
+| **Parameters**     | **Type** | **Default** | **Required** | **Description**                                                                                            |
+| ------------------ | -------- | ----------- | ------------ | ---------------------------------------------------------------------------------------------------------- |
+| debug              | Boolean  | `false`     | Optional     | Enable logging for debug                                                                                   |
+| debugLevel         | String   | `error`     | Optional     | Debug level required for logging. Either `info`, `error`, or `all`                                         |
+| connectionUrl      | String   | `null`      | Required     | ActionCable websocket server url                                                                           |
+| connectImmediately | Boolean  | `true`      | Optional     | ActionCable connects to your server immediately. If false, ActionCable connects on the first subscription. |
 
 #### 🌈 Component Level Usage
 
