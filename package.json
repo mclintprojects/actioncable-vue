@@ -29,7 +29,7 @@
 	},
 	"homepage": "https://github.com/mclintprojects/actioncable-vue#readme",
 	"dependencies": {
-		"actioncable": "^5.2.2"
+		"actioncable": "^5.2.3"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.1.2",

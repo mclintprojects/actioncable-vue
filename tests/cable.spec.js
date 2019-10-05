@@ -26,6 +26,8 @@ describe('Cable', () => {
 		global._addContext = function(context) {
 			cable._addContext.call(global, context);
 		};
+		global._connect = jest.fn();
+		global.subscribe = jest.fn();
 	});
 
 	test('It should initialize correctly if options provided', () => {
@@ -71,10 +73,11 @@ describe('Cable', () => {
 		expect(vue.prototype.$cable._cable).toBeNull();
 
 		create.mockReturnValue({});
+		global._cable = null;
+
 		cable.subscribe.call(global, { channel: 'ChatChannel' });
-		expect(vue.prototype.$cable._cable).toBeDefined();
-		expect(global._cable.subscriptions.create).toBeCalled();
-		expect(global._channels.subscriptions['ChatChannel']).toBeDefined();
+		expect(global._connect).toHaveBeenCalled();
+		expect(global.subscribe).toHaveBeenCalled();
 	});
 
 	test('It should not connect if param is not a string', () => {
