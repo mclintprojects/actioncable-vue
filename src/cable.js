@@ -101,7 +101,8 @@ export default class Cable {
 	 * @param {string} channelName - The name of the Action Cable server channel / The custom name chosen for the component channel
 	 */
 	unsubscribe(channelName) {
-		this._removeChannel(channelName);
+		if (this._channels.subscriptions[channelName])
+			this._channels.subscriptions[channelName].unsubscribe();
 	}
 
 	/**
