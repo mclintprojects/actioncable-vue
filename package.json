@@ -13,9 +13,10 @@
 	],
 	"scripts": {
 		"build": "webpack --mode=production --progress --hide-modules",
-		"publish-minor": "npm run build && npm version minor && npm publish",
-		"publish-patch": "npm run build && npm version patch && npm publish",
-		"publish-major": "npm run build && npm version major && npm publish",
+		"commit-build": "git add . && git commit -m \"updated lib\"",
+		"publish-minor": "npm run build && npm run commit-build && npm version minor && npm publish",
+		"publish-patch": "npm run build && npm run commit-build && npm version patch && npm publish",
+		"publish-major": "npm run build && npm run commit-build && npm version major && npm publish",
 		"test": "./node_modules/.bin/jest"
 	},
 	"repository": {
