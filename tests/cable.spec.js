@@ -230,13 +230,32 @@ describe('Cable', () => {
 		global._contexts[channelUid] = { users: 1 };
 
 		cable.unsubscribe.call(global, channelName);
+		expect(global._channels[channelName]).toBeDefined();
+		expect(global._channels.subscriptions[channelName]).toBeDefined();
+		expect(global._contexts[channelUid]).toBeDefined();
+		expect(unsubscribe).toBeCalledTimes(1);
+	});
+
+	test('It should remove channel correctly when component is destroyed', () => {
+		const unsubscribe = jest.fn();
+		const channelName = 'ChatChannel';
+		const channelUid = 3;
+
+		global._channels.ChatChannel = {
+			_uid: channelUid,
+			name: channelName
+		};
+		global._channels.subscriptions[channelName] = { unsubscribe };
+		global._contexts[channelUid] = { users: 1 };
+
+		cable._removeChannel.call(global, channelName);
 		expect(global._channels[channelName]).toBeUndefined();
 		expect(global._channels.subscriptions[channelName]).toBeUndefined();
 		expect(global._contexts[channelUid]).toBeUndefined();
 		expect(unsubscribe).toBeCalledTimes(1);
 	});
 
-	test('It should not remove context when unsubscribing from channel if users still exist', () => {
+	test('It should not remove context when removing channel if users still exist', () => {
 		const unsubscribe = jest.fn();
 		const channelName = 'ChatChannel';
 		const channelUid = 3;
@@ -248,7 +267,7 @@ describe('Cable', () => {
 		global._channels.subscriptions[channelName] = { unsubscribe };
 		global._contexts[channelUid] = { users: 2 };
 
-		cable.unsubscribe.call(global, channelName);
+		cable._removeChannel.call(global, channelName);
 		expect(global._channels[channelName]).toBeUndefined();
 		expect(global._channels.subscriptions[channelName]).toBeUndefined();
 		expect(global._contexts[channelUid]).toBeDefined();
