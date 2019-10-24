@@ -101,8 +101,10 @@ export default class Cable {
 	 * @param {string} channelName - The name of the Action Cable server channel / The custom name chosen for the component channel
 	 */
 	unsubscribe(channelName) {
-		if (this._channels.subscriptions[channelName])
+		if (this._channels.subscriptions[channelName]) {
 			this._channels.subscriptions[channelName].unsubscribe();
+			this._logger.log(`Unsubscribed from channel '${channelName}'.`, 'info');
+		}
 	}
 
 	/**
@@ -208,7 +210,7 @@ export default class Cable {
 			--this._contexts[uid].users;
 			if (this._contexts[uid].users <= 0) delete this._contexts[uid];
 
-			this._logger.log(`Unsubscribing from channel '${name}'.`, 'info');
+			this._logger.log(`Unsubscribed from channel '${name}'.`, 'info');
 		}
 	}
 
