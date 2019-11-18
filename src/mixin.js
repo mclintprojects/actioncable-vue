@@ -5,11 +5,11 @@ export default {
 	mounted() {
 		if (this.$options.channels) {
 			Object.entries(this.$options.channels).forEach(entry => {
-				if (entry[0] != 'dynamic')
+				if (entry[0] != 'computed')
 					this.$cable._addChannel(entry[0], entry[1], this);
 				else {
-					const dynamicChannels = entry[1];
-					dynamicChannels.forEach(channel => {
+					const computedChannels = entry[1];
+					computedChannels.forEach(channel => {
 						const channelName = channel.channelName();
 						const channelObject = {
 							connected: channel['connected'],

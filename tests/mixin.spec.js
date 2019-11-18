@@ -13,7 +13,7 @@ describe('Mixin', () => {
 			channels: {
 				ChatChannel: {},
 				NotificationChannel: {},
-				dynamic: [
+				computed: [
 					{
 						channelName() {
 							return `${userId}_channel`;

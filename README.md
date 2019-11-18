@@ -142,7 +142,7 @@ new Vue({
 });
 ```
 
-###### 3. Subscribing to a channel with a name that is computed
+###### 3. Subscribing to a channel with a computed name
 
 ```javascript
 // Conversations.vue
@@ -161,13 +161,13 @@ new Vue({
 
 new Vue({
 	channels: {
-		dynamic: [
+		computed: [
 			{
 				channelName() {
 					return `${this.$route.params.conversationId}`;
 				},
 				connected() {
-					console.log('I am connected to a dynamic channel.');
+					console.log('I am connected to a channel with a computed name.');
 				},
 				rejected() {},
 				received(data) {},
