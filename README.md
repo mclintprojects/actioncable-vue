@@ -21,16 +21,16 @@ import App from './App.vue';
 import ActionCableVue from 'actioncable-vue';
 
 Vue.use(ActionCableVue, {
-  debug: true,
-  debugLevel: 'error',
-  connectionUrl: 'ws://localhost:5000/api/cable',
-  connectImmediately: true
+	debug: true,
+	debugLevel: 'error',
+	connectionUrl: 'ws://localhost:5000/api/cable',
+	connectImmediately: true
 });
 
 new Vue({
-  router,
-  store,
-  render: h => h(App)
+	router,
+	store,
+	render: h => h(App)
 }).$mount('#app');
 ```
 
@@ -47,36 +47,36 @@ new Vue({
 
 ```javascript
 new Vue({
-  data() {
-    return {
-      message: 'Hello world'
-    };
-  },
-  channels: {
-    ChatChannel: {
-      connected() {},
-      rejected() {},
-      received(data) {},
-      disconnected() {}
-    }
-  },
-  methods: {
-    sendMessage: function() {
-      this.$cable.perform({
-        channel: 'ChatChannel',
-        action: 'send_message',
-        data: {
-          content: this.message
-        }
-      });
-    }
-  },
-  mounted() {
-    this.$cable.subscribe({
-      channel: 'ChatChannel',
-      room: 'public'
-    });
-  }
+	data() {
+		return {
+			message: 'Hello world'
+		};
+	},
+	channels: {
+		ChatChannel: {
+			connected() {},
+			rejected() {},
+			received(data) {},
+			disconnected() {}
+		}
+	},
+	methods: {
+		sendMessage: function() {
+			this.$cable.perform({
+				channel: 'ChatChannel',
+				action: 'send_message',
+				data: {
+					content: this.message
+				}
+			});
+		}
+	},
+	mounted() {
+		this.$cable.subscribe({
+			channel: 'ChatChannel',
+			room: 'public'
+		});
+	}
 });
 ```
 
@@ -88,18 +88,18 @@ Requires that you have an object defined in your component's `channels` object m
 
 ```javascript
 new Vue({
-  channels: {
-    ChatChannel: {
-      connected() {
-        console.log('I am connected.');
-      }
-    }
-  },
-  mounted() {
-    this.$cable.subscribe({
-      channel: 'ChatChannel'
-    });
-  }
+	channels: {
+		ChatChannel: {
+			connected() {
+				console.log('I am connected.');
+			}
+		}
+	},
+	mounted() {
+		this.$cable.subscribe({
+			channel: 'ChatChannel'
+		});
+	}
 });
 ```
 
@@ -111,32 +111,34 @@ new Vue({
 
 ```javascript
 new Vue({
-  channels: {
-    chat_channel_public: {
-      connected() {
-        console.log('I am connected to the public chat channel.');
-      }
-    },
-    chat_channel_private: {
-      connected() {
-        console.log('I am connected to the private chat channel.');
-      }
-    }
-  },
-  mounted() {
-    this.$cable.subscribe({
-        channel: 'ChatChannel',
-        room: 'public'
-      },
-      'chat_channel_public'
-    );
-    this.$cable.subscribe({
-        channel: 'ChatChannel',
-        room: 'private'
-      },
-      'chat_channel_private'
-    );
-  }
+	channels: {
+		chat_channel_public: {
+			connected() {
+				console.log('I am connected to the public chat channel.');
+			}
+		},
+		chat_channel_private: {
+			connected() {
+				console.log('I am connected to the private chat channel.');
+			}
+		}
+	},
+	mounted() {
+		this.$cable.subscribe(
+			{
+				channel: 'ChatChannel',
+				room: 'public'
+			},
+			'chat_channel_public'
+		);
+		this.$cable.subscribe(
+			{
+				channel: 'ChatChannel',
+				room: 'private'
+			},
+			'chat_channel_private'
+		);
+	}
 });
 ```
 
@@ -150,7 +152,6 @@ Store your channel id in a global object, preferably the `window` object.
 new Vue({
   methods: {
     openConversation(conversationId){
-      window.conversationId = conversationId;
       this.$router.push({name: 'conversation', params: {id: conversationId});
     }
   }
@@ -161,16 +162,24 @@ new Vue({
 // Chat.vue
 
 new Vue({
-  channels: {
-    [window.conversationId]: {
-      connected() {
-	console.log("I am connected to a user's chat channel.");
-      }
-    }
-  },
-  mounted() {
-    this.$cable.subscribe({ channel: window.conversationId });
-  }
+	channels: {
+		dynamic: [
+			{
+				channelName() {
+					return `${this.$route.params.conversationId}`;
+				},
+				connected() {
+					console.log('I am connected to a dynamic channel.');
+				},
+				rejected() {},
+				received(data) {},
+				disconnected() {}
+			}
+		]
+	},
+	mounted() {
+		this.$cable.subscribe({ channel: this.$route.params.conversationId });
+	}
 });
 ```
 
@@ -180,16 +189,16 @@ new Vue({
 
 ```javascript
 new Vue({
-  methods: {
-    unsubscribe() {
-      this.$cable.unsubscribe('ChatChannel');
-    }
-  },
-  mounted() {
-    this.$cable.subscribe({
-      channel: 'ChatChannel'
-    });
-  }
+	methods: {
+		unsubscribe() {
+			this.$cable.unsubscribe('ChatChannel');
+		}
+	},
+	mounted() {
+		this.$cable.subscribe({
+			channel: 'ChatChannel'
+		});
+	}
 });
 ```
 
@@ -199,32 +208,32 @@ Requires that you have a method defined in your Rails Action Cable channel whose
 
 ```javascript
 new Vue({
-  channels: {
-    ChatChannel: {
-      connected() {
-        console.log('Connected to the chat channel');
-      },
-      received(data) {
-        console.log('Message received');
-      }
-    }
-  },
-  methods: {
-    sendMessage() {
-      this.$cable.perform({
-        channel: 'ChatChannel',
-        action: 'send_message',
-        data: {
-          content: 'Hi'
-        }
-      });
-    }
-  },
-  mounted() {
-    this.$cable.subscribe({
-      channel: 'ChatChannel'
-    });
-  }
+	channels: {
+		ChatChannel: {
+			connected() {
+				console.log('Connected to the chat channel');
+			},
+			received(data) {
+				console.log('Message received');
+			}
+		}
+	},
+	methods: {
+		sendMessage() {
+			this.$cable.perform({
+				channel: 'ChatChannel',
+				action: 'send_message',
+				data: {
+					content: 'Hi'
+				}
+			});
+		}
+	},
+	mounted() {
+		this.$cable.subscribe({
+			channel: 'ChatChannel'
+		});
+	}
 });
 ```
 
@@ -239,12 +248,12 @@ import Vue from 'vue';
 import ActionCableVue from 'actioncable-vue';
 
 if (process.client) {
-  Vue.use(ActionCableVue, {
-    debug: true,
-    debugLevel: 'all',
-    connectionUrl: process.env.WEBSOCKET_HOST,
-    connectImmediately: true
-  });
+	Vue.use(ActionCableVue, {
+		debug: true,
+		debugLevel: 'all',
+		connectionUrl: process.env.WEBSOCKET_HOST,
+		connectImmediately: true
+	});
 }
 ```
 
