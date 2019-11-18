@@ -142,9 +142,7 @@ new Vue({
 });
 ```
 
-###### 3. Subscribing to a channel with a dynamic name
-
-Store your channel id in a global object, preferably the `window` object.
+###### 3. Subscribing to a channel with a name that is computed
 
 ```javascript
 // Conversations.vue
