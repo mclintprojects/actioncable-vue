@@ -4,7 +4,7 @@ describe('Cable', () => {
 	let cable, vue, create;
 
 	beforeEach(() => {
-		vue = function() {};
+		vue = function () { };
 		vue.mixin = jest.fn();
 		create = jest.fn();
 
@@ -18,12 +18,12 @@ describe('Cable', () => {
 		global._channels = {
 			subscriptions: {}
 		};
-		global._logger = { log() {} };
+		global._logger = { log() { } };
 		global._contexts = {};
-		global._removeChannel = function(name) {
+		global._removeChannel = function (name) {
 			cable._removeChannel.call(global, name);
 		};
-		global._addContext = function(context) {
+		global._addContext = function (context) {
 			cable._addContext.call(global, context);
 		};
 		global._connect = jest.fn();
@@ -31,16 +31,20 @@ describe('Cable', () => {
 	});
 
 	test('It should initialize correctly if options provided', () => {
+		const store = function () { };
+
 		cable = new Cable(vue, {
 			connectionUrl: 'ws://localhost:5000/api/cable',
 			debug: true,
-			debugLevel: 'error'
+			debugLevel: 'error',
+			store
 		});
 
 		expect(vue.prototype.$cable._cable).toBeDefined();
 		expect(vue.mixin).toHaveBeenCalled();
 		expect(cable._logger._debug).toBe(true);
 		expect(cable._logger._debugLevel).toBe('error');
+		expect(store.prototype.$cable).toBeDefined();
 	});
 
 	test('It should throw error if options not provided', () => {
