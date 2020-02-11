@@ -1,14 +1,15 @@
 import Cable from '../src/cable';
+import Vuex from 'Vuex';
+import Vue from 'Vue';
 
 describe('Cable', () => {
-	let cable, vue, create;
+	let cable, create;
 
 	beforeEach(() => {
-		vue = function () { };
-		vue.mixin = jest.fn();
+		Vue.mixin = jest.fn();
 		create = jest.fn();
 
-		cable = new Cable(vue, { connectionUrl: 'ws://localhost:5000/api/cable' });
+		cable = new Cable(Vue, { connectionUrl: 'ws://localhost:5000/api/cable' });
 
 		global._cable = {
 			subscriptions: {
@@ -31,17 +32,19 @@ describe('Cable', () => {
 	});
 
 	test('It should initialize correctly if options provided', () => {
-		const store = function () { };
+		Vue.use(Vuex);
+		const store = new Vuex.Store({});
+		console.log(store);
 
-		cable = new Cable(vue, {
+		cable = new Cable(Vue, {
 			connectionUrl: 'ws://localhost:5000/api/cable',
 			debug: true,
 			debugLevel: 'error',
 			store
 		});
 
-		expect(vue.prototype.$cable._cable).toBeDefined();
-		expect(vue.mixin).toHaveBeenCalled();
+		expect(Vue.prototype.$cable._cable).toBeDefined();
+		expect(Vue.mixin).toHaveBeenCalled();
 		expect(cable._logger._debug).toBe(true);
 		expect(cable._logger._debugLevel).toBe('error');
 		expect(store.prototype.$cable).toBeDefined();
@@ -49,32 +52,32 @@ describe('Cable', () => {
 
 	test('It should throw error if options not provided', () => {
 		const fn = () => {
-			cable = new Cable(vue);
+			cable = new Cable(Vue);
 		};
 
 		expect(fn).toThrowError();
 	});
 
 	test('It should not connect immediately if connectImmediately is false', () => {
-		cable = new Cable(vue, {
+		cable = new Cable(Vue, {
 			connectionUrl: 'ws://localhost:5000/api/cable',
 			debug: true,
 			debugLevel: 'error',
 			connectImmediately: false
 		});
 
-		expect(vue.prototype.$cable._cable).toBeNull();
+		expect(Vue.prototype.$cable._cable).toBeNull();
 	});
 
 	test('It should connect on first subscription if connectImmediately is false', () => {
-		cable = new Cable(vue, {
+		cable = new Cable(Vue, {
 			connectionUrl: 'ws://localhost:5000/api/cable',
 			debug: true,
 			debugLevel: 'error',
 			connectImmediately: false
 		});
 
-		expect(vue.prototype.$cable._cable).toBeNull();
+		expect(Vue.prototype.$cable._cable).toBeNull();
 
 		create.mockReturnValue({});
 		global._cable = null;

@@ -19,14 +19,12 @@ npm install actioncable-vue --save
 import Vue from 'vue';
 import ActionCableVue from 'actioncable-vue';
 import App from './App.vue';
-import store from './store'
 
 Vue.use(ActionCableVue, {
   debug: true,
   debugLevel: 'error',
   connectionUrl: 'ws://localhost:5000/api/cable',
   connectImmediately: true,
-  store
 });
 
 new Vue({
@@ -38,7 +36,6 @@ new Vue({
 
 | **Parameters**     | **Type** | **Default** | **Required** | **Description**                                                                                            |
 | ------------------ | -------- | ----------- | ------------ | ---------------------------------------------------------------------------------------------------------- |
-|store|Vuex.Store|`undefined`|Optional|Vuex store. Provide only if you want to be able to use `this.$cable` in your mutations or actions|
 | debug              | Boolean  | `false`     | Optional     | Enable logging for debug                                                                                   |
 | debugLevel         | String   | `error`     | Optional     | Debug level required for logging. Either `info`, `error`, or `all`                                         |
 | connectionUrl      | String   | `null`      | Required     | ActionCable websocket server url                                                                           |

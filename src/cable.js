@@ -14,7 +14,6 @@ export default class Cable {
 	 * @param {Object} Vue
 	 * @param {Object} options - ActionCableVue options
 	 * @param {string} options.connectionUrl - ActionCable server websocket URL
-	 * @param {Object} options.store - Vuex store
 	 * @param {boolean} options.debug - Enable logging for debug
 	 * @param {string} options.debugLevel - Debug level required for logging. Either `info`, `error`, or `all`
 	 * @param {boolean} options.connectImmediately - Connect immediately or wait until the first subscription.
@@ -23,13 +22,11 @@ export default class Cable {
 		Vue.prototype.$cable = this;
 		Vue.mixin(Mixin);
 
-		let { debug, debugLevel, connectionUrl, connectImmediately, store } = options || {
+		let { debug, debugLevel, connectionUrl, connectImmediately } = options || {
 			debug: false,
 			debugLevel: 'error',
 			connectionUrl: null
 		};
-
-		if (store) store.prototype.$cable = this;
 
 		this._connectionUrl = connectionUrl;
 		if (connectImmediately !== false) connectImmediately = true;
