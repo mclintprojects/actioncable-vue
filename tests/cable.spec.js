@@ -1,6 +1,5 @@
 import Cable from '../src/cable';
-import Vuex from 'Vuex';
-import Vue from 'Vue';
+import Vue from 'vue';
 
 describe('Cable', () => {
 	let cable, create;
@@ -32,22 +31,16 @@ describe('Cable', () => {
 	});
 
 	test('It should initialize correctly if options provided', () => {
-		Vue.use(Vuex);
-		const store = new Vuex.Store({});
-		console.log(store);
-
 		cable = new Cable(Vue, {
 			connectionUrl: 'ws://localhost:5000/api/cable',
 			debug: true,
 			debugLevel: 'error',
-			store
 		});
 
 		expect(Vue.prototype.$cable._cable).toBeDefined();
 		expect(Vue.mixin).toHaveBeenCalled();
 		expect(cable._logger._debug).toBe(true);
 		expect(cable._logger._debugLevel).toBe('error');
-		expect(store.prototype.$cable).toBeDefined();
 	});
 
 	test('It should throw error if options not provided', () => {
