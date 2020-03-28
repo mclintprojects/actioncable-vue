@@ -51,6 +51,20 @@ describe('Cable', () => {
 		expect(fn).toThrowError();
 	});
 
+	test('It should use jwt if provided', () => {
+		const jwt = jest.fn();
+		const connectionUrl = 'ws://localhost:5000/api/cable';
+
+		cable = new Cable(Vue, {
+			connectionUrl,
+			debug: true,
+			debugLevel: 'error',
+			jwt
+		});
+
+		expect(jwt).toHaveBeenCalled();
+	})
+
 	test('It should not connect immediately if connectImmediately is false', () => {
 		cable = new Cable(Vue, {
 			connectionUrl: 'ws://localhost:5000/api/cable',
