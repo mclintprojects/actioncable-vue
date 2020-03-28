@@ -19,12 +19,14 @@ npm install actioncable-vue --save
 import Vue from 'vue';
 import ActionCableVue from 'actioncable-vue';
 import App from './App.vue';
+import store from './store';
 
 Vue.use(ActionCableVue, {
   debug: true,
   debugLevel: 'error',
   connectionUrl: 'ws://localhost:5000/api/cable',
   connectImmediately: true,
+  jwt: function() { return store.getters.user.token; }
 });
 
 new Vue({
@@ -40,6 +42,7 @@ new Vue({
 | debugLevel         | String   | `error`     | Optional     | Debug level required for logging. Either `info`, `error`, or `all`                                         |
 | connectionUrl      | String   | `null`      | Required     | ActionCable websocket server url                                                                           |
 | connectImmediately | Boolean  | `true`      | Optional     | ActionCable connects to your server immediately. If false, ActionCable connects on the first subscription. |
+| jwt | Function | `null`| Optional | JWT token for authorization on your ActionCable server |
 
 #### 🌈 Component Level Usage
 
