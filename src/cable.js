@@ -167,7 +167,7 @@ export default class Cable {
 	 * @param {function} jwt - A function to retrieve the JSON Web Token to use
 	 */
 	_connect(url, jwt) {
-		if (typeof url == 'string') {
+		if (typeof url == 'string' || 'function') {
 			this._cable = jwt ? actioncable.createConsumer(url, jwt()) : actioncable.createConsumer(url);
 		}
 		else {
