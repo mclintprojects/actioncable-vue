@@ -14,7 +14,7 @@ export default {
             const channelObject = {
               connected: channel["connected"],
               rejected: channel["rejected"],
-              disconnected: channel["rejected"],
+              disconnected: channel["disconnected"],
               received: channel["received"],
             };
 
