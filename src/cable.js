@@ -1,4 +1,4 @@
-import actioncable from "actioncable";
+import actioncable from "@rails/actioncable";
 import Logger from "./logger";
 import Mixin from "./mixin";
 
@@ -19,6 +19,7 @@ export default class Cable {
    * @param {boolean} options.connectImmediately - Connect immediately or wait until the first subscription.
    */
   constructor(Vue, options) {
+    console.log(actioncable);
     Vue.prototype.$cable = this;
     Vue.mixin(Mixin);
 
