@@ -1,330 +1,859 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@rails/actioncable')) :
-  typeof define === 'function' && define.amd ? define(['@rails/actioncable'], factory) :
-  (global = global || self, global.ActionCableVue = factory(global.actioncable));
-}(this, (function (actioncable) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define(factory) :
+	(global = global || self, global.ActionCableVue = factory());
+}(this, (function () { 'use strict';
 
-  actioncable = actioncable && Object.prototype.hasOwnProperty.call(actioncable, 'default') ? actioncable['default'] : actioncable;
+	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
-  class Logger {
-    /**
-     * Enable logging for debug
-     */
-    _debug;
-    /**
-     * Debug level required for logging. Either `info`, `error`, or `all`
-     */
-    _debugLevel;
+	function unwrapExports (x) {
+		return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+	}
 
-    /**
-     * ActionCableVue logger entry point
-     * @param {boolean} debug - Enable logging for debug
-     * @param {string} debugLevel - Debug level required for logging. Either `info`, `error`, or `all`
-     */
-    constructor(debug, level) {
-      this._debug = debug;
-      this._debugLevel = level;
-    }
+	function createCommonjsModule(fn, module) {
+		return module = { exports: {} }, fn(module, module.exports), module.exports;
+	}
 
-    /**
-     * Logs a message out to the console
-     * @param {string} message - The message to log out to the console
-     * @param {string} [level=error] - Debug level required for logging. Either `info`, `error`, or `all`
-     */
-    log(message, level = "error") {
-      if (this._debug) {
-        if (this._debugLevel == "all") console.log(message);
-        else if (level == this._debugLevel) {
-          console.log(message);
-        }
-      }
-    }
-  }
+	var action_cable = createCommonjsModule(function (module, exports) {
+	(function(global, factory) {
+	   factory(exports) ;
+	})(commonjsGlobal, function(exports) {
+	  var adapters = {
+	    logger: self.console,
+	    WebSocket: self.WebSocket
+	  };
+	  var logger = {
+	    log: function log() {
+	      if (this.enabled) {
+	        var _adapters$logger;
+	        for (var _len = arguments.length, messages = Array(_len), _key = 0; _key < _len; _key++) {
+	          messages[_key] = arguments[_key];
+	        }
+	        messages.push(Date.now());
+	        (_adapters$logger = adapters.logger).log.apply(_adapters$logger, [ "[ActionCable]" ].concat(messages));
+	      }
+	    }
+	  };
+	  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
+	    return typeof obj;
+	  } : function(obj) {
+	    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+	  };
+	  var classCallCheck = function(instance, Constructor) {
+	    if (!(instance instanceof Constructor)) {
+	      throw new TypeError("Cannot call a class as a function");
+	    }
+	  };
+	  var createClass = function() {
+	    function defineProperties(target, props) {
+	      for (var i = 0; i < props.length; i++) {
+	        var descriptor = props[i];
+	        descriptor.enumerable = descriptor.enumerable || false;
+	        descriptor.configurable = true;
+	        if ("value" in descriptor) descriptor.writable = true;
+	        Object.defineProperty(target, descriptor.key, descriptor);
+	      }
+	    }
+	    return function(Constructor, protoProps, staticProps) {
+	      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+	      if (staticProps) defineProperties(Constructor, staticProps);
+	      return Constructor;
+	    };
+	  }();
+	  var now = function now() {
+	    return new Date().getTime();
+	  };
+	  var secondsSince = function secondsSince(time) {
+	    return (now() - time) / 1e3;
+	  };
+	  var clamp = function clamp(number, min, max) {
+	    return Math.max(min, Math.min(max, number));
+	  };
+	  var ConnectionMonitor = function() {
+	    function ConnectionMonitor(connection) {
+	      classCallCheck(this, ConnectionMonitor);
+	      this.visibilityDidChange = this.visibilityDidChange.bind(this);
+	      this.connection = connection;
+	      this.reconnectAttempts = 0;
+	    }
+	    ConnectionMonitor.prototype.start = function start() {
+	      if (!this.isRunning()) {
+	        this.startedAt = now();
+	        delete this.stoppedAt;
+	        this.startPolling();
+	        addEventListener("visibilitychange", this.visibilityDidChange);
+	        logger.log("ConnectionMonitor started. pollInterval = " + this.getPollInterval() + " ms");
+	      }
+	    };
+	    ConnectionMonitor.prototype.stop = function stop() {
+	      if (this.isRunning()) {
+	        this.stoppedAt = now();
+	        this.stopPolling();
+	        removeEventListener("visibilitychange", this.visibilityDidChange);
+	        logger.log("ConnectionMonitor stopped");
+	      }
+	    };
+	    ConnectionMonitor.prototype.isRunning = function isRunning() {
+	      return this.startedAt && !this.stoppedAt;
+	    };
+	    ConnectionMonitor.prototype.recordPing = function recordPing() {
+	      this.pingedAt = now();
+	    };
+	    ConnectionMonitor.prototype.recordConnect = function recordConnect() {
+	      this.reconnectAttempts = 0;
+	      this.recordPing();
+	      delete this.disconnectedAt;
+	      logger.log("ConnectionMonitor recorded connect");
+	    };
+	    ConnectionMonitor.prototype.recordDisconnect = function recordDisconnect() {
+	      this.disconnectedAt = now();
+	      logger.log("ConnectionMonitor recorded disconnect");
+	    };
+	    ConnectionMonitor.prototype.startPolling = function startPolling() {
+	      this.stopPolling();
+	      this.poll();
+	    };
+	    ConnectionMonitor.prototype.stopPolling = function stopPolling() {
+	      clearTimeout(this.pollTimeout);
+	    };
+	    ConnectionMonitor.prototype.poll = function poll() {
+	      var _this = this;
+	      this.pollTimeout = setTimeout(function() {
+	        _this.reconnectIfStale();
+	        _this.poll();
+	      }, this.getPollInterval());
+	    };
+	    ConnectionMonitor.prototype.getPollInterval = function getPollInterval() {
+	      var _constructor$pollInte = this.constructor.pollInterval, min = _constructor$pollInte.min, max = _constructor$pollInte.max, multiplier = _constructor$pollInte.multiplier;
+	      var interval = multiplier * Math.log(this.reconnectAttempts + 1);
+	      return Math.round(clamp(interval, min, max) * 1e3);
+	    };
+	    ConnectionMonitor.prototype.reconnectIfStale = function reconnectIfStale() {
+	      if (this.connectionIsStale()) {
+	        logger.log("ConnectionMonitor detected stale connection. reconnectAttempts = " + this.reconnectAttempts + ", pollInterval = " + this.getPollInterval() + " ms, time disconnected = " + secondsSince(this.disconnectedAt) + " s, stale threshold = " + this.constructor.staleThreshold + " s");
+	        this.reconnectAttempts++;
+	        if (this.disconnectedRecently()) {
+	          logger.log("ConnectionMonitor skipping reopening recent disconnect");
+	        } else {
+	          logger.log("ConnectionMonitor reopening");
+	          this.connection.reopen();
+	        }
+	      }
+	    };
+	    ConnectionMonitor.prototype.connectionIsStale = function connectionIsStale() {
+	      return secondsSince(this.pingedAt ? this.pingedAt : this.startedAt) > this.constructor.staleThreshold;
+	    };
+	    ConnectionMonitor.prototype.disconnectedRecently = function disconnectedRecently() {
+	      return this.disconnectedAt && secondsSince(this.disconnectedAt) < this.constructor.staleThreshold;
+	    };
+	    ConnectionMonitor.prototype.visibilityDidChange = function visibilityDidChange() {
+	      var _this2 = this;
+	      if (document.visibilityState === "visible") {
+	        setTimeout(function() {
+	          if (_this2.connectionIsStale() || !_this2.connection.isOpen()) {
+	            logger.log("ConnectionMonitor reopening stale connection on visibilitychange. visbilityState = " + document.visibilityState);
+	            _this2.connection.reopen();
+	          }
+	        }, 200);
+	      }
+	    };
+	    return ConnectionMonitor;
+	  }();
+	  ConnectionMonitor.pollInterval = {
+	    min: 3,
+	    max: 30,
+	    multiplier: 5
+	  };
+	  ConnectionMonitor.staleThreshold = 6;
+	  var INTERNAL = {
+	    message_types: {
+	      welcome: "welcome",
+	      disconnect: "disconnect",
+	      ping: "ping",
+	      confirmation: "confirm_subscription",
+	      rejection: "reject_subscription"
+	    },
+	    disconnect_reasons: {
+	      unauthorized: "unauthorized",
+	      invalid_request: "invalid_request",
+	      server_restart: "server_restart"
+	    },
+	    default_mount_path: "/cable",
+	    protocols: [ "actioncable-v1-json", "actioncable-unsupported" ]
+	  };
+	  var message_types = INTERNAL.message_types, protocols = INTERNAL.protocols;
+	  var supportedProtocols = protocols.slice(0, protocols.length - 1);
+	  var indexOf = [].indexOf;
+	  var Connection = function() {
+	    function Connection(consumer) {
+	      classCallCheck(this, Connection);
+	      this.open = this.open.bind(this);
+	      this.consumer = consumer;
+	      this.subscriptions = this.consumer.subscriptions;
+	      this.monitor = new ConnectionMonitor(this);
+	      this.disconnected = true;
+	    }
+	    Connection.prototype.send = function send(data) {
+	      if (this.isOpen()) {
+	        this.webSocket.send(JSON.stringify(data));
+	        return true;
+	      } else {
+	        return false;
+	      }
+	    };
+	    Connection.prototype.open = function open() {
+	      if (this.isActive()) {
+	        logger.log("Attempted to open WebSocket, but existing socket is " + this.getState());
+	        return false;
+	      } else {
+	        logger.log("Opening WebSocket, current state is " + this.getState() + ", subprotocols: " + protocols);
+	        if (this.webSocket) {
+	          this.uninstallEventHandlers();
+	        }
+	        this.webSocket = new adapters.WebSocket(this.consumer.url, protocols);
+	        this.installEventHandlers();
+	        this.monitor.start();
+	        return true;
+	      }
+	    };
+	    Connection.prototype.close = function close() {
+	      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+	        allowReconnect: true
+	      }, allowReconnect = _ref.allowReconnect;
+	      if (!allowReconnect) {
+	        this.monitor.stop();
+	      }
+	      if (this.isActive()) {
+	        return this.webSocket.close();
+	      }
+	    };
+	    Connection.prototype.reopen = function reopen() {
+	      logger.log("Reopening WebSocket, current state is " + this.getState());
+	      if (this.isActive()) {
+	        try {
+	          return this.close();
+	        } catch (error) {
+	          logger.log("Failed to reopen WebSocket", error);
+	        } finally {
+	          logger.log("Reopening WebSocket in " + this.constructor.reopenDelay + "ms");
+	          setTimeout(this.open, this.constructor.reopenDelay);
+	        }
+	      } else {
+	        return this.open();
+	      }
+	    };
+	    Connection.prototype.getProtocol = function getProtocol() {
+	      if (this.webSocket) {
+	        return this.webSocket.protocol;
+	      }
+	    };
+	    Connection.prototype.isOpen = function isOpen() {
+	      return this.isState("open");
+	    };
+	    Connection.prototype.isActive = function isActive() {
+	      return this.isState("open", "connecting");
+	    };
+	    Connection.prototype.isProtocolSupported = function isProtocolSupported() {
+	      return indexOf.call(supportedProtocols, this.getProtocol()) >= 0;
+	    };
+	    Connection.prototype.isState = function isState() {
+	      for (var _len = arguments.length, states = Array(_len), _key = 0; _key < _len; _key++) {
+	        states[_key] = arguments[_key];
+	      }
+	      return indexOf.call(states, this.getState()) >= 0;
+	    };
+	    Connection.prototype.getState = function getState() {
+	      if (this.webSocket) {
+	        for (var state in adapters.WebSocket) {
+	          if (adapters.WebSocket[state] === this.webSocket.readyState) {
+	            return state.toLowerCase();
+	          }
+	        }
+	      }
+	      return null;
+	    };
+	    Connection.prototype.installEventHandlers = function installEventHandlers() {
+	      for (var eventName in this.events) {
+	        var handler = this.events[eventName].bind(this);
+	        this.webSocket["on" + eventName] = handler;
+	      }
+	    };
+	    Connection.prototype.uninstallEventHandlers = function uninstallEventHandlers() {
+	      for (var eventName in this.events) {
+	        this.webSocket["on" + eventName] = function() {};
+	      }
+	    };
+	    return Connection;
+	  }();
+	  Connection.reopenDelay = 500;
+	  Connection.prototype.events = {
+	    message: function message(event) {
+	      if (!this.isProtocolSupported()) {
+	        return;
+	      }
+	      var _JSON$parse = JSON.parse(event.data), identifier = _JSON$parse.identifier, message = _JSON$parse.message, reason = _JSON$parse.reason, reconnect = _JSON$parse.reconnect, type = _JSON$parse.type;
+	      switch (type) {
+	       case message_types.welcome:
+	        this.monitor.recordConnect();
+	        return this.subscriptions.reload();
 
-  var Mixin = {
-    /**
-     * Retrieve channels in component once mounted.
-     */
-    mounted() {
-      if (this.$options.channels) {
-        Object.entries(this.$options.channels).forEach((entry) => {
-          if (entry[0] != "computed")
-            this.$cable._addChannel(entry[0], entry[1], this);
-          else {
-            const computedChannels = entry[1];
-            computedChannels.forEach((channel) => {
-              const channelName = channel.channelName();
-              const channelObject = {
-                connected: channel["connected"],
-                rejected: channel["rejected"],
-                disconnected: channel["disconnected"],
-                received: channel["received"],
-              };
+	       case message_types.disconnect:
+	        logger.log("Disconnecting. Reason: " + reason);
+	        return this.close({
+	          allowReconnect: reconnect
+	        });
 
-              this.$options.channels[channelName] = channelObject;
-              this.$cable._addChannel(channelName, channelObject, this);
-            });
-          }
-        });
-      }
-    },
-    /**
-     * Unsubscribe from channels when component is destroyed.
-     */
-    destroyed() {
-      if (this.$options.channels) {
-        Object.keys(this.$options.channels).forEach((key) =>
-          this.$cable._removeChannel(key)
-        );
-      }
-    },
-  };
+	       case message_types.ping:
+	        return this.monitor.recordPing();
 
-  class Cable {
-    _logger = null;
-    _cable = null;
-    _channels = { subscriptions: {} };
-    _contexts = {};
-    _connectionUrl = null;
+	       case message_types.confirmation:
+	        return this.subscriptions.notify(identifier, "connected");
 
-    /**
-     * ActionCableVue $cable entry point
-     * @param {Object} Vue
-     * @param {Object} options - ActionCableVue options
-     * @param {string} options.connectionUrl - ActionCable server websocket URL
-     * @param {boolean} options.debug - Enable logging for debug
-     * @param {string} options.debugLevel - Debug level required for logging. Either `info`, `error`, or `all`
-     * @param {boolean} options.connectImmediately - Connect immediately or wait until the first subscription.
-     */
-    constructor(Vue, options) {
-      console.log(actioncable);
-      Vue.prototype.$cable = this;
-      Vue.mixin(Mixin);
+	       case message_types.rejection:
+	        return this.subscriptions.reject(identifier);
 
-      let { debug, debugLevel, connectionUrl, connectImmediately } = options || {
-        debug: false,
-        debugLevel: "error",
-        connectionUrl: null,
-      };
+	       default:
+	        return this.subscriptions.notify(identifier, "received", message);
+	      }
+	    },
+	    open: function open() {
+	      logger.log("WebSocket onopen event, using '" + this.getProtocol() + "' subprotocol");
+	      this.disconnected = false;
+	      if (!this.isProtocolSupported()) {
+	        logger.log("Protocol is unsupported. Stopping monitor and disconnecting.");
+	        return this.close({
+	          allowReconnect: false
+	        });
+	      }
+	    },
+	    close: function close(event) {
+	      logger.log("WebSocket onclose event");
+	      if (this.disconnected) {
+	        return;
+	      }
+	      this.disconnected = true;
+	      this.monitor.recordDisconnect();
+	      return this.subscriptions.notifyAll("disconnected", {
+	        willAttemptReconnect: this.monitor.isRunning()
+	      });
+	    },
+	    error: function error() {
+	      logger.log("WebSocket onerror event");
+	    }
+	  };
+	  var extend = function extend(object, properties) {
+	    if (properties != null) {
+	      for (var key in properties) {
+	        var value = properties[key];
+	        object[key] = value;
+	      }
+	    }
+	    return object;
+	  };
+	  var Subscription = function() {
+	    function Subscription(consumer) {
+	      var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	      var mixin = arguments[2];
+	      classCallCheck(this, Subscription);
+	      this.consumer = consumer;
+	      this.identifier = JSON.stringify(params);
+	      extend(this, mixin);
+	    }
+	    Subscription.prototype.perform = function perform(action) {
+	      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	      data.action = action;
+	      return this.send(data);
+	    };
+	    Subscription.prototype.send = function send(data) {
+	      return this.consumer.send({
+	        command: "message",
+	        identifier: this.identifier,
+	        data: JSON.stringify(data)
+	      });
+	    };
+	    Subscription.prototype.unsubscribe = function unsubscribe() {
+	      return this.consumer.subscriptions.remove(this);
+	    };
+	    return Subscription;
+	  }();
+	  var Subscriptions = function() {
+	    function Subscriptions(consumer) {
+	      classCallCheck(this, Subscriptions);
+	      this.consumer = consumer;
+	      this.subscriptions = [];
+	    }
+	    Subscriptions.prototype.create = function create(channelName, mixin) {
+	      var channel = channelName;
+	      var params = (typeof channel === "undefined" ? "undefined" : _typeof(channel)) === "object" ? channel : {
+	        channel: channel
+	      };
+	      var subscription = new Subscription(this.consumer, params, mixin);
+	      return this.add(subscription);
+	    };
+	    Subscriptions.prototype.add = function add(subscription) {
+	      this.subscriptions.push(subscription);
+	      this.consumer.ensureActiveConnection();
+	      this.notify(subscription, "initialized");
+	      this.sendCommand(subscription, "subscribe");
+	      return subscription;
+	    };
+	    Subscriptions.prototype.remove = function remove(subscription) {
+	      this.forget(subscription);
+	      if (!this.findAll(subscription.identifier).length) {
+	        this.sendCommand(subscription, "unsubscribe");
+	      }
+	      return subscription;
+	    };
+	    Subscriptions.prototype.reject = function reject(identifier) {
+	      var _this = this;
+	      return this.findAll(identifier).map(function(subscription) {
+	        _this.forget(subscription);
+	        _this.notify(subscription, "rejected");
+	        return subscription;
+	      });
+	    };
+	    Subscriptions.prototype.forget = function forget(subscription) {
+	      this.subscriptions = this.subscriptions.filter(function(s) {
+	        return s !== subscription;
+	      });
+	      return subscription;
+	    };
+	    Subscriptions.prototype.findAll = function findAll(identifier) {
+	      return this.subscriptions.filter(function(s) {
+	        return s.identifier === identifier;
+	      });
+	    };
+	    Subscriptions.prototype.reload = function reload() {
+	      var _this2 = this;
+	      return this.subscriptions.map(function(subscription) {
+	        return _this2.sendCommand(subscription, "subscribe");
+	      });
+	    };
+	    Subscriptions.prototype.notifyAll = function notifyAll(callbackName) {
+	      var _this3 = this;
+	      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	        args[_key - 1] = arguments[_key];
+	      }
+	      return this.subscriptions.map(function(subscription) {
+	        return _this3.notify.apply(_this3, [ subscription, callbackName ].concat(args));
+	      });
+	    };
+	    Subscriptions.prototype.notify = function notify(subscription, callbackName) {
+	      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+	        args[_key2 - 2] = arguments[_key2];
+	      }
+	      var subscriptions = void 0;
+	      if (typeof subscription === "string") {
+	        subscriptions = this.findAll(subscription);
+	      } else {
+	        subscriptions = [ subscription ];
+	      }
+	      return subscriptions.map(function(subscription) {
+	        return typeof subscription[callbackName] === "function" ? subscription[callbackName].apply(subscription, args) : undefined;
+	      });
+	    };
+	    Subscriptions.prototype.sendCommand = function sendCommand(subscription, command) {
+	      var identifier = subscription.identifier;
+	      return this.consumer.send({
+	        command: command,
+	        identifier: identifier
+	      });
+	    };
+	    return Subscriptions;
+	  }();
+	  var Consumer = function() {
+	    function Consumer(url) {
+	      classCallCheck(this, Consumer);
+	      this._url = url;
+	      this.subscriptions = new Subscriptions(this);
+	      this.connection = new Connection(this);
+	    }
+	    Consumer.prototype.send = function send(data) {
+	      return this.connection.send(data);
+	    };
+	    Consumer.prototype.connect = function connect() {
+	      return this.connection.open();
+	    };
+	    Consumer.prototype.disconnect = function disconnect() {
+	      return this.connection.close({
+	        allowReconnect: false
+	      });
+	    };
+	    Consumer.prototype.ensureActiveConnection = function ensureActiveConnection() {
+	      if (!this.connection.isActive()) {
+	        return this.connection.open();
+	      }
+	    };
+	    createClass(Consumer, [ {
+	      key: "url",
+	      get: function get$$1() {
+	        return createWebSocketURL(this._url);
+	      }
+	    } ]);
+	    return Consumer;
+	  }();
+	  function createWebSocketURL(url) {
+	    if (typeof url === "function") {
+	      url = url();
+	    }
+	    if (url && !/^wss?:/i.test(url)) {
+	      var a = document.createElement("a");
+	      a.href = url;
+	      a.href = a.href;
+	      a.protocol = a.protocol.replace("http", "ws");
+	      return a.href;
+	    } else {
+	      return url;
+	    }
+	  }
+	  function createConsumer() {
+	    var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : getConfig("url") || INTERNAL.default_mount_path;
+	    return new Consumer(url);
+	  }
+	  function getConfig(name) {
+	    var element = document.head.querySelector("meta[name='action-cable-" + name + "']");
+	    if (element) {
+	      return element.getAttribute("content");
+	    }
+	  }
+	  exports.Connection = Connection;
+	  exports.ConnectionMonitor = ConnectionMonitor;
+	  exports.Consumer = Consumer;
+	  exports.INTERNAL = INTERNAL;
+	  exports.Subscription = Subscription;
+	  exports.Subscriptions = Subscriptions;
+	  exports.adapters = adapters;
+	  exports.createWebSocketURL = createWebSocketURL;
+	  exports.logger = logger;
+	  exports.createConsumer = createConsumer;
+	  exports.getConfig = getConfig;
+	  Object.defineProperty(exports, "__esModule", {
+	    value: true
+	  });
+	});
+	});
 
-      this._connectionUrl = connectionUrl;
-      if (connectImmediately !== false) connectImmediately = true;
+	unwrapExports(action_cable);
+	var action_cable_1 = action_cable.createConsumer;
 
-      this._logger = new Logger(debug, debugLevel);
+	class Logger {
+	  /**
+	   * Enable logging for debug
+	   */
+	  _debug;
+	  /**
+	   * Debug level required for logging. Either `info`, `error`, or `all`
+	   */
+	  _debugLevel;
 
-      if (connectImmediately) this._connect(this._connectionUrl);
-    }
+	  /**
+	   * ActionCableVue logger entry point
+	   * @param {boolean} debug - Enable logging for debug
+	   * @param {string} debugLevel - Debug level required for logging. Either `info`, `error`, or `all`
+	   */
+	  constructor(debug, level) {
+	    this._debug = debug;
+	    this._debugLevel = level;
+	  }
 
-    /**
-     * Subscribes to an Action Cable server channel
-     * @param {Object} subscription
-     * @param {string} subscription.channel - The name of the Action Cable server channel
-     * @param {string} subscription.room - The room in the Action Cable server channel to subscribe to
-     * @param {string} name - A custom channel name to be used in component
-     */
-    subscribe(subscription, name) {
-      if (this._cable) {
-        const that = this;
-        const channelName = name || subscription.channel;
+	  /**
+	   * Logs a message out to the console
+	   * @param {string} message - The message to log out to the console
+	   * @param {string} [level=error] - Debug level required for logging. Either `info`, `error`, or `all`
+	   */
+	  log(message, level = "error") {
+	    if (this._debug) {
+	      if (this._debugLevel == "all") console.log(message);
+	      else if (level == this._debugLevel) {
+	        console.log(message);
+	      }
+	    }
+	  }
+	}
 
-        this._channels.subscriptions[
-          channelName
-        ] = this._cable.subscriptions.create(subscription, {
-          connected() {
-            that._fireChannelEvent(channelName, that._channelConnected);
-          },
-          disconnected() {
-            that._fireChannelEvent(channelName, that._channelDisconnected);
-          },
-          rejected() {
-            that._fireChannelEvent(channelName, that._subscriptionRejected);
-          },
-          received(data) {
-            that._fireChannelEvent(channelName, that._channelReceived, data);
-          },
-        });
-      } else {
-        this._connect(this._connectionUrl);
-        this.subscribe(subscription, name);
-      }
-    }
+	var Mixin = {
+	  /**
+	   * Retrieve channels in component once mounted.
+	   */
+	  mounted() {
+	    if (this.$options.channels) {
+	      Object.entries(this.$options.channels).forEach((entry) => {
+	        if (entry[0] != "computed")
+	          this.$cable._addChannel(entry[0], entry[1], this);
+	        else {
+	          const computedChannels = entry[1];
+	          computedChannels.forEach((channel) => {
+	            const channelName = channel.channelName();
+	            const channelObject = {
+	              connected: channel["connected"],
+	              rejected: channel["rejected"],
+	              disconnected: channel["disconnected"],
+	              received: channel["received"],
+	            };
 
-    /**
-     * Perform an action in an Action Cable server channel
-     * @param {Object} whatToDo
-     * @param {string} whatToDo.channel - The name of the Action Cable server channel / The custom name chosen for the component channel
-     * @param {string} whatToDo.action - The action to call in the Action Cable server channel
-     * @param {Object} whatToDo.data - The data to pass along with the call to the action
-     */
-    perform(whatToDo) {
-      const { channel, action, data } = whatToDo;
-      this._logger.log(
-        `Performing action '${action}' on channel '${channel}'.`,
-        "info"
-      );
-      const subscription = this._channels.subscriptions[channel];
-      if (subscription) {
-        subscription.perform(action, data);
-        this._logger.log(
-          `Performed '${action}' on channel '${channel}'.`,
-          "info"
-        );
-      } else {
-        throw new Error(
-          `You need to be subscribed to perform action '${action}' on channel '${channel}'.`
-        );
-      }
-    }
+	            this.$options.channels[channelName] = channelObject;
+	            this.$cable._addChannel(channelName, channelObject, this);
+	          });
+	        }
+	      });
+	    }
+	  },
+	  /**
+	   * Unsubscribe from channels when component is destroyed.
+	   */
+	  destroyed() {
+	    if (this.$options.channels) {
+	      Object.keys(this.$options.channels).forEach((key) =>
+	        this.$cable._removeChannel(key)
+	      );
+	    }
+	  },
+	};
 
-    /**
-     * Unsubscribes from an Action Cable server channel
-     * @param {string} channelName - The name of the Action Cable server channel / The custom name chosen for the component channel
-     */
-    unsubscribe(channelName) {
-      if (this._channels.subscriptions[channelName]) {
-        this._channels.subscriptions[channelName].unsubscribe();
-        this._logger.log(`Unsubscribed from channel '${channelName}'.`, "info");
-      }
-    }
+	class Cable {
+	  _logger = null;
+	  _cable = null;
+	  _channels = { subscriptions: {} };
+	  _contexts = {};
+	  _connectionUrl = null;
 
-    /**
-     * Called when a subscription to an Action Cable server channel successfully completes. Calls connected on the component channel
-     * @param {Object} channel - The component channel
-     */
-    _channelConnected(channel) {
-      if (channel.connected)
-        channel.connected.call(this._contexts[channel._uid].context);
+	  /**
+	   * ActionCableVue $cable entry point
+	   * @param {Object} Vue
+	   * @param {Object} options - ActionCableVue options
+	   * @param {string} options.connectionUrl - ActionCable server websocket URL
+	   * @param {boolean} options.debug - Enable logging for debug
+	   * @param {string} options.debugLevel - Debug level required for logging. Either `info`, `error`, or `all`
+	   * @param {boolean} options.connectImmediately - Connect immediately or wait until the first subscription.
+	   */
+	  constructor(Vue, options) {
+	    Vue.prototype.$cable = this;
+	    Vue.mixin(Mixin);
 
-      this._logger.log(
-        `Successfully connected to channel '${channel._name}'.`,
-        "info"
-      );
-    }
+	    let { debug, debugLevel, connectionUrl, connectImmediately } = options || {
+	      debug: false,
+	      debugLevel: "error",
+	      connectionUrl: null,
+	    };
 
-    /**
-     * Called when a subscription to an Action Cable server channel disconnects. Calls disconnected on the component channel
-     * @param {Object} channel - The component channel
-     */
-    _channelDisconnected(channel) {
-      if (channel.disconnected)
-        channel.disconnected.call(this._contexts[channel._uid].context);
+	    this._connectionUrl = connectionUrl;
+	    if (connectImmediately !== false) connectImmediately = true;
 
-      this._logger.log(
-        `Successfully disconnected from channel '${channel._name}'.`,
-        "info"
-      );
-    }
+	    this._logger = new Logger(debug, debugLevel);
 
-    /**
-     * Called when a subscription to an Action Cable server channel is rejected by the server. Calls rejected on the component channel
-     * @param {Object} channel - The component channel
-     */
-    _subscriptionRejected(channel) {
-      if (channel.rejected)
-        channel.rejected.call(this._contexts[channel._uid].context);
+	    if (connectImmediately) this._connect(this._connectionUrl);
+	  }
 
-      this._logger.log(`Subscription rejected for channel '${channel._name}'.`);
-    }
+	  /**
+	   * Subscribes to an Action Cable server channel
+	   * @param {Object} subscription
+	   * @param {string} subscription.channel - The name of the Action Cable server channel
+	   * @param {string} subscription.room - The room in the Action Cable server channel to subscribe to
+	   * @param {string} name - A custom channel name to be used in component
+	   */
+	  subscribe(subscription, name) {
+	    if (this._cable) {
+	      const that = this;
+	      const channelName = name || subscription.channel;
 
-    /**
-     * Called when a message from an Action Cable server channel is received. Calls received on the component channel
-     * @param {Object} channel - The component channel
-     */
-    _channelReceived(channel, data) {
-      if (channel.received)
-        channel.received.call(this._contexts[channel._uid].context, data);
+	      this._channels.subscriptions[
+	        channelName
+	      ] = this._cable.subscriptions.create(subscription, {
+	        connected() {
+	          that._fireChannelEvent(channelName, that._channelConnected);
+	        },
+	        disconnected() {
+	          that._fireChannelEvent(channelName, that._channelDisconnected);
+	        },
+	        rejected() {
+	          that._fireChannelEvent(channelName, that._subscriptionRejected);
+	        },
+	        received(data) {
+	          that._fireChannelEvent(channelName, that._channelReceived, data);
+	        },
+	      });
+	    } else {
+	      this._connect(this._connectionUrl);
+	      this.subscribe(subscription, name);
+	    }
+	  }
 
-      this._logger.log(`Message received on channel '${channel._name}'.`, "info");
-    }
+	  /**
+	   * Perform an action in an Action Cable server channel
+	   * @param {Object} whatToDo
+	   * @param {string} whatToDo.channel - The name of the Action Cable server channel / The custom name chosen for the component channel
+	   * @param {string} whatToDo.action - The action to call in the Action Cable server channel
+	   * @param {Object} whatToDo.data - The data to pass along with the call to the action
+	   */
+	  perform(whatToDo) {
+	    const { channel, action, data } = whatToDo;
+	    this._logger.log(
+	      `Performing action '${action}' on channel '${channel}'.`,
+	      "info"
+	    );
+	    const subscription = this._channels.subscriptions[channel];
+	    if (subscription) {
+	      subscription.perform(action, data);
+	      this._logger.log(
+	        `Performed '${action}' on channel '${channel}'.`,
+	        "info"
+	      );
+	    } else {
+	      throw new Error(
+	        `You need to be subscribed to perform action '${action}' on channel '${channel}'.`
+	      );
+	    }
+	  }
 
-    /**
-     * Connects to an Action Cable server
-     * @param {string} url - The websocket URL of the Action Cable server.
-     */
-    _connect(url) {
-      if (typeof url == "string") {
-        this._cable = actioncable.createConsumer(url);
-      } else if (typeof url == "function") {
-        this._cable = actioncable.createConsumer(url());
-      } else {
-        throw new Error(
-          "Connection URL needs to be a valid Action Cable websocket server URL."
-        );
-      }
-    }
+	  /**
+	   * Unsubscribes from an Action Cable server channel
+	   * @param {string} channelName - The name of the Action Cable server channel / The custom name chosen for the component channel
+	   */
+	  unsubscribe(channelName) {
+	    if (this._channels.subscriptions[channelName]) {
+	      this._channels.subscriptions[channelName].unsubscribe();
+	      this._logger.log(`Unsubscribed from channel '${channelName}'.`, "info");
+	    }
+	  }
 
-    /**
-     * Component mounted. Retrieves component channels for later use
-     * @param {string} name - Component channel name
-     * @param {Object} value - The component channel object itself
-     * @param {Object} context - The execution context of the component the channel was created in
-     */
-    _addChannel(name, value, context) {
-      value._uid = context._uid;
-      value._name = name;
+	  /**
+	   * Called when a subscription to an Action Cable server channel successfully completes. Calls connected on the component channel
+	   * @param {Object} channel - The component channel
+	   */
+	  _channelConnected(channel) {
+	    if (channel.connected)
+	      channel.connected.call(this._contexts[channel._uid].context);
 
-      this._channels[name] = value;
-      this._addContext(context);
-    }
+	    this._logger.log(
+	      `Successfully connected to channel '${channel._name}'.`,
+	      "info"
+	    );
+	  }
 
-    /**
-     * Adds a component to a cache. Component is then used to bind `this` in the component channel to the Vue component's execution context
-     * @param {Object} context - The Vue component execution context being added
-     */
-    _addContext(context) {
-      if (!this._contexts[context._uid]) {
-        this._contexts[context._uid] = { context, users: 1 };
-      } else {
-        ++this._contexts[context._uid].users;
-      }
-    }
+	  /**
+	   * Called when a subscription to an Action Cable server channel disconnects. Calls disconnected on the component channel
+	   * @param {Object} channel - The component channel
+	   */
+	  _channelDisconnected(channel) {
+	    if (channel.disconnected)
+	      channel.disconnected.call(this._contexts[channel._uid].context);
 
-    /**
-     * Component is destroyed. Removes component's channels, subscription and cached execution context.
-     */
-    _removeChannel(name) {
-      if (this._channels.subscriptions[name]) {
-        const uid = this._channels[name]._uid;
+	    this._logger.log(
+	      `Successfully disconnected from channel '${channel._name}'.`,
+	      "info"
+	    );
+	  }
 
-        this._channels.subscriptions[name].unsubscribe();
-        delete this._channels[name];
-        delete this._channels.subscriptions[name];
+	  /**
+	   * Called when a subscription to an Action Cable server channel is rejected by the server. Calls rejected on the component channel
+	   * @param {Object} channel - The component channel
+	   */
+	  _subscriptionRejected(channel) {
+	    if (channel.rejected)
+	      channel.rejected.call(this._contexts[channel._uid].context);
 
-        --this._contexts[uid].users;
-        if (this._contexts[uid].users <= 0) delete this._contexts[uid];
+	    this._logger.log(`Subscription rejected for channel '${channel._name}'.`);
+	  }
 
-        this._logger.log(`Unsubscribed from channel '${name}'.`, "info");
-      }
-    }
+	  /**
+	   * Called when a message from an Action Cable server channel is received. Calls received on the component channel
+	   * @param {Object} channel - The component channel
+	   */
+	  _channelReceived(channel, data) {
+	    if (channel.received)
+	      channel.received.call(this._contexts[channel._uid].context, data);
 
-    /**
-     * Fires the event triggered by the Action Cable subscription on the component channel
-     * @param {string} channelName - The name of the Action Cable server channel / The custom name chosen for the component channel
-     * @param {Function} callback - The component channel event to call
-     * @param {Object} data - The data passed from the Action Cable server channel
-     */
-    _fireChannelEvent(channelName, callback, data) {
-      if (this._channels.hasOwnProperty(channelName)) {
-        const channel = this._channels[channelName];
-        callback.call(this, channel, data);
-      }
-    }
-  }
+	    this._logger.log(`Message received on channel '${channel._name}'.`, "info");
+	  }
 
-  const ActionCableVue = {
-    /**
-     * ActionCableVue entry point
-     * @param Vue
-     * @param {Object} options - ActionCableVue options
-     * @param {string} options.connectionUrl - ActionCable server websocket URL
-     * @param {boolean} options.debug - Enable logging for debug
-     * @param {string} options.debugLevel - Debug level required for logging. Either `info`, `error`, or `all`
-     */
-    install(Vue, options) {
-      new Cable(Vue, options);
-    },
-  };
+	  /**
+	   * Connects to an Action Cable server
+	   * @param {string} url - The websocket URL of the Action Cable server.
+	   */
+	  _connect(url) {
+	    if (typeof url == "string") {
+	      this._cable = action_cable_1(url);
+	    } else if (typeof url == "function") {
+	      this._cable = action_cable_1(url());
+	    } else {
+	      throw new Error(
+	        "Connection URL needs to be a valid Action Cable websocket server URL."
+	      );
+	    }
+	  }
 
-  return ActionCableVue;
+	  /**
+	   * Component mounted. Retrieves component channels for later use
+	   * @param {string} name - Component channel name
+	   * @param {Object} value - The component channel object itself
+	   * @param {Object} context - The execution context of the component the channel was created in
+	   */
+	  _addChannel(name, value, context) {
+	    value._uid = context._uid;
+	    value._name = name;
+
+	    this._channels[name] = value;
+	    this._addContext(context);
+	  }
+
+	  /**
+	   * Adds a component to a cache. Component is then used to bind `this` in the component channel to the Vue component's execution context
+	   * @param {Object} context - The Vue component execution context being added
+	   */
+	  _addContext(context) {
+	    if (!this._contexts[context._uid]) {
+	      this._contexts[context._uid] = { context, users: 1 };
+	    } else {
+	      ++this._contexts[context._uid].users;
+	    }
+	  }
+
+	  /**
+	   * Component is destroyed. Removes component's channels, subscription and cached execution context.
+	   */
+	  _removeChannel(name) {
+	    if (this._channels.subscriptions[name]) {
+	      const uid = this._channels[name]._uid;
+
+	      this._channels.subscriptions[name].unsubscribe();
+	      delete this._channels[name];
+	      delete this._channels.subscriptions[name];
+
+	      --this._contexts[uid].users;
+	      if (this._contexts[uid].users <= 0) delete this._contexts[uid];
+
+	      this._logger.log(`Unsubscribed from channel '${name}'.`, "info");
+	    }
+	  }
+
+	  /**
+	   * Fires the event triggered by the Action Cable subscription on the component channel
+	   * @param {string} channelName - The name of the Action Cable server channel / The custom name chosen for the component channel
+	   * @param {Function} callback - The component channel event to call
+	   * @param {Object} data - The data passed from the Action Cable server channel
+	   */
+	  _fireChannelEvent(channelName, callback, data) {
+	    if (this._channels.hasOwnProperty(channelName)) {
+	      const channel = this._channels[channelName];
+	      callback.call(this, channel, data);
+	    }
+	  }
+	}
+
+	const ActionCableVue = {
+	  /**
+	   * ActionCableVue entry point
+	   * @param Vue
+	   * @param {Object} options - ActionCableVue options
+	   * @param {string} options.connectionUrl - ActionCable server websocket URL
+	   * @param {boolean} options.debug - Enable logging for debug
+	   * @param {string} options.debugLevel - Debug level required for logging. Either `info`, `error`, or `all`
+	   */
+	  install(Vue, options) {
+	    new Cable(Vue, options);
+	  },
+	};
+
+	return ActionCableVue;
 
 })));

@@ -3,8 +3,11 @@ import commonjs from 'rollup-plugin-commonjs';
 
 export default {
   input: 'src/index.js',
-  dest: 'actioncablevue.js',
-  format: 'umd',
+  output: {
+    file: 'dist/actioncablevue.js',
+    format: 'umd',
+    name: 'ActionCableVue'
+  },
   plugins: [resolve(), commonjs({
     namedExports: {
       "node_modules/@rails/actioncable/app/assets/javascripts/action_cable.js": ["createConsumer"]
