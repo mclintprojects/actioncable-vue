@@ -1,5 +1,6 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
+import { terser } from 'rollup-plugin-terser';
 
 export default {
   input: 'src/index.js',
@@ -12,5 +13,5 @@ export default {
     namedExports: {
       "node_modules/@rails/actioncable/app/assets/javascripts/action_cable.js": ["createConsumer"]
     }
-  })]
+  }), terser()]
 };
