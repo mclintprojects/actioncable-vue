@@ -1,4 +1,4 @@
-import actioncable from "actioncable";
+import { createConsumer } from "@rails/actioncable";
 import Logger from "./logger";
 import Mixin from "./mixin";
 
@@ -164,9 +164,9 @@ export default class Cable {
    */
   _connect(url) {
     if (typeof url == "string") {
-      this._cable = actioncable.createConsumer(url);
+      this._cable = createConsumer(url);
     } else if (typeof url == "function") {
-      this._cable = actioncable.createConsumer(url());
+      this._cable = createConsumer(url());
     } else {
       throw new Error(
         "Connection URL needs to be a valid Action Cable websocket server URL."

@@ -3,6 +3,7 @@ import Vue from "vue";
 
 describe("Cable", () => {
   let cable, create;
+  global.window = {};
 
   beforeEach(() => {
     Vue.mixin = jest.fn();
@@ -18,7 +19,7 @@ describe("Cable", () => {
     global._channels = {
       subscriptions: {},
     };
-    global._logger = { log() {} };
+    global._logger = { log() { } };
     global._contexts = {};
     global._removeChannel = function (name) {
       cable._removeChannel.call(global, name);
