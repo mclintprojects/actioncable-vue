@@ -172,6 +172,19 @@ export default class Cable {
         "Connection URL needs to be a valid Action Cable websocket server URL."
       );
     }
+
+    if (this._cable) this._attachConnectionObject();
+  }
+
+  _attachConnectionObject() {
+    this.connection = {
+      connect() {
+        this._cable.connect();
+      },
+      disconnect() {
+        this._cable.disconnect();
+      }
+    }
   }
 
   /**

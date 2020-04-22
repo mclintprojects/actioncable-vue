@@ -2,12 +2,12 @@ import Cable from "../src/cable";
 import Vue from "vue";
 
 describe("Cable", () => {
-  let cable, create;
+  let cable, create, connect, disconnect;
   global.window = {};
 
   beforeEach(() => {
     Vue.mixin = jest.fn();
-    create = jest.fn();
+    create = jest.fn(), connect = jest.fn(), disconnect = jest.fn();
 
     cable = new Cable(Vue, { connectionUrl: "ws://localhost:5000/api/cable" });
 
@@ -15,6 +15,8 @@ describe("Cable", () => {
       subscriptions: {
         create,
       },
+      connect,
+      disconnect
     };
     global._channels = {
       subscriptions: {},
@@ -42,6 +44,21 @@ describe("Cable", () => {
     expect(Vue.mixin).toHaveBeenCalled();
     expect(cable._logger._debug).toBe(true);
     expect(cable._logger._debugLevel).toBe("error");
+    expect(cable.connection).toBeDefined();
+  });
+
+  test("it should call connect and disconnect on connection object appropriately", () => {
+    cable = new Cable(Vue, {
+      connectionUrl: "ws://localhost:5000/api/cable",
+      debug: true,
+      debugLevel: "error",
+    });
+
+    cable.connection.connect.call(global);
+    expect(connect).toHaveBeenCalled();
+
+    cable.connection.disconnect.call(global);
+    expect(disconnect).toHaveBeenCalled();
   });
 
   test("It should throw error if options not provided", () => {
