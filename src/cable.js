@@ -183,8 +183,8 @@ export default class Cable {
       },
       disconnect() {
         this._cable.disconnect();
-      }
-    }
+      },
+    };
   }
 
   /**

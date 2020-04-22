@@ -7,7 +7,7 @@ describe("Cable", () => {
 
   beforeEach(() => {
     Vue.mixin = jest.fn();
-    create = jest.fn(), connect = jest.fn(), disconnect = jest.fn();
+    (create = jest.fn()), (connect = jest.fn()), (disconnect = jest.fn());
 
     cable = new Cable(Vue, { connectionUrl: "ws://localhost:5000/api/cable" });
 
@@ -16,12 +16,12 @@ describe("Cable", () => {
         create,
       },
       connect,
-      disconnect
+      disconnect,
     };
     global._channels = {
       subscriptions: {},
     };
-    global._logger = { log() { } };
+    global._logger = { log() {} };
     global._contexts = {};
     global._removeChannel = function (name) {
       cable._removeChannel.call(global, name);
