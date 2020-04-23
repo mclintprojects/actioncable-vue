@@ -47,23 +47,22 @@ export default class Cable {
    */
   subscribe(subscription, name) {
     if (this._cable) {
-      const that = this;
       const channelName = name || subscription.channel;
 
       this._channels.subscriptions[
         channelName
       ] = this._cable.subscriptions.create(subscription, {
-        connected() {
-          that._fireChannelEvent(channelName, that._channelConnected);
+        connected: () => {
+          this._fireChannelEvent(channelName, this._channelConnected);
         },
-        disconnected() {
-          that._fireChannelEvent(channelName, that._channelDisconnected);
+        disconnected: () => {
+          this._fireChannelEvent(channelName, this._channelDisconnected);
         },
-        rejected() {
-          that._fireChannelEvent(channelName, that._subscriptionRejected);
+        rejected: () => {
+          this._fireChannelEvent(channelName, this._subscriptionRejected);
         },
-        received(data) {
-          that._fireChannelEvent(channelName, that._channelReceived, data);
+        received: (data) => {
+          this._fireChannelEvent(channelName, this._channelReceived, data);
         },
       });
     } else {
@@ -178,14 +177,15 @@ export default class Cable {
 
   _attachConnectionObject() {
     this.connection = {
-      connect(url = null) {
+      connect: (url = null) => {
+        console.log(this);
         if (this._cable) {
           this._cable.connect();
         } else {
           this._connect(url || this._connectionUrl);
         }
       },
-      disconnect() {
+      disconnect: () => {
         if (this._cable) this._cable.disconnect();
       },
     };
