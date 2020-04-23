@@ -34,6 +34,8 @@ export default class Cable {
     this._logger = new Logger(debug, debugLevel);
 
     if (connectImmediately) this._connect(this._connectionUrl);
+
+    this._attachConnectionObject();
   }
 
   /**
@@ -45,23 +47,22 @@ export default class Cable {
    */
   subscribe(subscription, name) {
     if (this._cable) {
-      const that = this;
       const channelName = name || subscription.channel;
 
       this._channels.subscriptions[
         channelName
       ] = this._cable.subscriptions.create(subscription, {
-        connected() {
-          that._fireChannelEvent(channelName, that._channelConnected);
+        connected: () => {
+          this._fireChannelEvent(channelName, this._channelConnected);
         },
-        disconnected() {
-          that._fireChannelEvent(channelName, that._channelDisconnected);
+        disconnected: () => {
+          this._fireChannelEvent(channelName, this._channelDisconnected);
         },
-        rejected() {
-          that._fireChannelEvent(channelName, that._subscriptionRejected);
+        rejected: () => {
+          this._fireChannelEvent(channelName, this._subscriptionRejected);
         },
-        received(data) {
-          that._fireChannelEvent(channelName, that._channelReceived, data);
+        received: (data) => {
+          this._fireChannelEvent(channelName, this._channelReceived, data);
         },
       });
     } else {
@@ -172,6 +173,28 @@ export default class Cable {
         "Connection URL needs to be a valid Action Cable websocket server URL."
       );
     }
+  }
+
+  _attachConnectionObject() {
+    this.connection = {
+      /**
+       * Manually connect to an Action Cable server. Automatically re-subscribes all your subscriptions.
+       * @param {String|Function} url - Optional parameter. The connection URL to your Action Cable server
+       */
+      connect: (url = null) => {
+        if (this._cable) {
+          this._cable.connect();
+        } else {
+          this._connect(url || this._connectionUrl);
+        }
+      },
+      /**
+       * Disconnect from your Action Cable server
+       */
+      disconnect: () => {
+        if (this._cable) this._cable.disconnect();
+      },
+    };
   }
 
   /**

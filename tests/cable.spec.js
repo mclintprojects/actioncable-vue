@@ -19,7 +19,7 @@ describe("Cable", () => {
     global._channels = {
       subscriptions: {},
     };
-    global._logger = { log() { } };
+    global._logger = { log() {} };
     global._contexts = {};
     global._removeChannel = function (name) {
       cable._removeChannel.call(global, name);
@@ -42,6 +42,7 @@ describe("Cable", () => {
     expect(Vue.mixin).toHaveBeenCalled();
     expect(cable._logger._debug).toBe(true);
     expect(cable._logger._debugLevel).toBe("error");
+    expect(cable.connection).toBeDefined();
   });
 
   test("It should throw error if options not provided", () => {

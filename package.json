@@ -17,7 +17,8 @@
 		"publish-minor": "npm run build && npm run commit-build && npm version minor && npm publish",
 		"publish-patch": "npm run build && npm run commit-build && npm version patch && npm publish",
 		"publish-major": "npm run build && npm run commit-build && npm version major && npm publish",
-		"test": "./node_modules/.bin/jest"
+		"test": "./node_modules/.bin/jest",
+		"style:fix": "prettier --write '**/*.{js,vue}'"
 	},
 	"repository": {
 		"type": "git",
