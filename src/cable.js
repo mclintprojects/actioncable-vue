@@ -34,6 +34,8 @@ export default class Cable {
     this._logger = new Logger(debug, debugLevel);
 
     if (connectImmediately) this._connect(this._connectionUrl);
+
+    this._attachConnectionObject();
   }
 
   /**
@@ -172,17 +174,19 @@ export default class Cable {
         "Connection URL needs to be a valid Action Cable websocket server URL."
       );
     }
-
-    if (this._cable) this._attachConnectionObject();
   }
 
   _attachConnectionObject() {
     this.connection = {
-      connect() {
-        this._cable.connect();
+      connect(url = null) {
+        if (this._cable) {
+          this._cable.connect();
+        } else {
+          this._connect(url || this._connectionUrl);
+        }
       },
       disconnect() {
-        this._cable.disconnect();
+        if (this._cable) this._cable.disconnect();
       },
     };
   }
