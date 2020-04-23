@@ -177,14 +177,20 @@ export default class Cable {
 
   _attachConnectionObject() {
     this.connection = {
+      /**
+       * Manually connect to an Action Cable server. Automatically re-subscribes all your subscriptions.
+       * @param {String|Function} url - Optional parameter. The connection URL to your Action Cable server
+       */
       connect: (url = null) => {
-        console.log(this);
         if (this._cable) {
           this._cable.connect();
         } else {
           this._connect(url || this._connectionUrl);
         }
       },
+      /**
+       * Disconnect from your Action Cable server
+       */
       disconnect: () => {
         if (this._cable) this._cable.disconnect();
       },

@@ -198,7 +198,34 @@ new Vue({
 });
 ```
 
-#### ♣ Performing an action on your Action Cable server
+#### 👺 Manually connect to the server
+ActionCableVue automatically connects to your Action Cable server if `connectImmediately` is not set to `false` during setup. If you do set `connectImmediately` to `false` you can manually trigger a connection to your ActionCable server with `this.$cable.connection.connect`.
+
+```javascript
+new Vue({
+  methods: {
+    connectWithRefreshedToken(token) {
+      // You can optionally pass in a connection URL string
+      // You can optionally pass in a function that returns a connection URL
+      // You can choose not to pass in anything and it'll reconnect with the connection URL provided during setup.
+      this.$cable.connection.connect(`ws://localhost:5000/api/cable?token=${token}`);
+    }
+  }
+});
+```
+
+#### 👽 Disconnecting from the server
+```javascript
+new Vue({
+  methods: {
+    disconnect() {
+      this.$cable.connection.disconnect();
+    }
+  }
+});
+```
+
+#### 💎 Performing an action on your Action Cable server
 
 Requires that you have a method defined in your Rails Action Cable channel whose name matches the action property passed in.
 
