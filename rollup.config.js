@@ -6,7 +6,7 @@ export default {
   input: "src/index.js",
   output: {
     file: "dist/actioncablevue.js",
-    format: "umd",
+    format: "esm",
     name: "ActionCableVue",
   },
   plugins: [
