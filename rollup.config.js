@@ -4,11 +4,12 @@ import { terser } from "rollup-plugin-terser";
 
 export default {
   input: "src/index.js",
-  output: {
+  output: [{
     file: "dist/actioncablevue.js",
-    format: "esm",
+    format: "cjs",
     name: "ActionCableVue",
-  },
+  }
+  ],
   plugins: [
     resolve(),
     commonjs({
