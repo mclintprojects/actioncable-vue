@@ -4,13 +4,13 @@ export default {
    */
   mounted() {
     if (this.$options.channels) {
-      Object.entries(this.$options.channels).forEach((entry) => {
+      Object.entries(this.$options.channels).forEach(function (entry) {
         if (entry[0] != "computed")
           this.$cable._addChannel(entry[0], entry[1], this);
         else {
           const computedChannels = entry[1];
           computedChannels.forEach((channel) => {
-            const channelName = channel.channelName();
+            const channelName = channel.channelName.call(this);
             const channelObject = {
               connected: channel["connected"],
               rejected: channel["rejected"],
@@ -22,7 +22,7 @@ export default {
             this.$cable._addChannel(channelName, channelObject, this);
           });
         }
-      });
+      }.bind(this));
     }
   },
   /**

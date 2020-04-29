@@ -12,8 +12,7 @@
 		"websocket"
 	],
 	"scripts": {
-		"build": "rollup -c",
-		"buildw": "webpack --mode=production --progress --hide-modules",
+		"build": "webpack --mode=production --progress --hide-modules",
 		"commit-build": "git add . && git commit -m \"updated lib\"",
 		"publish-minor": "npm run build && npm run commit-build && npm version minor && npm publish",
 		"publish-patch": "npm run build && npm run commit-build && npm version patch && npm publish",
