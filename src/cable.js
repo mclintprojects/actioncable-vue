@@ -207,7 +207,8 @@ export default class Cable {
     value._uid = context._uid;
     value._name = name;
 
-    this._channels[name] = value;
+    if (!this._channels[name]) this._channels[name] = [];
+    this._channels[name].push(value);
     this._addContext(context);
   }
 
@@ -226,16 +227,18 @@ export default class Cable {
   /**
    * Component is destroyed. Removes component's channels, subscription and cached execution context.
    */
-  _removeChannel(name) {
+  _removeChannel(name, uid) {
     if (this._channels.subscriptions[name]) {
-      const uid = this._channels[name]._uid;
+      let users = this._contexts[uid].users;
+      --users;
 
-      this._channels.subscriptions[name].unsubscribe();
-      delete this._channels[name];
-      delete this._channels.subscriptions[name];
+      if (users == 0) {
+        this._channels.subscriptions[name].unsubscribe();
+        delete this._channels.subscriptions[name];
+        delete this._contexts[uid];
+      }
 
-      --this._contexts[uid].users;
-      if (this._contexts[uid].users <= 0) delete this._contexts[uid];
+      this._channels[name].splice(this._channels[name].findIndex(channel => channel._uid = uid), 1);
 
       this._logger.log(`Unsubscribed from channel '${name}'.`, "info");
     }
@@ -249,8 +252,10 @@ export default class Cable {
    */
   _fireChannelEvent(channelName, callback, data) {
     if (this._channels.hasOwnProperty(channelName)) {
-      const channel = this._channels[channelName];
-      callback.call(this, channel, data);
+      const channelEntries = this._channels[channelName];
+      for (let i = 0; i < channelEntries.length; i++) {
+        callback.call(this, channelEntries[i], data);
+      }
     }
   }
 }
