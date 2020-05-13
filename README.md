@@ -41,6 +41,11 @@ new Vue({
 | connectionUrl      | String/Function   | `null`      | Required     | ActionCable websocket server url                                                                           |
 | connectImmediately | Boolean  | `true`      | Optional     | ActionCable connects to your server immediately. If false, ActionCable connects on the first subscription. |
 
+
+#### ☕ Support ActionCable-Vue
+
+If you'd like to donate to support the continued development and maintenance of actioncable-vue, you can do so [here.](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=clintonmbah44@gmail.com&lc=US&item_name=Support+development+and+maintenance+of+ActionCableVue&no_note=0&cn=&currency_code=USD&bn=PP-DonationsBF:btn_donateCC_LG.gif:NonHosted)
+
 #### 🌈 Component Level Usage
 
 <p>If you want to listen channel events from your Vue component, you need to add a `channels` object in the Vue component. Each defined object in `channels` will start to receive events provided you subscribe correctly.</p>
