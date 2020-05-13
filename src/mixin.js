@@ -4,9 +4,12 @@ export default {
    */
   mounted() {
     if (this.$options.channels) {
-      Object.entries(this.$options.channels).forEach(function (entry) {
+      const entries = Object.entries(this.$options.channels)
+      for (let index = 0; index < entries.length; index++) {
+        const entry = entries[index];
+
         if (entry[0] != "computed")
-          this.$cable._addChannel(entry[0], entry[1], this);
+          this.$cable._addChannel(entry[0], { ...entry[1] }, this);
         else {
           const computedChannels = entry[1];
           computedChannels.forEach((channel) => {
@@ -18,11 +21,10 @@ export default {
               received: channel["received"],
             };
 
-            this.$options.channels[channelName] = channelObject;
             this.$cable._addChannel(channelName, channelObject, this);
           });
         }
-      }.bind(this));
+      }
     }
   },
   /**
@@ -31,7 +33,7 @@ export default {
   destroyed() {
     if (this.$options.channels) {
       Object.keys(this.$options.channels).forEach((key) =>
-        this.$cable._removeChannel(key)
+        this.$cable._removeChannel(key, this._uid)
       );
     }
   },
