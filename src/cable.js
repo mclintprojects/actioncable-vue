@@ -233,12 +233,14 @@ export default class Cable {
       --users;
 
       if (users == 0) {
-        this._channels.subscriptions[name].unsubscribe();
-        delete this._channels.subscriptions[name];
+        this._channels[name].splice(this._channels[name].findIndex(channel => channel._uid = uid), 1);
         delete this._contexts[uid];
       }
 
-      this._channels[name].splice(this._channels[name].findIndex(channel => channel._uid = uid), 1);
+      if (this._channels[name].length == 0) {
+        this._channels.subscriptions[name].unsubscribe();
+        delete this._channels.subscriptions[name];
+      }
 
       this._logger.log(`Unsubscribed from channel '${name}'.`, "info");
     }

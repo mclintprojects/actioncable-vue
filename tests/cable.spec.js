@@ -275,7 +275,7 @@ describe("Cable", () => {
     expect(global._channels.subscriptions[channelName]).toBeDefined();
     expect(global._contexts[channelUid]).toBeDefined();
     expect(unsubscribe).toBeCalledTimes(0);
-    expect(global._channels[channelName].findIndex(channel => channel._uid = channelUid)).toBe(-1)
+    expect(global._channels[channelName].find(channel => channel._uid = channelUid)).toBeDefined();
   });
 
   test("It should correctly add context", () => {

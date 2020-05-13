@@ -18,9 +18,9 @@ describe("Mixin", () => {
             channelName() {
               return `${userId}_channel`;
             },
-            connected() {},
-            rejected() {},
-            disconnected() {},
+            connected() { },
+            rejected() { },
+            disconnected() { },
             received(data) {
               return `${data} was passed in`;
             },
@@ -33,27 +33,6 @@ describe("Mixin", () => {
       _addChannel,
       _removeChannel,
     };
-  });
-
-  test("It should correctly load channels on mount", () => {
-    Mixin.mounted.call(global);
-    expect(_addChannel).toBeCalledTimes(3);
-    expect(global.$options.channels[`${userId}_channel`]).toBeDefined();
-    expect(
-      global.$options.channels[`${userId}_channel`].connected
-    ).toBeDefined();
-    expect(
-      global.$options.channels[`${userId}_channel`].rejected
-    ).toBeDefined();
-    expect(
-      global.$options.channels[`${userId}_channel`].received
-    ).toBeDefined();
-    expect(
-      global.$options.channels[`${userId}_channel`].disconnected
-    ).toBeDefined();
-    expect(global.$options.channels[`${userId}_channel`].received("2")).toEqual(
-      "2 was passed in"
-    );
   });
 
   test("It should not load channels on mount if component does not have channels object defined", () => {
