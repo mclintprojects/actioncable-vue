@@ -38,7 +38,7 @@ new Vue({
 | ------------------ | -------- | ----------- | ------------ | ---------------------------------------------------------------------------------------------------------- |
 | debug              | Boolean  | `false`     | Optional     | Enable logging for debug                                                                                   |
 | debugLevel         | String   | `error`     | Optional     | Debug level required for logging. Either `info`, `error`, or `all`                                         |
-| connectionUrl      | String/Function   | `null`      | Required     | ActionCable websocket server url                                                                           |
+| connectionUrl      | String/Function   | `null`      | Optional     | ActionCable websocket server url. Omit it for the [default behavior](https://guides.rubyonrails.org/action_cable_overview.html#connect-consumer) |
 | connectImmediately | Boolean  | `true`      | Optional     | ActionCable connects to your server immediately. If false, ActionCable connects on the first subscription. |
 
 
