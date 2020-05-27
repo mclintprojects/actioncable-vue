@@ -45,12 +45,14 @@ describe("Cable", () => {
     expect(cable.connection).toBeDefined();
   });
 
-  test("It should throw error if options not provided", () => {
-    const fn = () => {
-      cable = new Cable(Vue);
-    };
+  test("It should initialize correctly if options not provided", () => {
+    cable = new Cable(Vue);
 
-    expect(fn).toThrowError();
+    expect(Vue.prototype.$cable._cable).toBeDefined();
+    expect(Vue.mixin).toHaveBeenCalled();
+    expect(cable._logger._debug).toBe(false);
+    expect(cable._logger._debugLevel).toBe("error");
+    expect(cable.connection).toBeDefined();
   });
 
   test("It should not connect immediately if connectImmediately is false", () => {
@@ -80,14 +82,6 @@ describe("Cable", () => {
     cable.subscribe.call(global, { channel: "ChatChannel" });
     expect(global._connect).toHaveBeenCalled();
     expect(global.subscribe).toHaveBeenCalled();
-  });
-
-  test("It should not connect if param is not a string or function", () => {
-    const fn = () => {
-      cable._connect({});
-    };
-
-    expect(fn).toThrowError();
   });
 
   test("It should correctly subscribe to channel", () => {

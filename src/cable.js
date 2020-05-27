@@ -13,7 +13,7 @@ export default class Cable {
    * ActionCableVue $cable entry point
    * @param {Object} Vue
    * @param {Object} options - ActionCableVue options
-   * @param {string} options.connectionUrl - ActionCable server websocket URL
+   * @param {string|Function|null} [options.connectionUrl=null] - ActionCable server websocket URL
    * @param {boolean} options.debug - Enable logging for debug
    * @param {string} options.debugLevel - Debug level required for logging. Either `info`, `error`, or `all`
    * @param {boolean} options.connectImmediately - Connect immediately or wait until the first subscription.
@@ -161,17 +161,13 @@ export default class Cable {
 
   /**
    * Connects to an Action Cable server
-   * @param {string} url - The websocket URL of the Action Cable server.
+   * @param {string|Function|null} url - The websocket URL of the Action Cable server.
    */
   _connect(url) {
-    if (typeof url == "string") {
-      this._cable = createConsumer(url);
-    } else if (typeof url == "function") {
+    if (typeof url == "function") {
       this._cable = createConsumer(url());
     } else {
-      throw new Error(
-        "Connection URL needs to be a valid Action Cable websocket server URL."
-      );
+      this._cable = createConsumer(url);
     }
   }
 
@@ -179,7 +175,7 @@ export default class Cable {
     this.connection = {
       /**
        * Manually connect to an Action Cable server. Automatically re-subscribes all your subscriptions.
-       * @param {String|Function} url - Optional parameter. The connection URL to your Action Cable server
+       * @param {String|Function|null} [url=null] - Optional parameter. The connection URL to your Action Cable server
        */
       connect: (url = null) => {
         if (this._cable) {
