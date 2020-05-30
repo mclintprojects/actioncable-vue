@@ -89,7 +89,7 @@ new Vue({
 
 ###### 1. Subscribing to a channel
 
-Requires that you have an object defined in your component's `channels` object matching the action cable server channel name you passed for the subscription.
+Define a `channels` object in your component matching the action cable server channel name you passed for the subscription.
 
 ```javascript
 new Vue({
@@ -106,6 +106,32 @@ new Vue({
     });
   }
 });
+```
+
+Alternatively, if you're using `vue-class-component` define a `channels` property.
+
+```typescript
+@Component
+export default class ConversationComponent extends Vue {
+  @Prop({required: true}) private id!: string;
+
+  get channels() {
+    return {
+      ConversationChannel: {
+        connected() {
+          console.log("connected");
+        }
+      }
+    };
+  }
+
+  async mounted() {
+    this.$cable.subscribe({
+      channel: "ConversationChannel",
+      id: this.id
+    });
+  }
+}
 ```
 
 ##### Important
