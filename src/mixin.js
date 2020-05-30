@@ -3,8 +3,10 @@ export default {
    * Retrieve channels in component once mounted.
    */
   mounted() {
-    if (this.$options.channels) {
-      const entries = Object.entries(this.$options.channels)
+    if (this.$options.channels || this.channels) {
+      const channels = this.channels || this.$options.channels;
+      const entries = Object.entries(channels);
+
       for (let index = 0; index < entries.length; index++) {
         const entry = entries[index];
 
@@ -31,8 +33,9 @@ export default {
    * Unsubscribe from channels when component is destroyed.
    */
   destroyed() {
-    if (this.$options.channels) {
-      Object.keys(this.$options.channels).forEach((key) =>
+    if (this.$options.channels || this.channels) {
+      const channels = this.channels || this.$options.channels;
+      Object.keys(channels).forEach((key) =>
         this.$cable._removeChannel(key, this._uid)
       );
     }
