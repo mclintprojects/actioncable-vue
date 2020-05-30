@@ -48,7 +48,7 @@ If you'd like to donate to support the continued development and maintenance of 
 
 #### 🌈 Component Level Usage
 
-<p>If you want to listen channel events from your Vue component, you need to add a `channels` object in the Vue component. Each defined object in `channels` will start to receive events provided you subscribe correctly.</p>
+If you want to listen to channel events from your Vue component, you need to either add a `channels` object in the Vue component, or if you're using `vue-class-component` define a `channels` property. Each defined object in `channels` will start to receive events provided you subscribe correctly.
 
 ```javascript
 new Vue({
@@ -85,11 +85,50 @@ new Vue({
 });
 ```
 
+Alternative definition for `vue-class-component` users.
+
+```typescript
+@Component
+export default class ChatComponent extends Vue {
+  @Prop({required: true}) private id!: string;
+
+  get channels() {
+    return {
+      ChatChannel: {
+        connected() {
+          console.log('connected');
+        },
+        rejected() {},
+        received(data) {},
+        disconnected() {}
+      }
+    };
+  }
+
+  sendMessage(){
+    this.$cable.perform({
+      channel: 'ChatChannel',
+      action: 'send_message',
+      data: {
+        content: this.message
+      }
+    });
+  }
+
+  async mounted() {
+    this.$cable.subscribe({
+      channel: 'ChatChannel',
+      room: 'public'
+    });
+  }
+}
+```
+
 #### ✨ Subscriptions
 
 ###### 1. Subscribing to a channel
 
-Requires that you have an object defined in your component's `channels` object matching the action cable server channel name you passed for the subscription.
+Define a `channels` object in your component matching the action cable server channel name you passed for the subscription.
 
 ```javascript
 new Vue({
