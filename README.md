@@ -1,10 +1,13 @@
 <p align="center">
   <a href="https://travis-ci.org/mclintprojects/actioncable-vue"><img src="https://travis-ci.org/mclintprojects/actioncable-vue.svg?branch=master" /></a>
-  <a href="https://www.npmjs.com/package/actioncable-vue"><img src="https://img.shields.io/npm/v/actioncable-vue.svg"/> <img src="https://img.shields.io/npm/dt/actioncable-vue.svg"/></a>
-  <a href="https://github.com/vuejs/awesome-vue"><img src="https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg"/></a>
-  <a href="https://vuejs.org/"><img src="https://img.shields.io/badge/vue-2.x-brightgreen.svg"/></a>
-  <a href="https://github.com/mclintprojects/actioncable-vue/"><img src="https://img.shields.io/npm/l/actioncable-vue.svg"/></a>
+  <img alt="Last Commit" src="https://badgen.net/github/last-commit/chakra-ui/chakra-ui" />
+  <img alt="All Contributors Count" src="https://img.shields.io/github/contributors/mclintprojects/actioncable-vue"/>
+  <a href="https://www.npmjs.com/package/actioncable-vue"><img src="https://img.shields.io/npm/v/actioncable-vue.svg"/></a>
+  <img alt="Bundle Size" src="https://badgen.net/bundlephobia/minzip/actioncable-vue"/>
+  <img alt="Downloads" src="https://img.shields.io/npm/dt/actioncable-vue.svg"/>
   <a href="https://github.com/mclintprojects/actioncable-vue/"><img src="https://img.shields.io/github/stars/mclintprojects/actioncable-vue.svg"/></a>
+  <a href="https://github.com/mclintprojects/actioncable-vue/"><img src="https://img.shields.io/npm/l/actioncable-vue.svg"/></a>
+  <a href="https://vuejs.org/"><img src="https://img.shields.io/badge/vue-2.x-purple.svg"/></a>
 </p>
 
 <p>ActionCableVue is an easy-to-use Action Cable integration for VueJS.<p>
