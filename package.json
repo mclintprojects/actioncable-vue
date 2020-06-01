@@ -20,6 +20,11 @@
 		"test": "./node_modules/.bin/jest",
 		"style:fix": "prettier --write '**/*.{js,vue}'"
 	},
+	"files": [
+		"dist/*.js",
+		"types/*.d.ts"
+	],
+	"types": "types/index.d.ts",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/mclintprojects/actioncable-vue.git"
@@ -38,6 +43,7 @@
 		"@babel/plugin-proposal-class-properties": "^7.1.0",
 		"@babel/plugin-transform-classes": "^7.1.0",
 		"@babel/preset-env": "^7.1.0",
+		"@types/actioncable": "^5.2.3",
 		"@vue/test-utils": "^1.0.0-beta.28",
 		"babel-core": "^7.0.0-bridge.0",
 		"babel-jest": "^25.1.0",
