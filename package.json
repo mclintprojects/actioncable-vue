@@ -18,7 +18,7 @@
 		"publish-patch": "npm run build && npm run commit-build && npm version patch && npm publish",
 		"publish-major": "npm run build && npm run commit-build && npm version major && npm publish",
 		"test": "./node_modules/.bin/jest",
-		"style:fix": "prettier --write '**/*.{js,vue}'"
+		"style:fix": "prettier --write '{src,tests,types}/**/*.{js,vue}'"
 	},
 	"files": [
 		"dist/*.js",

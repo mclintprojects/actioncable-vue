@@ -229,7 +229,10 @@ export default class Cable {
       --users;
 
       if (users == 0) {
-        this._channels[name].splice(this._channels[name].findIndex(channel => channel._uid = uid), 1);
+        this._channels[name].splice(
+          this._channels[name].findIndex((channel) => (channel._uid = uid)),
+          1
+        );
         delete this._contexts[uid];
       }
 
