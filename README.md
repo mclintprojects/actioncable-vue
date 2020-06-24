@@ -43,6 +43,7 @@ new Vue({
 | debugLevel         | String   | `error`     | Optional     | Debug level required for logging. Either `info`, `error`, or `all`                                         |
 | connectionUrl      | String/Function   | `null`      | Optional     | ActionCable websocket server url. Omit it for the [default behavior](https://guides.rubyonrails.org/action_cable_overview.html#connect-consumer) |
 | connectImmediately | Boolean  | `true`      | Optional     | ActionCable connects to your server immediately. If false, ActionCable connects on the first subscription. |
+| store | Object | null | Optional | Vuex store |
 
 
 #### ☕ Support ActionCable-Vue
@@ -306,6 +307,55 @@ new Vue({
   }
 });
 ```
+
+#### 🐬 Usage with Vuex
+
+ActionCableVue has support for Vuex. All you have to do is setup your store correctly and pass it in during the ActionCableVue plugin setup.
+
+```javascript
+// store.js
+
+import Vue from 'vue';
+import Vuex from 'vuex';
+
+Vue.use(Vuex);
+
+export default new Vuex.Store({
+  state: {
+  },
+  mutations: {
+    sendMessage(state, content){
+      this.$cable.perform({
+        action: 'send_message',
+        data: {
+          content
+        }
+      })
+    }
+  },
+  actions: {
+    sendMessage({ commit }, content) {
+      commit('sendMessage', content)
+    }
+  }
+});
+```
+
+```javascript
+import store from './store';
+import Vue from 'vue';
+import ActionCableVue from 'actioncable-vue';
+
+Vue.use(ActionCableVue, {
+  debug: true,
+  debugLevel: 'all',
+  connectionUrl: process.env.WEBSOCKET_HOST,
+  connectImmediately: true,
+  store
+});
+```
+
+
 
 #### 💪 Usage with Nuxt.JS
 
