@@ -45,6 +45,17 @@ new Vue({
 | connectImmediately | Boolean  | `true`      | Optional     | ActionCable connects to your server immediately. If false, ActionCable connects on the first subscription. |
 | store | Object | null | Optional | Vuex store |
 
+#### Table of content
+- [Support ActionCable-Vue](https://github.com/mclintprojects/actioncable-vue#-support-actioncable-vue)
+- [Component Level Usage](https://github.com/mclintprojects/actioncable-vue#-component-level-usage)
+- [Subscriptions](https://github.com/mclintprojects/actioncable-vue#-subscriptions)
+- [Unsubscriptions](https://github.com/mclintprojects/actioncable-vue#-unsubscriptions)
+- [Manually connect to the server](https://github.com/mclintprojects/actioncable-vue#-manually-connect-to-the-server)
+- [Disconnecting from the server](https://github.com/mclintprojects/actioncable-vue#-disconnecting-from-the-server)
+- [Performing an action on your Action Cable server](https://github.com/mclintprojects/actioncable-vue#-performing-an-action-on-your-action-cable-server)
+- [Usage with Vuex](https://github.com/mclintprojects/actioncable-vue#-usage-with-vuex)
+- [Usage with Nuxt.JS](https://github.com/mclintprojects/actioncable-vue#-usage-with-nuxtjs)
+
 
 #### ☕ Support ActionCable-Vue
 
