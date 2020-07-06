@@ -7,6 +7,7 @@ export interface ActionCableVueOptions {
   debugLevel?: string;
   connectionUrl: () => string | string;
   connectImmediately?: boolean;
+  store?: object;
 }
 
 declare class VueActionCableExt {

@@ -23,11 +23,17 @@ export default class Cable {
     Vue.prototype.$cable = this;
     Vue.mixin(Mixin);
 
-    let { debug, debugLevel, connectionUrl, connectImmediately, store } = options || {
+    let {
+      debug,
+      debugLevel,
+      connectionUrl,
+      connectImmediately,
+      store,
+    } = options || {
       debug: false,
       debugLevel: "error",
       connectionUrl: null,
-      store: null
+      store: null,
     };
 
     this._connectionUrl = connectionUrl;

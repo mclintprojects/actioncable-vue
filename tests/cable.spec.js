@@ -32,10 +32,13 @@ describe("Cable", () => {
   });
 
   test("It should initialize correctly if options provided", () => {
+    const store = {};
+
     cable = new Cable(Vue, {
       connectionUrl: "ws://localhost:5000/api/cable",
       debug: true,
       debugLevel: "error",
+      store,
     });
 
     expect(Vue.prototype.$cable._cable).toBeDefined();
@@ -43,6 +46,7 @@ describe("Cable", () => {
     expect(cable._logger._debug).toBe(true);
     expect(cable._logger._debugLevel).toBe("error");
     expect(cable.connection).toBeDefined();
+    expect(store.$cable).toBeDefined();
   });
 
   test("It should initialize correctly if options not provided", () => {
