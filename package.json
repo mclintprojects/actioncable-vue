@@ -1,6 +1,6 @@
 {
 	"name": "actioncable-vue",
-	"version": "2.2.0",
+	"version": "2.3.0",
 	"description": "A Vue plugin that makes integrating ActionCable easy.",
 	"main": "dist/actioncablevue.js",
 	"keywords": [
@@ -18,7 +18,7 @@
 		"publish-patch": "npm run build && npm run commit-build && npm version patch && npm publish",
 		"publish-major": "npm run build && npm run commit-build && npm version major && npm publish",
 		"test": "./node_modules/.bin/jest",
-		"style:fix": "prettier --write '**/*.{js,vue}'"
+		"style:fix": "prettier --write '{src,tests,types}/**/*.{js,vue}'"
 	},
 	"files": [
 		"dist/*.js",

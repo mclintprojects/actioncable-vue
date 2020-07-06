@@ -16,20 +16,32 @@ export default class Cable {
    * @param {string|Function|null} [options.connectionUrl=null] - ActionCable server websocket URL
    * @param {boolean} options.debug - Enable logging for debug
    * @param {string} options.debugLevel - Debug level required for logging. Either `info`, `error`, or `all`
-   * @param {boolean} options.connectImmediately - Connect immediately or wait until the first subscription.
+   * @param {boolean} options.connectImmediately - Connect immediately or wait until the first subscription
+   * @param {object} options.store - Vuex store
    */
   constructor(Vue, options) {
     Vue.prototype.$cable = this;
     Vue.mixin(Mixin);
 
-    let { debug, debugLevel, connectionUrl, connectImmediately } = options || {
+    let {
+      debug,
+      debugLevel,
+      connectionUrl,
+      connectImmediately,
+      store,
+    } = options || {
       debug: false,
       debugLevel: "error",
       connectionUrl: null,
+      store: null,
     };
 
     this._connectionUrl = connectionUrl;
     if (connectImmediately !== false) connectImmediately = true;
+
+    if (store) {
+      store.$cable = this;
+    }
 
     this._logger = new Logger(debug, debugLevel);
 
@@ -229,7 +241,10 @@ export default class Cable {
       --users;
 
       if (users == 0) {
-        this._channels[name].splice(this._channels[name].findIndex(channel => channel._uid = uid), 1);
+        this._channels[name].splice(
+          this._channels[name].findIndex((channel) => (channel._uid = uid)),
+          1
+        );
         delete this._contexts[uid];
       }
 
