@@ -216,8 +216,11 @@ export default class Cable {
     value._name = name;
 
     if (!this._channels[name]) this._channels[name] = [];
-    this._channels[name].push(value);
     this._addContext(context);
+
+    if (!this._channels[name].find(c => c._uid == context._uid) && this._contexts[context._uid]) {
+      this._channels[name].push(value);
+    }
   }
 
   /**
@@ -225,30 +228,18 @@ export default class Cable {
    * @param {Object} context - The Vue component execution context being added
    */
   _addContext(context) {
-    if (!this._contexts[context._uid]) {
-      this._contexts[context._uid] = { context, users: 1 };
-    } else {
-      ++this._contexts[context._uid].users;
-    }
+    this._contexts[context._uid] = { context };
   }
 
   /**
    * Component is destroyed. Removes component's channels, subscription and cached execution context.
    */
   _removeChannel(name, uid) {
-    if (this._channels.subscriptions[name]) {
-      let users = this._contexts[uid].users;
-      --users;
+    if (this._channels[name]) {
+      this._channels[name].splice(this._channels[name].findIndex(c => c._uid == uid), 1);
+      delete this._contexts[uid];
 
-      if (users == 0) {
-        this._channels[name].splice(
-          this._channels[name].findIndex((channel) => (channel._uid = uid)),
-          1
-        );
-        delete this._contexts[uid];
-      }
-
-      if (this._channels[name].length == 0) {
+      if (this._channels[name].length == 0 && this._channels.subscriptions[name]) {
         this._channels.subscriptions[name].unsubscribe();
         delete this._channels.subscriptions[name];
       }

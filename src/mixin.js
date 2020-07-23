@@ -2,7 +2,8 @@ export default {
   /**
    * Retrieve channels in component once mounted.
    */
-  mounted() {
+  created() {
+    console.log('created')
     if (this.$options.channels || this.channels) {
       const channels = this.channels || this.$options.channels;
       const entries = Object.entries(channels);
@@ -32,12 +33,24 @@ export default {
   /**
    * Unsubscribe from channels when component is destroyed.
    */
-  destroyed() {
+  beforeDestroy() {
     if (this.$options.channels || this.channels) {
       const channels = this.channels || this.$options.channels;
-      Object.keys(channels).forEach((key) =>
-        this.$cable._removeChannel(key, this._uid)
-      );
+      const entries = Object.entries(channels);
+
+      for (let index = 0; index < entries.length; index++) {
+        const entry = entries[index];
+
+        if (entry[0] != "computed")
+          this.$cable._removeChannel(entry[0], this._uid)
+        else {
+          const computedChannels = entry[1];
+          computedChannels.forEach((channel) => {
+            const channelName = channel.channelName.call(this);
+            this.$cable._removeChannel(channelName, this._uid);
+          });
+        }
+      }
     }
   },
 };
