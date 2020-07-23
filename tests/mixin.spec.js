@@ -18,9 +18,9 @@ describe("Mixin", () => {
             channelName() {
               return `${userId}_channel`;
             },
-            connected() {},
-            rejected() {},
-            disconnected() {},
+            connected() { },
+            rejected() { },
+            disconnected() { },
             received(data) {
               return `${data} was passed in`;
             },
@@ -37,18 +37,18 @@ describe("Mixin", () => {
 
   test("It should not load channels on mount if component does not have channels object defined", () => {
     global.$options = {};
-    Mixin.mounted.call(global);
+    Mixin.created.call(global);
     expect(_addChannel).toBeCalledTimes(0);
   });
 
   test("It should correctly unsubscribe from channels on destroy", () => {
-    Mixin.destroyed.call(global);
+    Mixin.beforeDestroy.call(global);
     expect(_removeChannel).toBeCalledTimes(3);
   });
 
   test("It should not attempt to remove channels on destroy if component does not have channels object defined", () => {
     global.$options = {};
-    Mixin.destroyed.call(global);
+    Mixin.beforeDestroy.call(global);
     expect(_removeChannel).toBeCalledTimes(0);
   });
 });

@@ -19,7 +19,7 @@ describe("Cable", () => {
     global._channels = {
       subscriptions: {},
     };
-    global._logger = { log() {} };
+    global._logger = { log() { } };
     global._contexts = {};
     global._removeChannel = function (name) {
       cable._removeChannel.call(global, name);
@@ -263,40 +263,12 @@ describe("Cable", () => {
     expect(unsubscribe).toBeCalledTimes(1);
   });
 
-  test("It should not remove context when removing channel if users still exist", () => {
-    const unsubscribe = jest.fn();
-    const channelName = "ChatChannel";
-    const channelUid = 3;
-
-    global._channels.ChatChannel = [
-      {
-        _uid: channelUid,
-        name: channelName,
-      },
-    ];
-    global._channels.subscriptions[channelName] = { unsubscribe };
-    global._contexts[channelUid] = { users: 2 };
-
-    cable._removeChannel.call(global, channelName, channelUid);
-    expect(global._channels[channelName]).toBeDefined();
-    expect(global._channels.subscriptions[channelName]).toBeDefined();
-    expect(global._contexts[channelUid]).toBeDefined();
-    expect(unsubscribe).toBeCalledTimes(0);
-    expect(
-      global._channels[channelName].find(
-        (channel) => (channel._uid = channelUid)
-      )
-    ).toBeDefined();
-  });
-
   test("It should correctly add context", () => {
     const uid = 1;
     cable._addContext.call(global, { _uid: uid });
     expect(global._contexts[uid]).toBeDefined();
-    expect(global._contexts[uid].users).toEqual(1);
 
     cable._addContext.call(global, { _uid: uid });
-    expect(global._contexts[uid].users).toEqual(2);
   });
 
   test("It should correctly add channels", () => {
@@ -310,6 +282,5 @@ describe("Cable", () => {
     expect(global._channels[channelName].length).toEqual(1);
     expect(global._channels[channelName][0]._name).toEqual(channelName);
     expect(global._contexts[uid]).toBeDefined();
-    expect(global._contexts[uid].users).toEqual(1);
   });
 });

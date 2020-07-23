@@ -3,7 +3,6 @@ export default {
    * Retrieve channels in component once mounted.
    */
   created() {
-    console.log('created')
     if (this.$options.channels || this.channels) {
       const channels = this.channels || this.$options.channels;
       const entries = Object.entries(channels);
