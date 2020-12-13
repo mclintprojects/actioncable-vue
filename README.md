@@ -59,7 +59,7 @@ new Vue({
 
 #### ☕ Support ActionCable-Vue
 
-If you'd like to donate to support the continued development and maintenance of actioncable-vue, you can do so [here.](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=clintonmbah44@gmail.com&lc=US&item_name=Support+development+and+maintenance+of+ActionCableVue&no_note=0&cn=&currency_code=USD&bn=PP-DonationsBF:btn_donateCC_LG.gif:NonHosted)
+If you'd like to donate to support the continued development and maintenance of actioncable-vue, you can do so [here.](https://sendcash.africa/#/send/NG/2001944264/50211)
 
 #### 🌈 Component Level Usage
 
