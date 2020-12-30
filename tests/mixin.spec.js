@@ -42,13 +42,13 @@ describe("Mixin", () => {
   });
 
   test("It should correctly unsubscribe from channels on destroy", () => {
-    Mixin.beforeDestroy.call(global);
+    Mixin.beforeUnmount.call(global);
     expect(_removeChannel).toBeCalledTimes(3);
   });
 
   test("It should not attempt to remove channels on destroy if component does not have channels object defined", () => {
     global.$options = {};
-    Mixin.beforeDestroy.call(global);
+    Mixin.beforeUnmount.call(global);
     expect(_removeChannel).toBeCalledTimes(0);
   });
 });

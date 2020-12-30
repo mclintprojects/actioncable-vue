@@ -32,7 +32,7 @@ export default {
   /**
    * Unsubscribe from channels when component is destroyed.
    */
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.$options.channels || this.channels) {
       const channels = this.channels || this.$options.channels;
       const entries = Object.entries(channels);

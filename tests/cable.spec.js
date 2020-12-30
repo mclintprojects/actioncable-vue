@@ -1,7 +1,17 @@
 import Cable from "../src/cable";
-import Vue from "vue";
+import Vue, { createApp }from "vue";
 
 describe("Cable", () => {
+
+	let Vue;
+	let IS_VUE_3 = Number(process.env.VUE_VER) === 3;
+
+	if (IS_VUE_3) {
+		Vue = createApp({})
+	} else {
+		Vue = require('vue');
+	}
+
   let cable, create;
   global.window = {};
 
@@ -40,8 +50,9 @@ describe("Cable", () => {
       debugLevel: "error",
       store,
     });
-
-    expect(Vue.prototype.$cable._cable).toBeDefined();
+	  IS_VUE_3 ?
+		  expect(Vue.config.globalProperties.$cable._cable).toBeDefined() :
+	    expect(Vue.prototype.$cable._cable).toBeDefined();
     expect(Vue.mixin).toHaveBeenCalled();
     expect(cable._logger._debug).toBe(true);
     expect(cable._logger._debugLevel).toBe("error");
@@ -52,7 +63,9 @@ describe("Cable", () => {
   test("It should initialize correctly if options not provided", () => {
     cable = new Cable(Vue);
 
-    expect(Vue.prototype.$cable._cable).toBeDefined();
+	  IS_VUE_3 ?
+		  expect(Vue.config.globalProperties.$cable._cable).toBeDefined() :
+		  expect(Vue.prototype.$cable._cable).toBeDefined();
     expect(Vue.mixin).toHaveBeenCalled();
     expect(cable._logger._debug).toBe(false);
     expect(cable._logger._debugLevel).toBe("error");
@@ -67,7 +80,9 @@ describe("Cable", () => {
       connectImmediately: false,
     });
 
-    expect(Vue.prototype.$cable._cable).toBeNull();
+	  IS_VUE_3 ?
+		  expect(Vue.config.globalProperties.$cable._cable).toBeNull() :
+		  expect(Vue.prototype.$cable._cable).toBeNull();
   });
 
   test("It should connect on first subscription if connectImmediately is false", () => {
@@ -78,7 +93,9 @@ describe("Cable", () => {
       connectImmediately: false,
     });
 
-    expect(Vue.prototype.$cable._cable).toBeNull();
+	  IS_VUE_3 ?
+		  expect(Vue.config.globalProperties.$cable._cable).toBeNull() :
+		  expect(Vue.prototype.$cable._cable).toBeNull();
 
     create.mockReturnValue({});
     global._cable = null;
