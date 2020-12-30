@@ -8,6 +8,7 @@
   <a href="https://github.com/mclintprojects/actioncable-vue/"><img src="https://img.shields.io/github/stars/mclintprojects/actioncable-vue.svg"/></a>
   <a href="https://github.com/mclintprojects/actioncable-vue/"><img src="https://img.shields.io/npm/l/actioncable-vue.svg"/></a>
   <a href="https://vuejs.org/"><img src="https://img.shields.io/badge/vue-2.x-purple.svg"/></a>
+  <a href="https://vuejs.org/"><img src="https://img.shields.io/badge/vue-3.x-purple.svg"/></a>
 </p>
 
 <p>ActionCableVue is an easy-to-use Action Cable integration for VueJS.<p>
@@ -55,6 +56,9 @@ new Vue({
 - [Performing an action on your Action Cable server](https://github.com/mclintprojects/actioncable-vue#-performing-an-action-on-your-action-cable-server)
 - [Usage with Vuex](https://github.com/mclintprojects/actioncable-vue#-usage-with-vuex)
 - [Usage with Nuxt.JS](https://github.com/mclintprojects/actioncable-vue#-usage-with-nuxtjs)
+
+#### Wall of Appreciation
+- Many thanks to [@x88BitRain](https://github.com/x8BitRain) for adding Vue 3 compatibility
 
 
 #### ☕ Support ActionCable-Vue
