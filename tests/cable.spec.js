@@ -1,10 +1,16 @@
 import Cable from "../src/cable";
-import Vue, { createApp } from "vue";
+import Vue, { createApp }from "vue";
 
 describe("Cable", () => {
-	const Vue = createApp({
-	})
-	const IS_VUE_3 = Number(Vue.version.split(".")[0]) === 3;
+
+	let Vue;
+	let IS_VUE_3 = Number(process.env.VUE_VER) === 3;
+
+	if (IS_VUE_3) {
+		Vue = createApp({})
+	} else {
+		Vue = require('vue');
+	}
 
   let cable, create;
   global.window = {};
