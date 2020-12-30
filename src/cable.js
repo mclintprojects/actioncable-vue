@@ -20,8 +20,15 @@ export default class Cable {
    * @param {object} options.store - Vuex store
    */
   constructor(Vue, options) {
-    Vue.prototype.$cable = this;
-    Vue.mixin(Mixin);
+	  const VERSION = Number(Vue.version.split(".")[0]);
+
+	  if (VERSION === 3) {
+		  Vue.config.globalProperties.$cable = this;
+	  } else {
+		  Vue.prototype.$cable = this;
+	  }
+
+	  Vue.mixin(Mixin);
 
     let {
       debug,
