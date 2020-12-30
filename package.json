@@ -18,7 +18,7 @@
 		"publish-minor": "npm run build && npm run commit-build && npm version minor && npm publish",
 		"publish-patch": "npm run build && npm run commit-build && npm version patch && npm publish",
 		"publish-major": "npm run build && npm run commit-build && npm version major && npm publish",
-        "test": "VUE_VER=3 ./node_modules/.bin/jest",
+		"test": "VUE_VER=3 ./node_modules/.bin/jest",
 		"test-vue2": "VUE_VER=2 ./node_modules/.bin/jest",
 		"style:fix": "prettier --write '{src,tests,types}/**/*.{js,vue}'"
 	},
@@ -51,7 +51,7 @@
 		"babel-jest": "^25.1.0",
 		"babel-loader": "^8.0.4",
 		"jest": "^25.1.0",
-        "vue": "^3.0.0",
+		"vue": "^3.0.0",
 		"webpack": "^4.43.0",
 		"webpack-cli": "^3.3.11"
 	},

@@ -20,7 +20,7 @@ export default class Cable {
    * @param {object} options.store - Vuex store
    */
   constructor(Vue, options) {
-	  const VERSION = Number(Vue.version.split(".")[0]);
+    const VERSION = Number(Vue.version.split(".")[0]);
 
 	  if (VERSION === 3) {
 		  Vue.config.globalProperties.$cable = this;
