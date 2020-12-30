@@ -1,13 +1,13 @@
 {
 	"name": "actioncable-vue",
-	"version": "2.3.2",
+	"version": "2.4.0",
 	"description": "A Vue plugin that makes integrating ActionCable easy.",
 	"main": "dist/actioncablevue.js",
 	"keywords": [
 		"actioncable",
 		"vue",
 		"vuejs",
-        "vue3",
+		"vue3",
 		"rails",
 		"real-time",
 		"websocket"
