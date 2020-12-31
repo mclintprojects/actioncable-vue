@@ -20,6 +20,7 @@ npm install actioncable-vue --save
 ```
 
 ```javascript
+// Vue 2.x
 import Vue from 'vue';
 import ActionCableVue from 'actioncable-vue';
 import App from './App.vue';
@@ -36,6 +37,26 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app');
+```
+
+```javascript
+// Vue 3.x
+import { createApp } from 'vue';
+import App from './App.vue';
+import ActionCableVue from 'actioncable-vue';
+
+const actionCableVueOptions = {
+  debug: true,
+  debugLevel: 'error',
+  connectionUrl: 'ws://localhost:5000/api/cable',
+  connectImmediately: true
+};
+
+createApp(App)
+  .use(store)
+  .use(router)
+  .use(ActionCableVue, actionCableVueOptions)
+  .mount('#app');
 ```
 
 | **Parameters**     | **Type** | **Default** | **Required** | **Description**                                                                                            |
