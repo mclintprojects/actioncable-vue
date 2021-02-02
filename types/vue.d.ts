@@ -6,7 +6,7 @@ declare module 'vue/types/vue' {
   interface Vue {
     $cable: {
       subscribe: (subscription: string | ChannelNameWithParams, name?: string) => void;
-      perform: ({channel: string, action: string, data: {}})
+      perform: (whatToDo: {channel: string, action: string, data: object}) => void;
       unsubscribe: (channelName: string) => void;
       connected: boolean;
       disconnected: boolean;
