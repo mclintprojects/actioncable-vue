@@ -1,3 +1,24 @@
+function unsubscribe(context){
+  if (context.$options.channels || context.channels) {
+    const channels = context.channels || context.$options.channels;
+    const entries = Object.entries(channels);
+
+    for (let index = 0; index < entries.length; index++) {
+      const entry = entries[index];
+
+      if (entry[0] != "computed")
+        context.$cable._removeChannel(entry[0], context._uid)
+      else {
+        const computedChannels = entry[1];
+        computedChannels.forEach((channel) => {
+          const channelName = channel.channelName.call(context);
+          context.$cable._removeChannel(channelName, context._uid);
+        });
+      }
+    }
+  }
+}
+
 export default {
   /**
    * Retrieve channels in component once mounted.
@@ -30,26 +51,15 @@ export default {
     }
   },
   /**
-   * Unsubscribe from channels when component is destroyed.
+   * Unsubscribe from channels when component is unmounted.
    */
   beforeUnmount() {
-    if (this.$options.channels || this.channels) {
-      const channels = this.channels || this.$options.channels;
-      const entries = Object.entries(channels);
-
-      for (let index = 0; index < entries.length; index++) {
-        const entry = entries[index];
-
-        if (entry[0] != "computed")
-          this.$cable._removeChannel(entry[0], this._uid)
-        else {
-          const computedChannels = entry[1];
-          computedChannels.forEach((channel) => {
-            const channelName = channel.channelName.call(this);
-            this.$cable._removeChannel(channelName, this._uid);
-          });
-        }
-      }
-    }
+    unsubscribe(this);
+  },
+  /**
+   * Unsubscribe from channels when component is destroyed.
+   */
+  beforeDestroy(){
+    unsubscribe(this);
   },
 };
