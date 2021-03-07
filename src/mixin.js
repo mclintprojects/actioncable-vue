@@ -1,3 +1,5 @@
+import objectPolyfill from './polyfill'
+
 function unsubscribe(context){
   if (context.$options.channels || context.channels) {
     const channels = context.channels || context.$options.channels;
@@ -25,6 +27,9 @@ export default {
    */
   created() {
     if (this.$options.channels || this.channels) {
+      // polyfill Object.entries and Object.keys
+      objectPolyfill();
+
       const channels = this.channels || this.$options.channels;
       const entries = Object.entries(channels);
 
