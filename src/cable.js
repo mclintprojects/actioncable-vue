@@ -200,6 +200,7 @@ export default class Cable {
         if (this._cable) {
           this._cable.connect();
         } else {
+          if (url) this._connectionUrl = url;
           this._connect(url || this._connectionUrl);
         }
       },
