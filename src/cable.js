@@ -197,11 +197,11 @@ export default class Cable {
        * @param {String|Function|null} [url=null] - Optional parameter. The connection URL to your Action Cable server
        */
       connect: (url = null) => {
+        if (url) this._connectionUrl = url;
+
         if (this._cable) {
-          if (url) this._connectionUrl = url;
           this._cable.connect();
         } else {
-          if (url) this._connectionUrl = url;
           this._connect(url || this._connectionUrl);
         }
       },
