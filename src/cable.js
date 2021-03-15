@@ -198,6 +198,7 @@ export default class Cable {
        */
       connect: (url = null) => {
         if (this._cable) {
+          if (url) this._connectionUrl = url;
           this._cable.connect();
         } else {
           if (url) this._connectionUrl = url;
