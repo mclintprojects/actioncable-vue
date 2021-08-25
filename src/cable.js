@@ -22,26 +22,21 @@ export default class Cable {
   constructor(Vue, options) {
     const VERSION = Number(Vue.version.split(".")[0]);
 
-	  if (VERSION === 3) {
-		  Vue.config.globalProperties.$cable = this;
-	  } else {
-		  Vue.prototype.$cable = this;
-	  }
+    if (VERSION === 3) {
+      Vue.config.globalProperties.$cable = this;
+    } else {
+      Vue.prototype.$cable = this;
+    }
 
-	  Vue.mixin(Mixin);
+    Vue.mixin(Mixin);
 
-    let {
-      debug,
-      debugLevel,
-      connectionUrl,
-      connectImmediately,
-      store,
-    } = options || {
-      debug: false,
-      debugLevel: "error",
-      connectionUrl: null,
-      store: null,
-    };
+    let { debug, debugLevel, connectionUrl, connectImmediately, store } =
+      options || {
+        debug: false,
+        debugLevel: "error",
+        connectionUrl: null,
+        store: null,
+      };
 
     this._connectionUrl = connectionUrl;
     if (connectImmediately !== false) connectImmediately = true;
@@ -68,22 +63,21 @@ export default class Cable {
     if (this._cable) {
       const channelName = name || subscription.channel;
 
-      this._channels.subscriptions[
-        channelName
-      ] = this._cable.subscriptions.create(subscription, {
-        connected: () => {
-          this._fireChannelEvent(channelName, this._channelConnected);
-        },
-        disconnected: () => {
-          this._fireChannelEvent(channelName, this._channelDisconnected);
-        },
-        rejected: () => {
-          this._fireChannelEvent(channelName, this._subscriptionRejected);
-        },
-        received: (data) => {
-          this._fireChannelEvent(channelName, this._channelReceived, data);
-        },
-      });
+      this._channels.subscriptions[channelName] =
+        this._cable.subscriptions.create(subscription, {
+          connected: () => {
+            this._fireChannelEvent(channelName, this._channelConnected);
+          },
+          disconnected: () => {
+            this._fireChannelEvent(channelName, this._channelDisconnected);
+          },
+          rejected: () => {
+            this._fireChannelEvent(channelName, this._subscriptionRejected);
+          },
+          received: (data) => {
+            this._fireChannelEvent(channelName, this._channelReceived, data);
+          },
+        });
     } else {
       this._connect(this._connectionUrl);
       this.subscribe(subscription, name);
@@ -101,18 +95,18 @@ export default class Cable {
     const { channel, action, data } = whatToDo;
     this._logger.log(
       `Performing action '${action}' on channel '${channel}'.`,
-      "info"
+      "info",
     );
     const subscription = this._channels.subscriptions[channel];
     if (subscription) {
       subscription.perform(action, data);
       this._logger.log(
         `Performed '${action}' on channel '${channel}'.`,
-        "info"
+        "info",
       );
     } else {
       throw new Error(
-        `You need to be subscribed to perform action '${action}' on channel '${channel}'.`
+        `You need to be subscribed to perform action '${action}' on channel '${channel}'.`,
       );
     }
   }
@@ -138,7 +132,7 @@ export default class Cable {
 
     this._logger.log(
       `Successfully connected to channel '${channel._name}'.`,
-      "info"
+      "info",
     );
   }
 
@@ -152,7 +146,7 @@ export default class Cable {
 
     this._logger.log(
       `Successfully disconnected from channel '${channel._name}'.`,
-      "info"
+      "info",
     );
   }
 
@@ -209,7 +203,10 @@ export default class Cable {
        * Disconnect from your Action Cable server
        */
       disconnect: () => {
-        if (this._cable) this._cable.disconnect();
+        if (this._cable) {
+          this._cable.disconnect();
+          this._reset();
+        }
       },
     };
   }
@@ -227,7 +224,10 @@ export default class Cable {
     if (!this._channels[name]) this._channels[name] = [];
     this._addContext(context);
 
-    if (!this._channels[name].find(c => c._uid == context._uid) && this._contexts[context._uid]) {
+    if (
+      !this._channels[name].find((c) => c._uid == context._uid) &&
+      this._contexts[context._uid]
+    ) {
       this._channels[name].push(value);
     }
   }
@@ -245,10 +245,16 @@ export default class Cable {
    */
   _removeChannel(name, uid) {
     if (this._channels[name]) {
-      this._channels[name].splice(this._channels[name].findIndex(c => c._uid == uid), 1);
+      this._channels[name].splice(
+        this._channels[name].findIndex((c) => c._uid == uid),
+        1,
+      );
       delete this._contexts[uid];
 
-      if (this._channels[name].length == 0 && this._channels.subscriptions[name]) {
+      if (
+        this._channels[name].length == 0 &&
+        this._channels.subscriptions[name]
+      ) {
         this._channels.subscriptions[name].unsubscribe();
         delete this._channels.subscriptions[name];
       }
@@ -270,5 +276,14 @@ export default class Cable {
         callback.call(this, channelEntries[i], data);
       }
     }
+  }
+
+  /**
+   * Resets the component channel cache and every contexts, consumers to initial state because after disconnecting from action cable server we need to be able to re-connect it
+   */
+  _reset() {
+    this._cable = null;
+    this._channels = { subscriptions: {} };
+    this._contexts = {};
   }
 }
