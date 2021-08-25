@@ -1,9 +1,8 @@
-import Vue from "vue";
 import { ChannelNameWithParams } from "actioncable";
 import { ChannelOptions } from "./options";
 
 declare module "vue/types/vue" {
-  interface Vue {
+  export interface Vue {
     $cable: {
       subscribe: (
         subscription: string | ChannelNameWithParams,
@@ -26,7 +25,7 @@ declare module "vue/types/vue" {
 }
 
 declare module "vue/types/options" {
-  interface ComponentOptions<V extends Vue> {
-    channels?: ChannelOptions<V>;
+  export interface ComponentOptions {
+    channels?: ChannelOptions;
   }
 }

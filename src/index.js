@@ -12,7 +12,7 @@ const ActionCableVue = {
    * @param {object} options.store - Vuex store
    */
   install(Vue, options) {
-    new Cable(Vue, options);
+    Cable(Vue, options);
   },
 };
 export default ActionCableVue;

@@ -1,3 +1,3 @@
-const createActionCablePlugin = (store, cable) => {
+export const createActionCablePlugin = (store, cable) => {
   store.prototype.$cable = cable;
 };

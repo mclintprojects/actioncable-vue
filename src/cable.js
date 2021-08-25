@@ -127,8 +127,9 @@ export default class Cable {
    * @param {Object} channel - The component channel
    */
   _channelConnected(channel) {
-    if (channel.connected)
+    if (channel.connected) {
       channel.connected.call(this._contexts[channel._uid].context);
+    }
 
     this._logger.log(
       `Successfully connected to channel '${channel._name}'.`,
@@ -141,8 +142,9 @@ export default class Cable {
    * @param {Object} channel - The component channel
    */
   _channelDisconnected(channel) {
-    if (channel.disconnected)
+    if (channel.disconnected) {
       channel.disconnected.call(this._contexts[channel._uid].context);
+    }
 
     this._logger.log(
       `Successfully disconnected from channel '${channel._name}'.`,
@@ -155,8 +157,9 @@ export default class Cable {
    * @param {Object} channel - The component channel
    */
   _subscriptionRejected(channel) {
-    if (channel.rejected)
+    if (channel.rejected) {
       channel.rejected.call(this._contexts[channel._uid].context);
+    }
 
     this._logger.log(`Subscription rejected for channel '${channel._name}'.`);
   }
@@ -166,8 +169,9 @@ export default class Cable {
    * @param {Object} channel - The component channel
    */
   _channelReceived(channel, data) {
-    if (channel.received)
+    if (channel.received) {
       channel.received.call(this._contexts[channel._uid].context, data);
+    }
 
     this._logger.log(`Message received on channel '${channel._name}'.`, "info");
   }
@@ -177,7 +181,7 @@ export default class Cable {
    * @param {string|Function|null} url - The websocket URL of the Action Cable server.
    */
   _connect(url) {
-    if (typeof url == "function") {
+    if (typeof url === "function") {
       this._cable = createConsumer(url());
     } else {
       this._cable = createConsumer(url);
@@ -225,7 +229,7 @@ export default class Cable {
     this._addContext(context);
 
     if (
-      !this._channels[name].find((c) => c._uid == context._uid) &&
+      !this._channels[name].find((c) => c._uid === context._uid) &&
       this._contexts[context._uid]
     ) {
       this._channels[name].push(value);
@@ -246,13 +250,13 @@ export default class Cable {
   _removeChannel(name, uid) {
     if (this._channels[name]) {
       this._channels[name].splice(
-        this._channels[name].findIndex((c) => c._uid == uid),
+        this._channels[name].findIndex((c) => c._uid === uid),
         1,
       );
       delete this._contexts[uid];
 
       if (
-        this._channels[name].length == 0 &&
+        this._channels[name].length === 0 &&
         this._channels.subscriptions[name]
       ) {
         this._channels.subscriptions[name].unsubscribe();
@@ -270,7 +274,7 @@ export default class Cable {
    * @param {Object} data - The data passed from the Action Cable server channel
    */
   _fireChannelEvent(channelName, callback, data) {
-    if (this._channels.hasOwnProperty(channelName)) {
+    if (Object.prototype.hasOwnProperty.call(this._channels, channelName)) {
       const channelEntries = this._channels[channelName];
       for (let i = 0; i < channelEntries.length; i++) {
         callback.call(this, channelEntries[i], data);

@@ -1,4 +1,4 @@
-export type ChannelOptions<V> = {
+export type ChannelOptions = {
   [key: string]: {
     connected: () => void;
     rejected: () => void;

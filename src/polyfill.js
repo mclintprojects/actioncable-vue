@@ -1,18 +1,21 @@
 const addObjectDotKeys = () => {
   Object.keys = (function () {
     "use strict";
-    var hasOwnProperty = Object.prototype.hasOwnProperty,
-      hasDontEnumBug = !{ toString: null }.propertyIsEnumerable("toString"),
-      dontEnums = [
-        "toString",
-        "toLocaleString",
-        "valueOf",
-        "hasOwnProperty",
-        "isPrototypeOf",
-        "propertyIsEnumerable",
-        "constructor",
-      ],
-      dontEnumsLength = dontEnums.length;
+    const hasOwnProperty = Object.prototype.hasOwnProperty;
+    const hasDontEnumBug = Object.prototype.propertyIsEnumerable.call(
+      !{ toString: null },
+      "toString",
+    );
+    const dontEnums = [
+      "toString",
+      "toLocaleString",
+      "valueOf",
+      "hasOwnProperty",
+      "isPrototypeOf",
+      "propertyIsEnumerable",
+      "constructor",
+    ];
+    const dontEnumsLength = dontEnums.length;
 
     return function (obj) {
       if (
@@ -22,9 +25,9 @@ const addObjectDotKeys = () => {
         throw new TypeError("Object.keys called on non-object");
       }
 
-      var result = [],
-        prop,
-        i;
+      const result = [];
+      let prop;
+      let i;
 
       for (prop in obj) {
         if (hasOwnProperty.call(obj, prop)) {
@@ -46,9 +49,9 @@ const addObjectDotKeys = () => {
 
 const addObjectDotEntries = () => {
   Object.entries = function (obj) {
-    var ownProps = Object.keys(obj),
-      i = ownProps.length,
-      resArray = new Array(i); // preallocate the Array
+    const ownProps = Object.keys(obj);
+    let i = ownProps.length;
+    const resArray = new Array(i); // preallocate the Array
     while (i--) resArray[i] = [ownProps[i], obj[ownProps[i]]];
 
     return resArray;

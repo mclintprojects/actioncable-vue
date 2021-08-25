@@ -3,7 +3,7 @@ import { createApp } from "vue";
 
 describe("Cable", () => {
   let Vue;
-  let IS_VUE_3 = Number(process.env.VUE_VER) === 3;
+  const IS_VUE_3 = Number(process.env.VUE_VER) === 3;
 
   if (IS_VUE_3) {
     Vue = createApp({});
@@ -113,7 +113,7 @@ describe("Cable", () => {
     create.mockReturnValue({});
     cable.subscribe.call(global, { channel: "ChatChannel" });
     expect(global._cable.subscriptions.create).toBeCalled();
-    expect(global._channels.subscriptions["ChatChannel"]).toBeDefined();
+    expect(global._channels.subscriptions.ChatChannel).toBeDefined();
   });
 
   test("It should correctly subscribe to channel with custom name", () => {
@@ -124,7 +124,7 @@ describe("Cable", () => {
       "custom_channel_name",
     );
     expect(global._cable.subscriptions.create).toBeCalled();
-    expect(global._channels.subscriptions["custom_channel_name"]).toBeDefined();
+    expect(global._channels.subscriptions.custom_channel_name).toBeDefined();
   });
 
   test("It should correctly subscribe to same channel with multiple custom names", () => {
@@ -141,10 +141,8 @@ describe("Cable", () => {
     );
 
     expect(global._cable.subscriptions.create).toBeCalledTimes(2);
-    expect(global._channels.subscriptions["custom_channel_name"]).toBeDefined();
-    expect(
-      global._channels.subscriptions["custom_channel_name_2"],
-    ).toBeDefined();
+    expect(global._channels.subscriptions.custom_channel_name).toBeDefined();
+    expect(global._channels.subscriptions.custom_channel_name_2).toBeDefined();
   });
 
   test("It should correctly perform an action on a channel", () => {

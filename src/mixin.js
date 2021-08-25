@@ -8,9 +8,9 @@ function unsubscribe(context) {
     for (let index = 0; index < entries.length; index++) {
       const entry = entries[index];
 
-      if (entry[0] != "computed")
+      if (entry[0] !== "computed") {
         context.$cable._removeChannel(entry[0], context._uid);
-      else {
+      } else {
         const computedChannels = entry[1];
         computedChannels.forEach((channel) => {
           const channelName = channel.channelName.call(context);
@@ -36,17 +36,17 @@ export default {
       for (let index = 0; index < entries.length; index++) {
         const entry = entries[index];
 
-        if (entry[0] != "computed")
+        if (entry[0] !== "computed") {
           this.$cable._addChannel(entry[0], { ...entry[1] }, this);
-        else {
+        } else {
           const computedChannels = entry[1];
           computedChannels.forEach((channel) => {
             const channelName = channel.channelName.call(this);
             const channelObject = {
-              connected: channel["connected"],
-              rejected: channel["rejected"],
-              disconnected: channel["disconnected"],
-              received: channel["received"],
+              connected: channel.connected,
+              rejected: channel.rejected,
+              disconnected: channel.disconnected,
+              received: channel.received,
             };
 
             this.$cable._addChannel(channelName, channelObject, this);
