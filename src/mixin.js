@@ -1,6 +1,6 @@
-import objectPolyfill from './polyfill'
+import objectPolyfill from "./polyfill";
 
-function unsubscribe(context){
+function unsubscribe(context) {
   if (context.$options.channels || context.channels) {
     const channels = context.channels || context.$options.channels;
     const entries = Object.entries(channels);
@@ -9,7 +9,7 @@ function unsubscribe(context){
       const entry = entries[index];
 
       if (entry[0] != "computed")
-        context.$cable._removeChannel(entry[0], context._uid)
+        context.$cable._removeChannel(entry[0], context._uid);
       else {
         const computedChannels = entry[1];
         computedChannels.forEach((channel) => {
@@ -64,7 +64,7 @@ export default {
   /**
    * Unsubscribe from channels when component is destroyed.
    */
-  beforeDestroy(){
+  beforeDestroy() {
     unsubscribe(this);
   },
 };

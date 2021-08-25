@@ -18,9 +18,9 @@ describe("Mixin", () => {
             channelName() {
               return `${userId}_channel`;
             },
-            connected() { },
-            rejected() { },
-            disconnected() { },
+            connected() {},
+            rejected() {},
+            disconnected() {},
             received(data) {
               return `${data} was passed in`;
             },
