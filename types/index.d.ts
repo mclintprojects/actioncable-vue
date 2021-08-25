@@ -1,6 +1,6 @@
 import { PluginFunction } from "vue";
 // augment typings of Vue.js
-import "./vue"
+import "./vue";
 
 export interface ActionCableVueOptions {
   debug?: boolean;
@@ -15,4 +15,4 @@ declare class VueActionCableExt {
   static defaults: ActionCableVueOptions;
 }
 
-export default VueActionCableExt
+export default VueActionCableExt;
