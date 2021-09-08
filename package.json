@@ -1,6 +1,6 @@
 {
   "name": "actioncable-vue",
-  "version": "2.4.6",
+  "version": "2.5.0",
   "description": "A Vue plugin that makes integrating ActionCable easy.",
   "main": "dist/actioncablevue.js",
   "keywords": [
