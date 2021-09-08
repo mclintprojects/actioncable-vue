@@ -1,9 +1,9 @@
 import Mixin from "../src/mixin";
 
 describe("Mixin", () => {
-  let _addChannel,
-    _removeChannel,
-    userId = 1;
+  let _addChannel;
+  let _removeChannel;
+  const userId = 1;
 
   beforeEach(() => {
     _addChannel = jest.fn();
@@ -18,9 +18,9 @@ describe("Mixin", () => {
             channelName() {
               return `${userId}_channel`;
             },
-            connected() { },
-            rejected() { },
-            disconnected() { },
+            connected() {},
+            rejected() {},
+            disconnected() {},
             received(data) {
               return `${data} was passed in`;
             },

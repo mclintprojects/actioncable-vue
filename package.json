@@ -1,61 +1,82 @@
 {
-	"name": "actioncable-vue",
-	"version": "2.4.6",
-	"description": "A Vue plugin that makes integrating ActionCable easy.",
-	"main": "dist/actioncablevue.js",
-	"keywords": [
-		"actioncable",
-		"vue",
-		"vuejs",
-		"vue3",
-		"rails",
-		"real-time",
-		"websocket"
-	],
-	"scripts": {
-		"build": "webpack --mode=production --progress --hide-modules",
-		"commit-build": "git add . && git commit -m \"updated lib\"",
-		"publish-minor": "npm run build && npm run commit-build && npm version minor && npm publish",
-		"publish-patch": "npm run build && npm run commit-build && npm version patch && npm publish",
-		"publish-major": "npm run build && npm run commit-build && npm version major && npm publish",
-		"test": "VUE_VER=3 ./node_modules/.bin/jest",
-		"test-vue2": "VUE_VER=2 ./node_modules/.bin/jest",
-		"style:fix": "prettier --write '{src,tests,types}/**/*.{js,vue}'"
-	},
-	"files": [
-		"dist/*.js",
-		"types/*.d.ts"
-	],
-	"types": "types/index.d.ts",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/mclintprojects/actioncable-vue.git"
-	},
-	"author": "Mbah Clinton",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/mclintprojects/actioncable-vue/issues"
-	},
-	"homepage": "https://github.com/mclintprojects/actioncable-vue#readme",
-	"dependencies": {
-		"@rails/actioncable": "^6.0.2",
-		"@types/actioncable": "^5.2.3"
-	},
-	"devDependencies": {
-		"@babel/core": "^7.1.2",
-		"@babel/plugin-proposal-class-properties": "^7.1.0",
-		"@babel/plugin-transform-classes": "^7.1.0",
-		"@babel/preset-env": "^7.1.0",
-		"@vue/test-utils": "^1.0.0-beta.28",
-		"babel-core": "^7.0.0-bridge.0",
-		"babel-jest": "^25.1.0",
-		"babel-loader": "^8.0.4",
-		"jest": "^25.1.0",
-		"vue": "^3.0.0",
-		"webpack": "^4.43.0",
-		"webpack-cli": "^3.3.11"
-	},
-	"jest": {
-		"testURL": "http://localhost/"
-	}
+  "name": "actioncable-vue",
+  "version": "2.4.6",
+  "description": "A Vue plugin that makes integrating ActionCable easy.",
+  "main": "dist/actioncablevue.js",
+  "keywords": [
+    "actioncable",
+    "vue",
+    "vuejs",
+    "vue3",
+    "rails",
+    "real-time",
+    "websocket"
+  ],
+  "scripts": {
+    "prepare": "husky install",
+    "build": "webpack --mode=production --progress --hide-modules",
+    "commit-build": "git add . && git commit -m \"updated lib\"",
+    "publish-minor": "npm run build && npm run commit-build && npm version minor && npm publish",
+    "publish-patch": "npm run build && npm run commit-build && npm version patch && npm publish",
+    "publish-major": "npm run build && npm run commit-build && npm version major && npm publish",
+    "test": "cross-env VUE_VER=3 jest",
+    "test-vue2": "cross-env VUE_VER=2 jest",
+    "style:fix": "prettier --write ./**/*.{js,css,md,vue,ts,json}",
+    "lint:fix": "eslint --fix ./**/*.{js,vue,ts}",
+    "lint-staged": "lint-staged"
+  },
+  "files": [
+    "dist/*.js",
+    "types/*.d.ts"
+  ],
+  "types": "types/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mclintprojects/actioncable-vue.git"
+  },
+  "author": "Mbah Clinton",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mclintprojects/actioncable-vue/issues"
+  },
+  "homepage": "https://github.com/mclintprojects/actioncable-vue#readme",
+  "dependencies": {
+    "@rails/actioncable": "^6.0.2",
+    "@types/actioncable": "^5.2.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/plugin-transform-classes": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "@typescript-eslint/eslint-plugin": "^4.29.3",
+    "@typescript-eslint/parser": "^4.29.3",
+    "@vue/test-utils": "^1.0.0-beta.28",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^25.1.0",
+    "babel-loader": "^8.0.4",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.0",
+    "eslint-plugin-vue": "^7.16.0",
+    "husky": "^7.0.2",
+    "jest": "^25.1.0",
+    "lint-staged": "^11.1.2",
+    "prettier": "^2.3.2",
+    "typescript": "^4.3.5",
+    "vue": "^3.0.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  },
+  "jest": {
+    "testURL": "http://localhost/"
+  },
+  "lint-staged": {
+    "*.{js,vue}": "eslint --fix",
+    "*.{js,css,md,vue,ts,json}": "prettier --write"
+  }
 }

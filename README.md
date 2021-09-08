@@ -21,53 +21,54 @@ npm install actioncable-vue --save
 
 ```javascript
 // Vue 2.x
-import Vue from 'vue';
-import ActionCableVue from 'actioncable-vue';
-import App from './App.vue';
+import Vue from "vue";
+import ActionCableVue from "actioncable-vue";
+import App from "./App.vue";
 
 Vue.use(ActionCableVue, {
   debug: true,
-  debugLevel: 'error',
-  connectionUrl: 'ws://localhost:5000/api/cable', // or function which returns a string with your JWT appended to your server URL as a query parameter
+  debugLevel: "error",
+  connectionUrl: "ws://localhost:5000/api/cable", // or function which returns a string with your JWT appended to your server URL as a query parameter
   connectImmediately: true,
 });
 
 new Vue({
   router,
   store,
-  render: h => h(App)
-}).$mount('#app');
+  render: (h) => h(App),
+}).$mount("#app");
 ```
 
 ```javascript
 // Vue 3.x
-import { createApp } from 'vue';
-import App from './App.vue';
-import ActionCableVue from 'actioncable-vue';
+import { createApp } from "vue";
+import App from "./App.vue";
+import ActionCableVue from "actioncable-vue";
 
 const actionCableVueOptions = {
   debug: true,
-  debugLevel: 'error',
-  connectionUrl: 'ws://localhost:5000/api/cable',
-  connectImmediately: true
+  debugLevel: "error",
+  connectionUrl: "ws://localhost:5000/api/cable",
+  connectImmediately: true,
 };
 
 createApp(App)
   .use(store)
   .use(router)
   .use(ActionCableVue, actionCableVueOptions)
-  .mount('#app');
+  .mount("#app");
 ```
 
-| **Parameters**     | **Type** | **Default** | **Required** | **Description**                                                                                            |
-| ------------------ | -------- | ----------- | ------------ | ---------------------------------------------------------------------------------------------------------- |
-| debug              | Boolean  | `false`     | Optional     | Enable logging for debug                                                                                   |
-| debugLevel         | String   | `error`     | Optional     | Debug level required for logging. Either `info`, `error`, or `all`                                         |
-| connectionUrl      | String/Function   | `null`      | Optional     | ActionCable websocket server url. Omit it for the [default behavior](https://guides.rubyonrails.org/action_cable_overview.html#connect-consumer) |
-| connectImmediately | Boolean  | `true`      | Optional     | ActionCable connects to your server immediately. If false, ActionCable connects on the first subscription. |
-| store | Object | null | Optional | Vuex store |
+| **Parameters**     | **Type**        | **Default** | **Required** | **Description**                                                                                                                                  |
+| ------------------ | --------------- | ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| debug              | Boolean         | `false`     | Optional     | Enable logging for debug                                                                                                                         |
+| debugLevel         | String          | `error`     | Optional     | Debug level required for logging. Either `info`, `error`, or `all`                                                                               |
+| connectionUrl      | String/Function | `null`      | Optional     | ActionCable websocket server url. Omit it for the [default behavior](https://guides.rubyonrails.org/action_cable_overview.html#connect-consumer) |
+| connectImmediately | Boolean         | `true`      | Optional     | ActionCable connects to your server immediately. If false, ActionCable connects on the first subscription.                                       |
+| store              | Object          | null        | Optional     | Vuex store                                                                                                                                       |
 
 #### Table of content
+
 - [Support ActionCable-Vue](https://github.com/mclintprojects/actioncable-vue#-support-actioncable-vue)
 - [Component Level Usage](https://github.com/mclintprojects/actioncable-vue#-component-level-usage)
 - [Subscriptions](https://github.com/mclintprojects/actioncable-vue#-subscriptions)
@@ -79,8 +80,8 @@ createApp(App)
 - [Usage with Nuxt.JS](https://github.com/mclintprojects/actioncable-vue#-usage-with-nuxtjs)
 
 #### Wall of Appreciation
-- Many thanks to [@x88BitRain](https://github.com/x8BitRain) for adding Vue 3 compatibility
 
+- Many thanks to [@x88BitRain](https://github.com/x8BitRain) for adding Vue 3 compatibility
 
 #### ☕ Support ActionCable-Vue
 
@@ -94,7 +95,7 @@ If you want to listen to channel events from your Vue component, you need to eit
 new Vue({
   data() {
     return {
-      message: 'Hello world'
+      message: "Hello world",
     };
   },
   channels: {
@@ -102,26 +103,26 @@ new Vue({
       connected() {},
       rejected() {},
       received(data) {},
-      disconnected() {}
-    }
+      disconnected() {},
+    },
   },
   methods: {
-    sendMessage: function() {
+    sendMessage: function () {
       this.$cable.perform({
-        channel: 'ChatChannel',
-        action: 'send_message',
+        channel: "ChatChannel",
+        action: "send_message",
         data: {
-          content: this.message
-        }
+          content: this.message,
+        },
       });
-    }
+    },
   },
   mounted() {
     this.$cable.subscribe({
-      channel: 'ChatChannel',
-      room: 'public'
+      channel: "ChatChannel",
+      room: "public",
     });
-  }
+  },
 });
 ```
 
@@ -130,35 +131,35 @@ Alternative definition for `vue-class-component` users.
 ```typescript
 @Component
 export default class ChatComponent extends Vue {
-  @Prop({required: true}) private id!: string;
+  @Prop({ required: true }) private id!: string;
 
   get channels() {
     return {
       ChatChannel: {
         connected() {
-          console.log('connected');
+          console.log("connected");
         },
         rejected() {},
         received(data) {},
-        disconnected() {}
-      }
+        disconnected() {},
+      },
     };
   }
 
-  sendMessage(){
+  sendMessage() {
     this.$cable.perform({
-      channel: 'ChatChannel',
-      action: 'send_message',
+      channel: "ChatChannel",
+      action: "send_message",
       data: {
-        content: this.message
-      }
+        content: this.message,
+      },
     });
   }
 
   async mounted() {
     this.$cable.subscribe({
-      channel: 'ChatChannel',
-      room: 'public'
+      channel: "ChatChannel",
+      room: "public",
     });
   }
 }
@@ -175,15 +176,15 @@ new Vue({
   channels: {
     ChatChannel: {
       connected() {
-        console.log('I am connected.');
-      }
-    }
+        console.log("I am connected.");
+      },
+    },
   },
   mounted() {
     this.$cable.subscribe({
-      channel: 'ChatChannel'
+      channel: "ChatChannel",
     });
-  }
+  },
 });
 ```
 
@@ -198,29 +199,31 @@ new Vue({
   channels: {
     chat_channel_public: {
       connected() {
-        console.log('I am connected to the public chat channel.');
-      }
+        console.log("I am connected to the public chat channel.");
+      },
     },
     chat_channel_private: {
       connected() {
-        console.log('I am connected to the private chat channel.');
-      }
-    }
+        console.log("I am connected to the private chat channel.");
+      },
+    },
   },
   mounted() {
-    this.$cable.subscribe({
-        channel: 'ChatChannel',
-        room: 'public'
+    this.$cable.subscribe(
+      {
+        channel: "ChatChannel",
+        room: "public",
       },
-      'chat_channel_public'
+      "chat_channel_public",
     );
-    this.$cable.subscribe({
-        channel: 'ChatChannel',
-        room: 'private'
+    this.$cable.subscribe(
+      {
+        channel: "ChatChannel",
+        room: "private",
       },
-      'chat_channel_private'
+      "chat_channel_private",
     );
-  }
+  },
 });
 ```
 
@@ -243,23 +246,25 @@ new Vue({
 
 new Vue({
   channels: {
-    computed: [{
-      channelName() {
-        return `${this.$route.params.conversationId}`;
+    computed: [
+      {
+        channelName() {
+          return `${this.$route.params.conversationId}`;
+        },
+        connected() {
+          console.log("I am connected to a channel with a computed name.");
+        },
+        rejected() {},
+        received(data) {},
+        disconnected() {},
       },
-      connected() {
-        console.log('I am connected to a channel with a computed name.');
-      },
-      rejected() {},
-      received(data) {},
-      disconnected() {}
-    }]
+    ],
   },
   mounted() {
     this.$cable.subscribe({
-      channel: this.$route.params.conversationId
+      channel: this.$route.params.conversationId,
     });
-  }
+  },
 });
 ```
 
@@ -271,18 +276,19 @@ new Vue({
 new Vue({
   methods: {
     unsubscribe() {
-      this.$cable.unsubscribe('ChatChannel');
-    }
+      this.$cable.unsubscribe("ChatChannel");
+    },
   },
   mounted() {
     this.$cable.subscribe({
-      channel: 'ChatChannel'
+      channel: "ChatChannel",
     });
-  }
+  },
 });
 ```
 
 #### 👺 Manually connect to the server
+
 ActionCableVue automatically connects to your Action Cable server if `connectImmediately` is not set to `false` during setup. If you do set `connectImmediately` to `false` you can manually trigger a connection to your ActionCable server with `this.$cable.connection.connect`.
 
 ```javascript
@@ -292,20 +298,23 @@ new Vue({
       // You can optionally pass in a connection URL string
       // You can optionally pass in a function that returns a connection URL
       // You can choose not to pass in anything and it'll reconnect with the connection URL provided during setup.
-      this.$cable.connection.connect(`ws://localhost:5000/api/cable?token=${token}`);
-    }
-  }
+      this.$cable.connection.connect(
+        `ws://localhost:5000/api/cable?token=${token}`,
+      );
+    },
+  },
 });
 ```
 
 #### 👽 Disconnecting from the server
+
 ```javascript
 new Vue({
   methods: {
     disconnect() {
       this.$cable.connection.disconnect();
-    }
-  }
+    },
+  },
 });
 ```
 
@@ -318,29 +327,29 @@ new Vue({
   channels: {
     ChatChannel: {
       connected() {
-        console.log('Connected to the chat channel');
+        console.log("Connected to the chat channel");
       },
       received(data) {
-        console.log('Message received');
-      }
-    }
+        console.log("Message received");
+      },
+    },
   },
   methods: {
     sendMessage() {
       this.$cable.perform({
-        channel: 'ChatChannel',
-        action: 'send_message',
+        channel: "ChatChannel",
+        action: "send_message",
         data: {
-          content: 'Hi'
-        }
+          content: "Hi",
+        },
       });
-    }
+    },
   },
   mounted() {
     this.$cable.subscribe({
-      channel: 'ChatChannel'
+      channel: "ChatChannel",
     });
-  }
+  },
 });
 ```
 
@@ -351,47 +360,44 @@ ActionCableVue has support for Vuex. All you have to do is setup your store corr
 ```javascript
 // store.js
 
-import Vue from 'vue';
-import Vuex from 'vuex';
+import Vue from "vue";
+import Vuex from "vuex";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {
-  },
+  state: {},
   mutations: {
-    sendMessage(state, content){
+    sendMessage(state, content) {
       this.$cable.perform({
-        action: 'send_message',
+        action: "send_message",
         data: {
-          content
-        }
-      })
-    }
+          content,
+        },
+      });
+    },
   },
   actions: {
     sendMessage({ commit }, content) {
-      commit('sendMessage', content)
-    }
-  }
+      commit("sendMessage", content);
+    },
+  },
 });
 ```
 
 ```javascript
-import store from './store';
-import Vue from 'vue';
-import ActionCableVue from 'actioncable-vue';
+import store from "./store";
+import Vue from "vue";
+import ActionCableVue from "actioncable-vue";
 
 Vue.use(ActionCableVue, {
   debug: true,
-  debugLevel: 'all',
+  debugLevel: "all",
   connectionUrl: process.env.WEBSOCKET_HOST,
   connectImmediately: true,
-  store
+  store,
 });
 ```
-
-
 
 #### 💪 Usage with Nuxt.JS
 
@@ -400,15 +406,15 @@ ActionCableVue works just fine with Nuxt.JS. All you need to do is set it up as 
 ```javascript
 // /plugins/actioncable-vue.js
 
-import Vue from 'vue';
-import ActionCableVue from 'actioncable-vue';
+import Vue from "vue";
+import ActionCableVue from "actioncable-vue";
 
 if (process.client) {
   Vue.use(ActionCableVue, {
     debug: true,
-    debugLevel: 'all',
+    debugLevel: "all",
     connectionUrl: process.env.WEBSOCKET_HOST,
-    connectImmediately: true
+    connectImmediately: true,
   });
 }
 ```
@@ -420,5 +426,5 @@ Don't forget to register your plugin.
 /*
  ** Plugins to load before mounting the App
  */
-plugins: [{ src: '@/plugins/actioncable-vue', ssr: false }];
+plugins: [{ src: "@/plugins/actioncable-vue", ssr: false }];
 ```

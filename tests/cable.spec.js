@@ -2,24 +2,24 @@ import Cable from "../src/cable";
 import { createApp } from "vue";
 
 describe("Cable", () => {
-	let Vue;
-	let IS_VUE_3 = Number(process.env.VUE_VER) === 3;
+  let Vue;
+  const IS_VUE_3 = Number(process.env.VUE_VER) === 3;
 
-	if (IS_VUE_3) {
-		Vue = createApp({})
-	} else {
-		Vue = require('vue');
-	}
+  if (IS_VUE_3) {
+    Vue = createApp({});
+  } else {
+    Vue = require("vue");
+  }
 
   let cable, create;
   global.window = {};
 
   beforeEach(() => {
-    if(!IS_VUE_3) {
-      Vue.version = '2.6.11';
+    if (!IS_VUE_3) {
+      Vue.version = "2.6.11";
       Vue.prototype = {};
     }
-    
+
     Vue.mixin = jest.fn();
     create = jest.fn();
 
@@ -33,7 +33,7 @@ describe("Cable", () => {
     global._channels = {
       subscriptions: {},
     };
-    global._logger = { log() { } };
+    global._logger = { log() {} };
     global._contexts = {};
     global._removeChannel = function (name) {
       cable._removeChannel.call(global, name);
@@ -54,7 +54,9 @@ describe("Cable", () => {
       debugLevel: "error",
       store,
     });
-	  IS_VUE_3 ? expect(Vue.config.globalProperties.$cable._cable).toBeDefined() : expect(Vue.prototype.$cable._cable).toBeDefined();
+    IS_VUE_3
+      ? expect(Vue.config.globalProperties.$cable._cable).toBeDefined()
+      : expect(Vue.prototype.$cable._cable).toBeDefined();
     expect(Vue.mixin).toHaveBeenCalled();
     expect(cable._logger._debug).toBe(true);
     expect(cable._logger._debugLevel).toBe("error");
@@ -65,7 +67,9 @@ describe("Cable", () => {
   test("It should initialize correctly if options not provided", () => {
     cable = new Cable(Vue);
 
-	  IS_VUE_3 ? expect(Vue.config.globalProperties.$cable._cable).toBeDefined() : expect(Vue.prototype.$cable._cable).toBeDefined();
+    IS_VUE_3
+      ? expect(Vue.config.globalProperties.$cable._cable).toBeDefined()
+      : expect(Vue.prototype.$cable._cable).toBeDefined();
     expect(Vue.mixin).toHaveBeenCalled();
     expect(cable._logger._debug).toBe(false);
     expect(cable._logger._debugLevel).toBe("error");
@@ -80,7 +84,9 @@ describe("Cable", () => {
       connectImmediately: false,
     });
 
-	  IS_VUE_3 ? expect(Vue.config.globalProperties.$cable._cable).toBeNull() : expect(Vue.prototype.$cable._cable).toBeNull();
+    IS_VUE_3
+      ? expect(Vue.config.globalProperties.$cable._cable).toBeNull()
+      : expect(Vue.prototype.$cable._cable).toBeNull();
   });
 
   test("It should connect on first subscription if connectImmediately is false", () => {
@@ -91,7 +97,9 @@ describe("Cable", () => {
       connectImmediately: false,
     });
 
-	  IS_VUE_3 ? expect(Vue.config.globalProperties.$cable._cable).toBeNull() : expect(Vue.prototype.$cable._cable).toBeNull();
+    IS_VUE_3
+      ? expect(Vue.config.globalProperties.$cable._cable).toBeNull()
+      : expect(Vue.prototype.$cable._cable).toBeNull();
 
     create.mockReturnValue({});
     global._cable = null;
@@ -105,7 +113,7 @@ describe("Cable", () => {
     create.mockReturnValue({});
     cable.subscribe.call(global, { channel: "ChatChannel" });
     expect(global._cable.subscriptions.create).toBeCalled();
-    expect(global._channels.subscriptions["ChatChannel"]).toBeDefined();
+    expect(global._channels.subscriptions.ChatChannel).toBeDefined();
   });
 
   test("It should correctly subscribe to channel with custom name", () => {
@@ -113,10 +121,10 @@ describe("Cable", () => {
     cable.subscribe.call(
       global,
       { channel: "ChatChannel" },
-      "custom_channel_name"
+      "custom_channel_name",
     );
     expect(global._cable.subscriptions.create).toBeCalled();
-    expect(global._channels.subscriptions["custom_channel_name"]).toBeDefined();
+    expect(global._channels.subscriptions.custom_channel_name).toBeDefined();
   });
 
   test("It should correctly subscribe to same channel with multiple custom names", () => {
@@ -124,19 +132,17 @@ describe("Cable", () => {
     cable.subscribe.call(
       global,
       { channel: "ChatChannel" },
-      "custom_channel_name"
+      "custom_channel_name",
     );
     cable.subscribe.call(
       global,
       { channel: "ChatChannel" },
-      "custom_channel_name_2"
+      "custom_channel_name_2",
     );
 
     expect(global._cable.subscriptions.create).toBeCalledTimes(2);
-    expect(global._channels.subscriptions["custom_channel_name"]).toBeDefined();
-    expect(
-      global._channels.subscriptions["custom_channel_name_2"]
-    ).toBeDefined();
+    expect(global._channels.subscriptions.custom_channel_name).toBeDefined();
+    expect(global._channels.subscriptions.custom_channel_name_2).toBeDefined();
   });
 
   test("It should correctly perform an action on a channel", () => {
@@ -179,7 +185,7 @@ describe("Cable", () => {
     cable._fireChannelEvent.call(
       global,
       "ChatChannel",
-      cable._channelConnected
+      cable._channelConnected,
     );
 
     expect(connected).toBeCalledTimes(2);
@@ -193,7 +199,7 @@ describe("Cable", () => {
     cable._fireChannelEvent.call(
       global,
       "ChatChannel",
-      cable._subscriptionRejected
+      cable._subscriptionRejected,
     );
 
     expect(rejected).toBeCalledTimes(1);
@@ -213,7 +219,7 @@ describe("Cable", () => {
     cable._fireChannelEvent.call(
       global,
       "ChatChannel",
-      cable._channelDisconnected
+      cable._channelDisconnected,
     );
 
     expect(disconnected).toBeCalledTimes(1);
@@ -229,7 +235,7 @@ describe("Cable", () => {
       global,
       "ChatChannel",
       cable._channelReceived,
-      data
+      data,
     );
 
     expect(received).toBeCalledTimes(1);

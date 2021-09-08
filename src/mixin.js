@@ -1,6 +1,6 @@
-import objectPolyfill from './polyfill'
+import objectPolyfill from "./polyfill";
 
-function unsubscribe(context){
+function unsubscribe(context) {
   if (context.$options.channels || context.channels) {
     const channels = context.channels || context.$options.channels;
     const entries = Object.entries(channels);
@@ -8,9 +8,9 @@ function unsubscribe(context){
     for (let index = 0; index < entries.length; index++) {
       const entry = entries[index];
 
-      if (entry[0] != "computed")
-        context.$cable._removeChannel(entry[0], context._uid)
-      else {
+      if (entry[0] !== "computed") {
+        context.$cable._removeChannel(entry[0], context._uid);
+      } else {
         const computedChannels = entry[1];
         computedChannels.forEach((channel) => {
           const channelName = channel.channelName.call(context);
@@ -36,17 +36,17 @@ export default {
       for (let index = 0; index < entries.length; index++) {
         const entry = entries[index];
 
-        if (entry[0] != "computed")
+        if (entry[0] !== "computed") {
           this.$cable._addChannel(entry[0], { ...entry[1] }, this);
-        else {
+        } else {
           const computedChannels = entry[1];
           computedChannels.forEach((channel) => {
             const channelName = channel.channelName.call(this);
             const channelObject = {
-              connected: channel["connected"],
-              rejected: channel["rejected"],
-              disconnected: channel["disconnected"],
-              received: channel["received"],
+              connected: channel.connected,
+              rejected: channel.rejected,
+              disconnected: channel.disconnected,
+              received: channel.received,
             };
 
             this.$cable._addChannel(channelName, channelObject, this);
@@ -64,7 +64,7 @@ export default {
   /**
    * Unsubscribe from channels when component is destroyed.
    */
-  beforeDestroy(){
+  beforeDestroy() {
     unsubscribe(this);
   },
 };
