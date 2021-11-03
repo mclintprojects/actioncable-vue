@@ -21,7 +21,7 @@
     "publish-major": "npm run build && npm run commit-build && npm version major && npm publish",
     "test": "cross-env VUE_VER=3 jest",
     "test-vue2": "cross-env VUE_VER=2 jest",
-    "style:fix": "prettier --write ./**/*.{js,css,md,vue,ts,json}",
+    "format:fix": "prettier --write ./**/*.{js,css,md,vue,ts,json}",
     "lint:fix": "eslint --fix ./**/*.{js,vue,ts}",
     "lint-staged": "lint-staged"
   },
