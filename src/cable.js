@@ -8,6 +8,7 @@ export default class Cable {
   _channels = { subscriptions: {} };
   _contexts = {};
   _connectionUrl = null;
+  _isReset = false;
 
   /**
    * ActionCableVue $cable entry point
@@ -203,7 +204,9 @@ export default class Cable {
           this._connect(url || this._connectionUrl);
         }
 
-        this._reSubscribe();
+        if (this._isReset) {
+          this._reSubscribe();
+        }
       },
       /**
        * Disconnect from your Action Cable server
@@ -211,6 +214,7 @@ export default class Cable {
       disconnect: () => {
         if (this._cable) {
           this._cable.disconnect();
+          this._isReset = true;
           this._reset();
         }
       },
