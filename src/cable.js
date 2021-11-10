@@ -202,6 +202,8 @@ export default class Cable {
         } else {
           this._connect(url || this._connectionUrl);
         }
+
+        this._reSubscribe();
       },
       /**
        * Disconnect from your Action Cable server
@@ -288,6 +290,15 @@ export default class Cable {
   _reset() {
     this._cable = null;
     this._channels = { subscriptions: {} };
-    this._contexts = {};
+  }
+
+  /**
+   * whe should subscribe again components to the channels after reconnecting to the server
+   */
+  _reSubscribe() {
+    Object.keys(this._contexts).forEach((key) => {
+      const component = this._contexts[key]?.context;
+      component?.$reSubscribeCableChannels?.();
+    });
   }
 }
