@@ -1,3 +1,4 @@
+import Vue from "vue";
 import { ChannelNameWithParams } from "actioncable";
 import { ChannelOptions } from "./options";
 
@@ -25,7 +26,8 @@ declare module "vue/types/vue" {
 }
 
 declare module "vue/types/options" {
-  export interface ComponentOptions {
+  // eslint-disable-next-line no-unused-vars
+  export interface ComponentOptions<V extends Vue> {
     channels?: ChannelOptions;
   }
 }
