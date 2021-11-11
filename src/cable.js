@@ -205,7 +205,7 @@ export default class Cable {
         }
 
         if (this._isReset) {
-          this._reSubscribe();
+          this._resubscribe();
         }
       },
       /**
@@ -297,12 +297,12 @@ export default class Cable {
   }
 
   /**
-   * whe should subscribe again components to the channels after reconnecting to the server
+   * Resubscribes to a component's channels when we reconnect to the server
    */
-  _reSubscribe() {
+  _resubscribe() {
     Object.keys(this._contexts).forEach((key) => {
       const component = this._contexts[key]?.context;
-      component?.$reSubscribeCableChannels?.();
+      component?.$resubscribeToCableChannels?.();
     });
   }
 }

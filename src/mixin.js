@@ -72,7 +72,7 @@ export default {
     unsubscribe(this);
   },
   methods: {
-    $reSubscribeCableChannels() {
+    $resubscribeToCableChannels() {
       subscribe(this);
     },
   },
