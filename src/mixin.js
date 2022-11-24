@@ -62,15 +62,15 @@ export default {
   /**
    * Unsubscribe from channels when component is unmounted.
    */
-  beforeUnmount() {
-    unsubscribe(this);
-  },
+  // beforeUnmount() {
+  //   unsubscribe(this);
+  // },
   /**
    * Unsubscribe from channels when component is destroyed.
    */
-  beforeDestroy() {
-    unsubscribe(this);
-  },
+  // beforeDestroy() {
+  //   unsubscribe(this);
+  // },
   methods: {
     $resubscribeToCableChannels() {
       subscribe(this);
