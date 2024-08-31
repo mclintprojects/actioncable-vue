@@ -276,10 +276,9 @@ export default class Cable {
    */
   _addContext(context) {
     const uid = context._uid || context.$.uid;
-    if (uid) {
+    if (uid !== undefined) {
       this._contexts[uid] = { context };
     }
-    console.log(context.$, uid);
   }
 
   /**

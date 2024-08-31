@@ -89,7 +89,12 @@ If you'd like to donate to support the continued development and maintenance of 
 
 #### 🌈 Component Level Usage
 
-If you want to listen to channel events from your Vue component, you need to either add a `channels` object in the Vue component, or if you're using `vue-class-component` define a `channels` property. Each defined object in `channels` will start to receive events provided you subscribe correctly.
+If you want to listen to channel events from your Vue component:
+1. You need to either add a `channels` object in the Vue component
+2. If you're using `vue-class-component` define a `channels` property.
+3. If you're using Vue 3 `defineComponent` define a `channels` property.
+
+Each defined object in `channels` will start to receive events provided you subscribe correctly.
 
 ```javascript
 new Vue({
@@ -163,6 +168,34 @@ export default class ChatComponent extends Vue {
     });
   }
 }
+```
+
+Alternative definition for Vue 3 `defineComponent` users.
+
+```typescript
+import { onMounted } from 'vue';
+
+export default defineComponent({
+  channels: {
+    ChatChannel: {
+      connected() {
+        console.log('connected');
+      },
+      rejected() {
+        console.log('rejected');
+      },
+      received(data) {},
+      disconnected() {},
+    },
+  },
+  setup() {
+    onMounted(() => {
+      this.$cable.subscribe({
+        channel: "ChatChannel",
+      });
+    });
+  },
+});
 ```
 
 #### ✨ Subscriptions
