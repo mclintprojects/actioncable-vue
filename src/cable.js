@@ -9,7 +9,6 @@ export default class Cable {
   _contexts = {};
   _connectionUrl = null;
   _isReset = false;
-  _version = null;
 
   /**
    * ActionCableVue $cable entry point
@@ -26,31 +25,32 @@ export default class Cable {
 
     if (VERSION === 3) {
       Vue.config.globalProperties.$cable = this;
-      this._version = 3;
     } else {
       Vue.prototype.$cable = this;
-      this._version = 2;
     }
 
     Vue.mixin(Mixin);
 
-    let { debug, debugLevel, connectionUrl, connectImmediately, store } =
-      options || {
-        debug: false,
-        debugLevel: "error",
-        connectionUrl: null,
-        store: null,
-      };
+    const defaultOptions = {
+      debug: false,
+      debugLevel: "error",
+      connectionUrl: null,
+      connectImmediately: true,
+      store: null,
+    };
+
+    const {
+      debug,
+      debugLevel,
+      connectionUrl,
+      connectImmediately,
+      store
+    } = { ...defaultOptions, ...options };
 
     this._connectionUrl = connectionUrl;
-    if (connectImmediately !== false) connectImmediately = true;
-
-    if (store) {
-      store.$cable = this;
-    }
-
     this._logger = new Logger(debug, debugLevel);
 
+    if (store) store.$cable = this;
     if (connectImmediately) this._connect(this._connectionUrl);
 
     this._attachConnectionObject();
@@ -234,19 +234,18 @@ export default class Cable {
    * @private
    */
   _registerChannel(channel, context) {
-    if (channel[0] !== "computed") {
-      this._addChannel(channel[0], channel[1], context);
+    const [name, config] = channel;
+    if (name !== "computed") {
+      this._addChannel(name, config, context);
     } else {
-      const computedChannels = entry[1];
-      computedChannels.forEach((channel) => {
-        const channelName = channel.channelName.call(context);
+      config.forEach((computedChannel) => {
+        const channelName = computedChannel.channelName.call(context);
         const channelObject = {
-          connected: channel.connected,
-          rejected: channel.rejected,
-          disconnected: channel.disconnected,
-          received: channel.received,
+          connected: computedChannel.connected,
+          rejected: computedChannel.rejected,
+          disconnected: computedChannel.disconnected,
+          received: computedChannel.received,
         };
-
         this._addChannel(channelName, channelObject, context);
       });
     }
@@ -259,18 +258,14 @@ export default class Cable {
    * @param {Object} context - The execution context of the component the channel was created in
    */
   _addChannel(name, value, context) {
-    const uid = this._version === 2 ? context._uid : (context._uid || context.$.uid);
-
+    const uid = context._uid || context.$.uid;
     value._uid = uid;
     value._name = name;
 
     if (!this._channels[name]) this._channels[name] = [];
     this._addContext(context);
 
-    if (
-      !this._channels[name].find((c) => c._uid === uid) &&
-      this._contexts[uid]
-    ) {
+    if (!this._channels[name].find((c) => c._uid === uid) && this._contexts[uid]) {
       this._channels[name].push(value);
     }
   }
@@ -280,8 +275,11 @@ export default class Cable {
    * @param {Object} context - The Vue component execution context being added
    */
   _addContext(context) {
-    const uid = this._version === 2 ? context._uid : (context._uid || context.$.uid);
-    this._contexts[uid] = { context };
+    const uid = context._uid || context.$.uid;
+    if (uid) {
+      this._contexts[uid] = { context };
+    }
+    console.log(context.$, uid);
   }
 
   /**

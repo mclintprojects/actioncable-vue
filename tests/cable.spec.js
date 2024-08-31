@@ -7,7 +7,6 @@ describe("Cable", () => {
 
   if (IS_VUE_3) {
     Vue = createApp({});
-    global._version = 3;
   } else {
     Vue = require("vue");
   }
@@ -19,7 +18,6 @@ describe("Cable", () => {
     if (!IS_VUE_3) {
       Vue.version = "2.6.11";
       Vue.prototype = {};
-      global._version = 2;
     }
 
     Vue.mixin = jest.fn();
