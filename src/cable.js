@@ -9,6 +9,7 @@ export default class Cable {
   _contexts = {};
   _connectionUrl = null;
   _isReset = false;
+  _version = null;
 
   /**
    * ActionCableVue $cable entry point
@@ -25,8 +26,10 @@ export default class Cable {
 
     if (VERSION === 3) {
       Vue.config.globalProperties.$cable = this;
+      this._version = 3;
     } else {
       Vue.prototype.$cable = this;
+      this._version = 2;
     }
 
     Vue.mixin(Mixin);
@@ -228,15 +231,17 @@ export default class Cable {
    * @param {Object} context - The execution context of the component the channel was created in
    */
   _addChannel(name, value, context) {
-    value._uid = context._uid;
+    const uid = this._version === 2 ? context._uid : (context.$.uid || context._uid);
+
+    value._uid = uid;
     value._name = name;
 
     if (!this._channels[name]) this._channels[name] = [];
     this._addContext(context);
 
     if (
-      !this._channels[name].find((c) => c._uid === context._uid) &&
-      this._contexts[context._uid]
+      !this._channels[name].find((c) => c._uid === uid) &&
+      this._contexts[uid]
     ) {
       this._channels[name].push(value);
     }
@@ -247,7 +252,8 @@ export default class Cable {
    * @param {Object} context - The Vue component execution context being added
    */
   _addContext(context) {
-    this._contexts[context._uid] = { context };
+    const uid = this._version === 2 ? context._uid : (context.$.uid || context._uid);
+    this._contexts[uid] = { context };
   }
 
   /**
