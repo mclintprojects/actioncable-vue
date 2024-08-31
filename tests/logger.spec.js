@@ -12,22 +12,22 @@ describe("Logger", () => {
     const logger = new Logger(true, "all");
 
     logger.log("Hi -- info", "info");
-    expect(log).toBeCalledWith("Hi -- info");
+    expect(log).toBeCalledWith("[INFO] Hi -- info");
 
     logger.log("Hi -- error", "error");
-    expect(log).toBeCalledWith("Hi -- error");
+    expect(log).toBeCalledWith("[ERROR] Hi -- error");
   });
 
   test("It should correctly log if debugLevel is info", () => {
     const logger = new Logger(true, "info");
     logger.log("Hi -- info", "info");
-    expect(log).toBeCalledWith("Hi -- info");
+    expect(log).toBeCalledWith("[INFO] Hi -- info");
   });
 
   test("It should correctly log if debugLevel is error", () => {
     const logger = new Logger(true, "error");
     logger.log("Hi -- error", "error");
-    expect(log).toBeCalledWith("Hi -- error");
+    expect(log).toBeCalledWith("[ERROR] Hi -- error");
   });
 
   test("It should not log if debugLevel does not match error type", () => {
@@ -46,6 +46,6 @@ describe("Logger", () => {
     const logger = new Logger(true, "error");
     logger.log("Hi -- error");
     expect(log).toBeCalledTimes(1);
-    expect(log).toHaveBeenCalledWith("Hi -- error");
+    expect(log).toHaveBeenCalledWith("[ERROR] Hi -- error");
   });
 });
