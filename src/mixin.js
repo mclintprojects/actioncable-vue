@@ -1,7 +1,7 @@
 import objectPolyfill from "./polyfill";
 
 function unsubscribe(context) {
-  if (context.$options.channels || context.channels || (context.$.type && context.$.type.channels)) {
+  if (context.$options.channels || context.channels || (context.$ && context.$.type.channels)) {
     const channels = context.$ ? context.$.type.channels : (context.channels || context.$options.channels);
     Object.entries(channels).forEach(([channelName, channelValue]) => {
       if (channelName === "computed") {
@@ -17,7 +17,7 @@ function unsubscribe(context) {
 }
 
 function subscribe(context) {
-  if (context.$options.channels || context.channels || (context.$.type && context.$.type.channels)) {
+  if (context.$options.channels || context.channels || (context.$ && context.$.type.channels)) {
     // polyfill Object.entries and Object.keys
     objectPolyfill();
 
