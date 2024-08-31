@@ -225,13 +225,41 @@ export default class Cable {
   }
 
   /**
+   * Registers a channel for a given context.
+   * If the channel is not computed, it adds the channel directly.
+   * For computed channels, it iterates through each channel and adds them individually.
+   * 
+   * @param {Array} channel - An array containing the channel name and its configuration
+   * @param {Object} context - The context (typically a Vue component instance) for which the channel is being registered
+   * @private
+   */
+  _registerChannel(channel, context) {
+    if (channel[0] !== "computed") {
+      this._addChannel(channel[0], channel[1], context);
+    } else {
+      const computedChannels = entry[1];
+      computedChannels.forEach((channel) => {
+        const channelName = channel.channelName.call(context);
+        const channelObject = {
+          connected: channel.connected,
+          rejected: channel.rejected,
+          disconnected: channel.disconnected,
+          received: channel.received,
+        };
+
+        this._addChannel(channelName, channelObject, context);
+      });
+    }
+  }
+
+  /**
    * Component mounted. Retrieves component channels for later use
    * @param {string} name - Component channel name
    * @param {Object} value - The component channel object itself
    * @param {Object} context - The execution context of the component the channel was created in
    */
   _addChannel(name, value, context) {
-    const uid = this._version === 2 ? context._uid : (context.$.uid || context._uid);
+    const uid = this._version === 2 ? context._uid : (context._uid || context.$.uid);
 
     value._uid = uid;
     value._name = name;
@@ -252,7 +280,7 @@ export default class Cable {
    * @param {Object} context - The Vue component execution context being added
    */
   _addContext(context) {
-    const uid = this._version === 2 ? context._uid : (context.$.uid || context._uid);
+    const uid = this._version === 2 ? context._uid : (context._uid || context.$.uid);
     this._contexts[uid] = { context };
   }
 
