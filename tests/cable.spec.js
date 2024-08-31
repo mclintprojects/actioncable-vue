@@ -7,6 +7,7 @@ describe("Cable", () => {
 
   if (IS_VUE_3) {
     Vue = createApp({});
+    global._version = 3;
   } else {
     Vue = require("vue");
   }
@@ -18,6 +19,7 @@ describe("Cable", () => {
     if (!IS_VUE_3) {
       Vue.version = "2.6.11";
       Vue.prototype = {};
+      global._version = 2;
     }
 
     Vue.mixin = jest.fn();
@@ -33,7 +35,7 @@ describe("Cable", () => {
     global._channels = {
       subscriptions: {},
     };
-    global._logger = { log() {} };
+    global._logger = { log() { } };
     global._contexts = {};
     global._removeChannel = function (name) {
       cable._removeChannel.call(global, name);
@@ -284,16 +286,17 @@ describe("Cable", () => {
 
   test("It should correctly add context", () => {
     const uid = 1;
-    cable._addContext.call(global, { _uid: uid });
+    const context = IS_VUE_3 ? { $: { uid } } : { _uid: uid };
+    cable._addContext.call(global, context);
     expect(global._contexts[uid]).toBeDefined();
 
-    cable._addContext.call(global, { _uid: uid });
+    cable._addContext.call(global, context);
   });
 
   test("It should correctly add channels", () => {
     const channelName = "ChatChannel";
     const uid = 1;
-    const context = { _uid: uid };
+    const context = IS_VUE_3 ? { $: { uid } } : { _uid: uid };
 
     cable._addChannel.call(global, channelName, {}, context);
     expect(global._channels[channelName]).toBeDefined();
