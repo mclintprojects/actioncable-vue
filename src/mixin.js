@@ -56,7 +56,7 @@ export default {
   /**
    * Retrieve channels in component once mounted.
    */
-  created() {
+  beforeCreate() {
     subscribe(this);
   },
   /**
