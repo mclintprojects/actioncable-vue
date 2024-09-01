@@ -1,4 +1,4 @@
-import { createConsumer } from "@rails/actioncable";
+import { createConsumer, getConfig } from "@rails/actioncable";
 import Logger from "./logger";
 import Mixin from "./mixin";
 
@@ -36,7 +36,7 @@ export default class Cable {
     const defaultOptions = {
       debug: false,
       debugLevel: "error",
-      connectionUrl: null,
+      connectionUrl: getConfig("url"),
       connectImmediately: true,
       unsubscribeOnUnmount: true,
       store: null,
@@ -55,8 +55,9 @@ export default class Cable {
     this._unsubscribeOnUnmount = unsubscribeOnUnmount;
     this._logger = new Logger(debug, debugLevel);
 
+    if (connectionUrl !== false) connectImmediately = true;
     if (store) store.$cable = this;
-    if (connectImmediately) this._connect(this._connectionUrl);
+    if (connectImmediately && this._connectionUrl) this._connect(this._connectionUrl);
 
     this._attachConnectionObject();
   }
