@@ -32,6 +32,7 @@ describe("Mixin", () => {
     global.$cable = {
       _addChannel,
       _removeChannel,
+      _unsubscribeOnUnmount: true,
     };
   });
 
@@ -44,6 +45,12 @@ describe("Mixin", () => {
   test("It should correctly unsubscribe from channels on destroy", () => {
     Mixin.beforeUnmount.call(global);
     expect(_removeChannel).toBeCalledTimes(3);
+  });
+
+  test("It should not unsubscribe from channels if unsubscribeOnUnmount is not set", () => {
+    global.$cable._unsubscribeOnUnmount = false;
+    Mixin.beforeUnmount.call(global);
+    expect(_removeChannel).toBeCalledTimes(0);
   });
 
   test("It should not attempt to remove channels on destroy if component does not have channels object defined", () => {
