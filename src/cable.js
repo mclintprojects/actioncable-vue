@@ -42,7 +42,7 @@ export default class Cable {
       store: null,
     };
 
-    const {
+    let {
       debug,
       debugLevel,
       connectionUrl,
@@ -55,7 +55,7 @@ export default class Cable {
     this._unsubscribeOnUnmount = unsubscribeOnUnmount;
     this._logger = new Logger(debug, debugLevel);
 
-    if (connectionUrl !== false) connectImmediately = true;
+    if (connectImmediately !== false) connectImmediately = true;
     if (store) store.$cable = this;
     if (connectImmediately) this._connect(this._connectionUrl);
 
