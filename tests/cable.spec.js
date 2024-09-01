@@ -33,7 +33,7 @@ describe("Cable", () => {
     global._channels = {
       subscriptions: {},
     };
-    global._logger = { log() {} };
+    global._logger = { log() { } };
     global._contexts = {};
     global._removeChannel = function (name) {
       cable._removeChannel.call(global, name);
@@ -253,12 +253,34 @@ describe("Cable", () => {
     };
     global._channels.subscriptions[channelName] = { unsubscribe };
     global._contexts[channelUid] = { users: 1 };
+    global._unsubscribeOnUnmount = true;
 
     cable.unsubscribe.call(global, channelName);
     expect(global._channels[channelName]).toBeDefined();
     expect(global._channels.subscriptions[channelName]).toBeDefined();
     expect(global._contexts[channelUid]).toBeDefined();
     expect(unsubscribe).toBeCalledTimes(1);
+  });
+
+  test("it should not unsubscribe on unmount if unsubscribeOnUnmount is false", () => {
+    cable = new Cable(Vue, {
+      connectionUrl: "ws://localhost:5000/api/cable",
+      debug: true,
+      debugLevel: "error",
+      unsubscribeOnUnmount: false,
+    });
+
+    const unsubscribe = jest.fn();
+    const channelName = "ChatChannel";
+
+    global._channels.ChatChannel = {
+      name: channelName,
+    };
+    global._channels.subscriptions[channelName] = { unsubscribe };
+    global._unsubscribeOnUnmount = false;
+
+    cable.unsubscribe.call(global, channelName);
+    expect(unsubscribe).not.toBeCalled();
   });
 
   test("It should remove destroyed component's channel correctly", () => {
@@ -284,16 +306,17 @@ describe("Cable", () => {
 
   test("It should correctly add context", () => {
     const uid = 1;
-    cable._addContext.call(global, { _uid: uid });
+    const context = IS_VUE_3 ? { $: { uid } } : { _uid: uid };
+    cable._addContext.call(global, context);
     expect(global._contexts[uid]).toBeDefined();
 
-    cable._addContext.call(global, { _uid: uid });
+    cable._addContext.call(global, context);
   });
 
   test("It should correctly add channels", () => {
     const channelName = "ChatChannel";
     const uid = 1;
-    const context = { _uid: uid };
+    const context = IS_VUE_3 ? { $: { uid } } : { _uid: uid };
 
     cable._addChannel.call(global, channelName, {}, context);
     expect(global._channels[channelName]).toBeDefined();

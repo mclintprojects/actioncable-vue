@@ -15,8 +15,6 @@ declare module "vue/types/vue" {
         data: object;
       }) => void;
       unsubscribe: (channelName: string) => void;
-      connected: boolean;
-      disconnected: boolean;
       connection?: {
         connect: (url?: string | (() => string) | null) => void;
         disconnect: () => void;

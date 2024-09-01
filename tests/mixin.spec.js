@@ -18,9 +18,9 @@ describe("Mixin", () => {
             channelName() {
               return `${userId}_channel`;
             },
-            connected() {},
-            rejected() {},
-            disconnected() {},
+            connected() { },
+            rejected() { },
+            disconnected() { },
             received(data) {
               return `${data} was passed in`;
             },
@@ -37,7 +37,7 @@ describe("Mixin", () => {
 
   test("It should not load channels on mount if component does not have channels object defined", () => {
     global.$options = {};
-    Mixin.created.call(global);
+    Mixin.beforeCreate.call(global);
     expect(_addChannel).toBeCalledTimes(0);
   });
 
