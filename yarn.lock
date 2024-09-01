@@ -1218,10 +1218,10 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@rails/actioncable@^6.0.2":
-  version "6.1.0"
-  resolved "https://registry.npmjs.org/@rails/actioncable/-/actioncable-6.1.0.tgz"
-  integrity sha512-eDgy+vcKN9RIzxmMBfSAe77rTj2cp6kJALiVQyKrW2O9EK2MdostOmP+99At/Dit3ur5+77NVnruxD7y14ZYFA==
+"@rails/actioncable@^7.2.100":
+  version "7.2.100"
+  resolved "https://registry.yarnpkg.com/@rails/actioncable/-/actioncable-7.2.100.tgz#86ec1c2e00c357cef1e421fd63863d5c34339ce8"
+  integrity sha512-7xtIENf0Yw59AFDM3+xqxPCZxev3QVAqjPmUzmgsB9eL8S/zTpB0IU9srNc7XknzJI4e09XKNnCaJRx3gfYzXA==
 
 "@sinclair/typebox@^0.27.8":
   version "0.27.8"
@@ -1243,9 +1243,9 @@
     "@sinonjs/commons" "^3.0.0"
 
 "@types/actioncable@^5.2.3":
-  version "5.2.3"
-  resolved "https://registry.npmjs.org/@types/actioncable/-/actioncable-5.2.3.tgz"
-  integrity sha512-RxPohXyK0PmC+xAnIrdrd/+0Rp5Pc3e0gMIw+Rc4EorbXApS+i8D00dDC6RxDCXNrmQaIBwiu5iCE7JurC38kA==
+  version "5.2.11"
+  resolved "https://registry.yarnpkg.com/@types/actioncable/-/actioncable-5.2.11.tgz#4b563cec68f00973dc0c5e2cc6c3810d6169a38b"
+  integrity sha512-aGzv5JS3razLvv4ZJW+wlDuNS5y1IFFVlm1EkZq3ZHs6txju7/2iee1e6sdK6DE4zsz8cIREs1K4BtfF5RMESQ==
 
 "@types/babel__core@^7.1.14":
   version "7.20.5"
