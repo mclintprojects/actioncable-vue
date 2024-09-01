@@ -8,6 +8,7 @@ export default class Cable {
   _channels = { subscriptions: {} };
   _contexts = {};
   _connectionUrl = null;
+  _unsubscribeOnUnmount = true;
   _isReset = false;
 
   /**
@@ -15,9 +16,10 @@ export default class Cable {
    * @param {Object} Vue
    * @param {Object} options - ActionCableVue options
    * @param {string|Function|null} [options.connectionUrl=null] - ActionCable server websocket URL
-   * @param {boolean} options.debug - Enable logging for debug
-   * @param {string} options.debugLevel - Debug level required for logging. Either `info`, `error`, or `all`
-   * @param {boolean} options.connectImmediately - Connect immediately or wait until the first subscription
+   * @param {boolean} [options.debug=false] - Enable logging for debug
+   * @param {string} [options.debugLevel="error"] - Debug level required for logging. Either `info`, `error`, or `all`
+   * @param {boolean} [options.connectImmediately=true] - Connect immediately or wait until the first subscription
+   * @param {boolean} [options.unsubscribeOnUnmount=true] - Unsubscribe from channels when component is unmounted
    * @param {object} options.store - Vuex store
    */
   constructor(Vue, options) {
@@ -36,6 +38,7 @@ export default class Cable {
       debugLevel: "error",
       connectionUrl: null,
       connectImmediately: true,
+      unsubscribeOnUnmount: true,
       store: null,
     };
 
@@ -44,10 +47,12 @@ export default class Cable {
       debugLevel,
       connectionUrl,
       connectImmediately,
-      store
+      store,
+      unsubscribeOnUnmount,
     } = { ...defaultOptions, ...options };
 
     this._connectionUrl = connectionUrl;
+    this._unsubscribeOnUnmount = unsubscribeOnUnmount;
     this._logger = new Logger(debug, debugLevel);
 
     if (store) store.$cable = this;
@@ -120,7 +125,7 @@ export default class Cable {
    * @param {string} channelName - The name of the Action Cable server channel / The custom name chosen for the component channel
    */
   unsubscribe(channelName) {
-    if (this._channels.subscriptions[channelName]) {
+    if (this._unsubscribeOnUnmount && this._channels.subscriptions[channelName]) {
       this._channels.subscriptions[channelName].unsubscribe();
       this._logger.log(`Unsubscribed from channel '${channelName}'.`, "info");
     }
