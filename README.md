@@ -50,6 +50,7 @@ const actionCableVueOptions = {
   debugLevel: "error",
   connectionUrl: "ws://localhost:5000/api/cable",
   connectImmediately: true,
+  unsubscribeOnUnmount: true,
 };
 
 createApp(App)
@@ -59,13 +60,14 @@ createApp(App)
   .mount("#app");
 ```
 
-| **Parameters**     | **Type**        | **Default** | **Required** | **Description**                                                                                                                                  |
-| ------------------ | --------------- | ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| debug              | Boolean         | `false`     | Optional     | Enable logging for debug                                                                                                                         |
-| debugLevel         | String          | `error`     | Optional     | Debug level required for logging. Either `info`, `error`, or `all`                                                                               |
-| connectionUrl      | String/Function | `null`      | Optional     | ActionCable websocket server url. Omit it for the [default behavior](https://guides.rubyonrails.org/action_cable_overview.html#connect-consumer) |
-| connectImmediately | Boolean         | `true`      | Optional     | ActionCable connects to your server immediately. If false, ActionCable connects on the first subscription.                                       |
-| store              | Object          | null        | Optional     | Vuex store                                                                                                                                       |
+| **Parameters**       | **Type**        | **Default** | **Required** | **Description**                                                                                                                                  |
+| ---------------------| --------------- | ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| debug                | Boolean         | `false`     | Optional     | Enable logging for debug                                                                                                                         |
+| debugLevel           | String          | `error`     | Optional     | Debug level required for logging. Either `info`, `error`, or `all`                                                                               |
+| connectionUrl        | String/Function | `null`      | Optional     | ActionCable websocket server url. Omit it for the [default behavior](https://guides.rubyonrails.org/action_cable_overview.html#connect-consumer) |
+| connectImmediately   | Boolean         | `true`      | Optional     | ActionCable connects to your server immediately. If false, ActionCable connects on the first subscription.                                       |
+| unsubscribeOnUnmount | Boolean         | `true`      | Optional     | Unsubscribe from channels when component is unmounted.                                                                                           |
+| store                | Object          | null        | Optional     | Vuex store                                                                                                                                       |
 
 #### Table of content
 
