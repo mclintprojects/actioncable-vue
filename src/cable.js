@@ -8,6 +8,7 @@ export default class Cable {
   _channels = { subscriptions: {} };
   _contexts = {};
   _connectionUrl = null;
+  _unsubscribeOnUnmount = true;
   _isReset = false;
 
   /**
@@ -15,9 +16,10 @@ export default class Cable {
    * @param {Object} Vue
    * @param {Object} options - ActionCableVue options
    * @param {string|Function|null} [options.connectionUrl=null] - ActionCable server websocket URL
-   * @param {boolean} options.debug - Enable logging for debug
-   * @param {string} options.debugLevel - Debug level required for logging. Either `info`, `error`, or `all`
-   * @param {boolean} options.connectImmediately - Connect immediately or wait until the first subscription
+   * @param {boolean} [options.debug=false] - Enable logging for debug
+   * @param {string} [options.debugLevel="error"] - Debug level required for logging. Either `info`, `error`, or `all`
+   * @param {boolean} [options.connectImmediately=true] - Connect immediately or wait until the first subscription
+   * @param {boolean} [options.unsubscribeOnUnmount=true] - Unsubscribe from channels when component is unmounted
    * @param {object} options.store - Vuex store
    */
   constructor(Vue, options) {
@@ -31,23 +33,29 @@ export default class Cable {
 
     Vue.mixin(Mixin);
 
-    let { debug, debugLevel, connectionUrl, connectImmediately, store } =
-      options || {
-        debug: false,
-        debugLevel: "error",
-        connectionUrl: null,
-        store: null,
-      };
+    const defaultOptions = {
+      debug: false,
+      debugLevel: "error",
+      connectionUrl: null,
+      connectImmediately: true,
+      unsubscribeOnUnmount: true,
+      store: null,
+    };
+
+    const {
+      debug,
+      debugLevel,
+      connectionUrl,
+      connectImmediately,
+      store,
+      unsubscribeOnUnmount,
+    } = { ...defaultOptions, ...options };
 
     this._connectionUrl = connectionUrl;
-    if (connectImmediately !== false) connectImmediately = true;
-
-    if (store) {
-      store.$cable = this;
-    }
-
+    this._unsubscribeOnUnmount = unsubscribeOnUnmount;
     this._logger = new Logger(debug, debugLevel);
 
+    if (store) store.$cable = this;
     if (connectImmediately) this._connect(this._connectionUrl);
 
     this._attachConnectionObject();
@@ -117,7 +125,7 @@ export default class Cable {
    * @param {string} channelName - The name of the Action Cable server channel / The custom name chosen for the component channel
    */
   unsubscribe(channelName) {
-    if (this._channels.subscriptions[channelName]) {
+    if (this._unsubscribeOnUnmount && this._channels.subscriptions[channelName]) {
       this._channels.subscriptions[channelName].unsubscribe();
       this._logger.log(`Unsubscribed from channel '${channelName}'.`, "info");
     }
@@ -222,22 +230,47 @@ export default class Cable {
   }
 
   /**
+   * Registers a channel for a given context.
+   * If the channel is not computed, it adds the channel directly.
+   * For computed channels, it iterates through each channel and adds them individually.
+   * 
+   * @param {Array} channel - An array containing the channel name and its configuration
+   * @param {Object} context - The context (typically a Vue component instance) for which the channel is being registered
+   * @private
+   */
+  _registerChannel(channel, context) {
+    const [name, config] = channel;
+    if (name !== "computed") {
+      this._addChannel(name, config, context);
+    } else {
+      config.forEach((computedChannel) => {
+        const channelName = computedChannel.channelName.call(context);
+        const channelObject = {
+          connected: computedChannel.connected,
+          rejected: computedChannel.rejected,
+          disconnected: computedChannel.disconnected,
+          received: computedChannel.received,
+        };
+        this._addChannel(channelName, channelObject, context);
+      });
+    }
+  }
+
+  /**
    * Component mounted. Retrieves component channels for later use
    * @param {string} name - Component channel name
    * @param {Object} value - The component channel object itself
    * @param {Object} context - The execution context of the component the channel was created in
    */
   _addChannel(name, value, context) {
-    value._uid = context._uid;
+    const uid = context._uid || context.$.uid;
+    value._uid = uid;
     value._name = name;
 
     if (!this._channels[name]) this._channels[name] = [];
     this._addContext(context);
 
-    if (
-      !this._channels[name].find((c) => c._uid === context._uid) &&
-      this._contexts[context._uid]
-    ) {
+    if (!this._channels[name].find((c) => c._uid === uid) && this._contexts[uid]) {
       this._channels[name].push(value);
     }
   }
@@ -247,7 +280,10 @@ export default class Cable {
    * @param {Object} context - The Vue component execution context being added
    */
   _addContext(context) {
-    this._contexts[context._uid] = { context };
+    const uid = context._uid || context.$.uid;
+    if (uid !== undefined) {
+      this._contexts[uid] = { context };
+    }
   }
 
   /**

@@ -1,0 +1,19 @@
+name: CI
+on:
+  push:
+    branches: master
+  pull_request:
+    branches: master
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        uses: borales/actions-yarn@v4.2.0
+        with:
+          cmd: install
+
+      - name: Run tests
+        run: yarn test

@@ -1,9 +1,9 @@
 {
-  "presets": ["@babel/preset-env"],
-  "ignore": ["node_modules"],
-  "plugins": [
-    "@babel/plugin-proposal-class-properties",
-    "@babel/plugin-transform-classes"
+  "presets": [
+    "@babel/preset-env"
+  ],
+  "ignore": [
+    "node_modules"
   ],
   "sourceMaps": true,
   "retainLines": true

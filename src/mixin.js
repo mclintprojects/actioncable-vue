@@ -1,62 +1,46 @@
 import objectPolyfill from "./polyfill";
 
+function getChannels(context) {
+  return context.$ ? context.$.type.channels : (context.channels || context.$options.channels);
+}
+
+function hasChannels(context) {
+  return context.$options.channels || context.channels || (context.$ && context.$.type.channels);
+}
+
 function unsubscribe(context) {
-  if (context.$options.channels || context.channels) {
-    const channels = context.channels || context.$options.channels;
-    const entries = Object.entries(channels);
+  if (!hasChannels(context)) return;
 
-    for (let index = 0; index < entries.length; index++) {
-      const entry = entries[index];
+  const channels = getChannels(context);
 
-      if (entry[0] !== "computed") {
-        context.$cable._removeChannel(entry[0], context._uid);
-      } else {
-        const computedChannels = entry[1];
-        computedChannels.forEach((channel) => {
-          const channelName = channel.channelName.call(context);
-          context.$cable._removeChannel(channelName, context._uid);
-        });
-      }
+  Object.entries(channels).forEach(([channelName, channelValue]) => {
+    if (channelName === "computed") {
+      channelValue.forEach((channel) => {
+        const computedChannelName = channel.channelName.call(context);
+        context.$cable._removeChannel(computedChannelName, context._uid);
+      });
+    } else {
+      context.$cable._removeChannel(channelName, context._uid);
     }
-  }
+  });
 }
 
 function subscribe(context) {
-  if (context.$options.channels || context.channels) {
-    // polyfill Object.entries and Object.keys
-    objectPolyfill();
+  if (!hasChannels(context)) return;
 
-    const channels = context.channels || context.$options.channels;
-    const entries = Object.entries(channels);
+  objectPolyfill();
 
-    for (let index = 0; index < entries.length; index++) {
-      const entry = entries[index];
-
-      if (entry[0] !== "computed") {
-        context.$cable._addChannel(entry[0], { ...entry[1] }, context);
-      } else {
-        const computedChannels = entry[1];
-        computedChannels.forEach((channel) => {
-          const channelName = channel.channelName.call(context);
-          const channelObject = {
-            connected: channel.connected,
-            rejected: channel.rejected,
-            disconnected: channel.disconnected,
-            received: channel.received,
-          };
-
-          context.$cable._addChannel(channelName, channelObject, context);
-        });
-      }
-    }
-  }
+  const channels = getChannels(context);
+  Object.entries(channels).forEach(entry => {
+    context.$cable._registerChannel(entry, context);
+  });
 }
 
 export default {
   /**
    * Retrieve channels in component once mounted.
    */
-  created() {
+  beforeCreate() {
     subscribe(this);
   },
   /**

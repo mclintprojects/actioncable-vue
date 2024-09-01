@@ -1,19 +1,20 @@
+/**
+ * @typedef {'info' | 'error' | 'all'} LogLevel
+ */
+
 export default class Logger {
-  /**
-   * Enable logging for debug
-   */
+  /** @type {boolean} */
   _debug;
-  /**
-   * Debug level required for logging. Either `info`, `error`, or `all`
-   */
+
+  /** @type {LogLevel} */
   _debugLevel;
 
   /**
    * ActionCableVue logger entry point
    * @param {boolean} debug - Enable logging for debug
-   * @param {string} debugLevel - Debug level required for logging. Either `info`, `error`, or `all`
+   * @param {LogLevel} level - Debug level required for logging
    */
-  constructor(debug, level) {
+  constructor(debug, level = 'error') {
     this._debug = debug;
     this._debugLevel = level;
   }
@@ -21,14 +22,11 @@ export default class Logger {
   /**
    * Logs a message out to the console
    * @param {string} message - The message to log out to the console
-   * @param {string} [level=error] - Debug level required for logging. Either `info`, `error`, or `all`
+   * @param {LogLevel} [level='error'] - Debug level for this message
    */
-  log(message, level = "error") {
-    if (this._debug) {
-      if (this._debugLevel === "all") console.log(message);
-      else if (level === this._debugLevel) {
-        console.log(message);
-      }
+  log(message, level = 'error') {
+    if (this._debug && (this._debugLevel === 'all' || level === this._debugLevel)) {
+      console.log(`[${level.toUpperCase()}] ${message}`);
     }
   }
 }

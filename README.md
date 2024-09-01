@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://travis-ci.org/mclintprojects/actioncable-vue"><img src="https://travis-ci.org/mclintprojects/actioncable-vue.svg?branch=master" /></a>
+  <a href="https://github.com/mclintprojects/actioncable-vue/"><img src="https://github.com/mclintprojects/actioncable-vue/actions/workflows/test.yml/badge.svg" /></a>
   <img alt="Last Commit" src="https://badgen.net/github/last-commit/mclintprojects/actioncable-vue" />
   <img alt="All Contributors Count" src="https://img.shields.io/github/contributors/mclintprojects/actioncable-vue"/>
   <a href="https://www.npmjs.com/package/actioncable-vue"><img src="https://img.shields.io/npm/v/actioncable-vue.svg"/></a>
@@ -50,6 +50,7 @@ const actionCableVueOptions = {
   debugLevel: "error",
   connectionUrl: "ws://localhost:5000/api/cable",
   connectImmediately: true,
+  unsubscribeOnUnmount: true,
 };
 
 createApp(App)
@@ -59,13 +60,14 @@ createApp(App)
   .mount("#app");
 ```
 
-| **Parameters**     | **Type**        | **Default** | **Required** | **Description**                                                                                                                                  |
-| ------------------ | --------------- | ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| debug              | Boolean         | `false`     | Optional     | Enable logging for debug                                                                                                                         |
-| debugLevel         | String          | `error`     | Optional     | Debug level required for logging. Either `info`, `error`, or `all`                                                                               |
-| connectionUrl      | String/Function | `null`      | Optional     | ActionCable websocket server url. Omit it for the [default behavior](https://guides.rubyonrails.org/action_cable_overview.html#connect-consumer) |
-| connectImmediately | Boolean         | `true`      | Optional     | ActionCable connects to your server immediately. If false, ActionCable connects on the first subscription.                                       |
-| store              | Object          | null        | Optional     | Vuex store                                                                                                                                       |
+| **Parameters**       | **Type**        | **Default** | **Required** | **Description**                                                                                                                                  |
+| ---------------------| --------------- | ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| debug                | Boolean         | `false`     | Optional     | Enable logging for debug                                                                                                                         |
+| debugLevel           | String          | `error`     | Optional     | Debug level required for logging. Either `info`, `error`, or `all`                                                                               |
+| connectionUrl        | String/Function | `null`      | Optional     | ActionCable websocket server url. Omit it for the [default behavior](https://guides.rubyonrails.org/action_cable_overview.html#connect-consumer) |
+| connectImmediately   | Boolean         | `true`      | Optional     | ActionCable connects to your server immediately. If false, ActionCable connects on the first subscription.                                       |
+| unsubscribeOnUnmount | Boolean         | `true`      | Optional     | Unsubscribe from channels when component is unmounted.                                                                                           |
+| store                | Object          | null        | Optional     | Vuex store                                                                                                                                       |
 
 #### Table of content
 
@@ -89,7 +91,12 @@ If you'd like to donate to support the continued development and maintenance of 
 
 #### 🌈 Component Level Usage
 
-If you want to listen to channel events from your Vue component, you need to either add a `channels` object in the Vue component, or if you're using `vue-class-component` define a `channels` property. Each defined object in `channels` will start to receive events provided you subscribe correctly.
+If you want to listen to channel events from your Vue component:
+1. You need to either add a `channels` object in the Vue component
+2. If you're using `vue-class-component` define a `channels` property.
+3. If you're using Vue 3 `defineComponent` define a `channels` property.
+
+Each defined object in `channels` will start to receive events provided you subscribe correctly.
 
 ```javascript
 new Vue({
@@ -163,6 +170,34 @@ export default class ChatComponent extends Vue {
     });
   }
 }
+```
+
+Alternative definition for Vue 3 `defineComponent` users.
+
+```typescript
+import { onMounted } from 'vue';
+
+export default defineComponent({
+  channels: {
+    ChatChannel: {
+      connected() {
+        console.log('connected');
+      },
+      rejected() {
+        console.log('rejected');
+      },
+      received(data) {},
+      disconnected() {},
+    },
+  },
+  setup() {
+    onMounted(() => {
+      this.$cable.subscribe({
+        channel: "ChatChannel",
+      });
+    });
+  },
+});
 ```
 
 #### ✨ Subscriptions
