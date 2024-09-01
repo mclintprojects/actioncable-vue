@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://travis-ci.org/mclintprojects/actioncable-vue"><img src="https://travis-ci.org/mclintprojects/actioncable-vue.svg?branch=master" /></a>
+  <a href="https://github.com/mclintprojects/actioncable-vue/"><img src="https://github.com/mclintprojects/actioncable-vue/actions/workflows/test.yml/badge.svg" /></a>
   <img alt="Last Commit" src="https://badgen.net/github/last-commit/mclintprojects/actioncable-vue" />
   <img alt="All Contributors Count" src="https://img.shields.io/github/contributors/mclintprojects/actioncable-vue"/>
   <a href="https://www.npmjs.com/package/actioncable-vue"><img src="https://img.shields.io/npm/v/actioncable-vue.svg"/></a>
