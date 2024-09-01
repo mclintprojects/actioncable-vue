@@ -9,7 +9,7 @@ function hasChannels(context) {
 }
 
 function unsubscribe(context) {
-  if (!hasChannels(context)) return;
+  if (!hasChannels(context) || !context.$cable || !context.$cable._unsubscribeOnUnmount) return;
 
   const channels = getChannels(context);
 
