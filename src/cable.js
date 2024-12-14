@@ -60,6 +60,8 @@ export default class Cable {
     if (connectImmediately) this._connect(this._connectionUrl);
 
     this._attachConnectionObject();
+
+    return this;
   }
 
   /**
@@ -130,6 +132,37 @@ export default class Cable {
       this._channels.subscriptions[channelName].unsubscribe();
       this._logger.log(`Unsubscribed from channel '${channelName}'.`, "info");
     }
+  }
+
+  /**
+   * Registers channels for a given context.
+   * @param {Object} channels - An object containing the channel names and their configurations
+   * @param {Object} context - The context (typically a Vue component instance) for which the channels are being registered
+   */
+  registerChannels(channels, context) {
+    Object.entries(channels).forEach((channelEntry) => {
+      this._registerChannel(channelEntry, context);
+    });
+  }
+
+  /**
+   * Unregisters channels for a given context.
+   * @param {Object} channels - An object containing the channel names and their configurations
+   * @param {Object} context - The context (typically a Vue component instance) for which the channels are being unregistered
+   */
+  unregisterChannels(channels, context) {
+    Object.entries(channels).forEach((channelEntry) => {
+      const [channelName, channelValue] = channelEntry;
+
+      if (channelName === "computed") {
+        channelValue.forEach((channel) => {
+          const computedChannelName = channel.channelName.call(context);
+          this._removeChannel(computedChannelName, context._uid);
+        });
+      } else {
+        this._removeChannel(channelName, context._uid);
+      }
+    });
   }
 
   /**
