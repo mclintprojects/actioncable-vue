@@ -7,8 +7,8 @@
   <img alt="Downloads" src="https://img.shields.io/npm/dt/actioncable-vue.svg"/>
   <a href="https://github.com/mclintprojects/actioncable-vue/"><img src="https://img.shields.io/github/stars/mclintprojects/actioncable-vue.svg"/></a>
   <a href="https://github.com/mclintprojects/actioncable-vue/"><img src="https://img.shields.io/npm/l/actioncable-vue.svg"/></a>
-  <a href="https://vuejs.org/"><img src="https://img.shields.io/badge/vue-2.x-purple.svg"/></a>
   <a href="https://vuejs.org/"><img src="https://img.shields.io/badge/vue-3.x-purple.svg"/></a>
+  <a href="https://vuejs.org/"><img src="https://img.shields.io/badge/vue-2.x-purple.svg"/></a>
 </p>
 
 <p>ActionCableVue is an easy-to-use Action Cable integration for VueJS.<p>
@@ -17,6 +17,27 @@
 
 ```bash
 npm install actioncable-vue --save
+```
+
+```javascript
+// Vue 3.x
+import { createApp } from "vue";
+import App from "./App.vue";
+import ActionCableVue from "actioncable-vue";
+
+const actionCableVueOptions = {
+  debug: true,
+  debugLevel: "error",
+  connectionUrl: "ws://localhost:5000/api/cable", // If you don"t provide a connectionUrl, ActionCable will use the default behavior
+  connectImmediately: true,
+  unsubscribeOnUnmount: true,
+};
+
+createApp(App)
+  .use(store)
+  .use(router)
+  .use(ActionCableVue, actionCableVueOptions)
+  .mount("#app");
 ```
 
 ```javascript
@@ -39,29 +60,8 @@ new Vue({
 }).$mount("#app");
 ```
 
-```javascript
-// Vue 3.x
-import { createApp } from "vue";
-import App from "./App.vue";
-import ActionCableVue from "actioncable-vue";
-
-const actionCableVueOptions = {
-  debug: true,
-  debugLevel: "error",
-  connectionUrl: "ws://localhost:5000/api/cable",
-  connectImmediately: true,
-  unsubscribeOnUnmount: true,
-};
-
-createApp(App)
-  .use(store)
-  .use(router)
-  .use(ActionCableVue, actionCableVueOptions)
-  .mount("#app");
-```
-
 | **Parameters**       | **Type**        | **Default** | **Required** | **Description**                                                                                                                                  |
-| ---------------------| --------------- | ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| -------------------- | --------------- | ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | debug                | Boolean         | `false`     | Optional     | Enable logging for debug                                                                                                                         |
 | debugLevel           | String          | `error`     | Optional     | Debug level required for logging. Either `info`, `error`, or `all`                                                                               |
 | connectionUrl        | String/Function | `null`      | Optional     | ActionCable websocket server url. Omit it for the [default behavior](https://guides.rubyonrails.org/action_cable_overview.html#connect-consumer) |
@@ -71,7 +71,6 @@ createApp(App)
 
 #### Table of content
 
-- [Support ActionCable-Vue](https://github.com/mclintprojects/actioncable-vue#-support-actioncable-vue)
 - [Component Level Usage](https://github.com/mclintprojects/actioncable-vue#-component-level-usage)
 - [Subscriptions](https://github.com/mclintprojects/actioncable-vue#-subscriptions)
 - [Unsubscriptions](https://github.com/mclintprojects/actioncable-vue#-unsubscriptions)
@@ -85,18 +84,74 @@ createApp(App)
 
 - Many thanks to [@x88BitRain](https://github.com/x8BitRain) for adding Vue 3 compatibility
 
-#### ☕ Support ActionCable-Vue
-
-If you'd like to donate to support the continued development and maintenance of actioncable-vue, you can do so [here.](https://sendcash.africa/#/send/NG/2001944264/50211)
-
 #### 🌈 Component Level Usage
 
 If you want to listen to channel events from your Vue component:
-1. You need to either add a `channels` object in the Vue component
-2. If you're using `vue-class-component` define a `channels` property.
-3. If you're using Vue 3 `defineComponent` define a `channels` property.
+
+1. If you're using **Vue 3** `setup` script define a `channels` object in the `setup` function.
+2. If you're using **Vue 3** `defineComponent` define a `channels` property.
+3. You need to either add a `channels` object in the Vue component **(Vue 2 only)**
+4. If you're using `vue-class-component` define a `channels` property. **(Vue 2 only)**
 
 Each defined object in `channels` will start to receive events provided you subscribe correctly.
+
+##### 1. Vue 3 `setup` script
+
+```typescript
+<script setup>
+import { onMounted, onUnmounted } from "vue";
+
+const channels = {
+  ChatChannel: {
+    connected() {
+      console.log("connected");
+    },
+  },
+};
+
+onMounted(() => {
+  this.$cable.registerChannels(channels);
+  this.$cable.subscribe({
+    channel: "ChatChannel",
+  });
+});
+
+onUnmounted(() => {
+  this.$cable.unregisterChannels(channels);
+  this.$cable.unsubscribe("ChatChannel");
+});
+</script>
+```
+
+##### 2. Vue 3 `defineComponent`
+
+```typescript
+import { onMounted } from "vue";
+
+export default defineComponent({
+  channels: {
+    ChatChannel: {
+      connected() {
+        console.log("connected");
+      },
+      rejected() {
+        console.log("rejected");
+      },
+      received(data) {},
+      disconnected() {},
+    },
+  },
+  setup() {
+    onMounted(() => {
+      this.$cable.subscribe({
+        channel: "ChatChannel",
+      });
+    });
+  },
+});
+```
+
+##### 3. Vue 2.x.
 
 ```javascript
 new Vue({
@@ -133,7 +188,7 @@ new Vue({
 });
 ```
 
-Alternative definition for `vue-class-component` users.
+##### 4. Vue 2.x `vue-class-component`
 
 ```typescript
 @Component
@@ -172,140 +227,141 @@ export default class ChatComponent extends Vue {
 }
 ```
 
-Alternative definition for Vue 3 `defineComponent` users.
-
-```typescript
-import { onMounted } from 'vue';
-
-export default defineComponent({
-  channels: {
-    ChatChannel: {
-      connected() {
-        console.log('connected');
-      },
-      rejected() {
-        console.log('rejected');
-      },
-      received(data) {},
-      disconnected() {},
-    },
-  },
-  setup() {
-    onMounted(() => {
-      this.$cable.subscribe({
-        channel: "ChatChannel",
-      });
-    });
-  },
-});
-```
-
-#### ✨ Subscriptions
+#### 👂🏾 Subscriptions
 
 ###### 1. Subscribing to a channel
 
 Define a `channels` object in your component matching the action cable server channel name you passed for the subscription.
 
-```javascript
-new Vue({
-  channels: {
-    ChatChannel: {
-      connected() {
-        console.log("I am connected.");
-      },
+```typescript
+<script setup>
+import { onMounted } from "vue";
+
+const channels = {
+  ChatChannel: {
+    connected() {
+      console.log("connected");
     },
   },
-  mounted() {
-    this.$cable.subscribe({
-      channel: "ChatChannel",
-    });
-  },
+};
+
+onMounted(() => {
+  this.$cable.registerChannels(channels);
+  this.$cable.subscribe({
+    channel: "ChatChannel",
+  });
 });
+</script>
 ```
 
-##### Important
+### Important ⚠️
 
 > ActionCableVue **automatically** uses your ActionCable server channel name if you do not pass in a specific channel name to use in your `channels`. It will also **override** clashing channel names.
 
 ###### 2. Subscribing to the same channel but different rooms
 
-```javascript
-new Vue({
-  channels: {
-    chat_channel_public: {
-      connected() {
-        console.log("I am connected to the public chat channel.");
-      },
-    },
-    chat_channel_private: {
-      connected() {
-        console.log("I am connected to the private chat channel.");
-      },
+```typescript
+<script setup>
+import { onMounted } from "vue";
+
+const channels = {
+  chat_channel_public: {
+    connected() {
+      console.log("I am connected to the public chat channel.");
     },
   },
-  mounted() {
-    this.$cable.subscribe(
-      {
-        channel: "ChatChannel",
-        room: "public",
-      },
-      "chat_channel_public",
-    );
-    this.$cable.subscribe(
-      {
-        channel: "ChatChannel",
-        room: "private",
-      },
-      "chat_channel_private",
-    );
+  chat_channel_private: {
+    connected() {
+      console.log("I am connected to the private chat channel.");
+    },
   },
+};
+
+onMounted(() => {
+  this.$cable.registerChannels(channels);
+
+  this.$cable.subscribe(
+    {
+      channel: "ChatChannel",
+      room: "public"
+    },
+    "chat_channel_public"
+  );
+
+  this.$cable.subscribe(
+    {
+      channel: "ChatChannel",
+      room: "private"
+    },
+    "chat_channel_private"
+  );
 });
+</script>
 ```
 
 ###### 3. Subscribing to a channel with a computed name
 
-```javascript
+```typescript
 // Conversations.vue
 
-new Vue({
-  methods: {
-    openConversation(conversationId){
-      this.$router.push({name: 'conversation', params: {id: conversationId});
-    }
-  }
-});
+<script setup>
+import { onMounted } from "vue";
+const router = useRouter();
+
+const openConversation = (conversationId) => {
+  router.push({name: "conversation", params: {id: conversationId});
+}
+</script>
 ```
 
-```javascript
+```typescript
 // Chat.vue
 
-new Vue({
-  channels: {
-    computed: [
-      {
-        channelName() {
-          return `${this.$route.params.conversationId}`;
-        },
-        connected() {
-          console.log("I am connected to a channel with a computed name.");
-        },
-        rejected() {},
-        received(data) {},
-        disconnected() {},
+<script setup>
+import { onMounted } from "vue";
+const route = useRoute();
+
+const channels = {
+  computed: [
+    {
+      channelName() {
+        return `chat-convo-${route.params.conversationId}`;
       },
-    ],
-  },
-  mounted() {
-    this.$cable.subscribe({
-      channel: this.$route.params.conversationId,
-    });
-  },
+      connected() {
+        console.log("I am connected to a channel with a computed name.");
+      },
+      rejected() {},
+      received(data) {},
+      disconnected() {},
+    },
+  ],
+}
+
+onMounted(() => {
+  this.$cable.registerChannels(channels);
+  this.$cable.subscribe({
+    channel: `chat-convo-${route.params.conversationId}`,
+  });
 });
+</script>
 ```
 
-#### 🎃 Unsubscriptions
+#### 🔇 Unsubscriptions
 
-> When your component is **destroyed** ActionCableVue **automatically unsubscribes** from any channel **that component** was subscribed to.
+> For Vue 2.x and when using Vue 3.x `defineComponent`, when your component is **destroyed** ActionCableVue **automatically unsubscribes** from any channel **that component** was subscribed to.
+
+###### 1. Unsubscribing from a channel (Vue 3.x setup script)
+
+```typescript
+<script setup>
+import {onUnmounted } from "vue";
+onUnmounted(() => {
+  this.$cable.unsubscribe("ChatChannel");
+});
+</script>
+```
+
+###### 2. Unsubscribing from a channel Vue 2.x
 
 ```javascript
 new Vue({
@@ -314,81 +370,70 @@ new Vue({
       this.$cable.unsubscribe("ChatChannel");
     },
   },
-  mounted() {
-    this.$cable.subscribe({
-      channel: "ChatChannel",
-    });
-  },
 });
 ```
 
-#### 👺 Manually connect to the server
+#### 🔌 Manually connect to the server
 
 ActionCableVue automatically connects to your Action Cable server if `connectImmediately` is not set to `false` during setup. If you do set `connectImmediately` to `false` you can manually trigger a connection to your ActionCable server with `this.$cable.connection.connect`.
 
-```javascript
-new Vue({
-  methods: {
-    connectWithRefreshedToken(token) {
-      // You can optionally pass in a connection URL string
-      // You can optionally pass in a function that returns a connection URL
-      // You can choose not to pass in anything and it'll reconnect with the connection URL provided during setup.
-      this.$cable.connection.connect(
-        `ws://localhost:5000/api/cable?token=${token}`,
-      );
-    },
-  },
-});
+```typescript
+<script setup>
+const connectWithRefreshedToken = (token) => {
+  this.$cable.connection.connect(`ws://localhost:5000/api/cable?token=${token}`);
+}
+</script>
 ```
 
-#### 👽 Disconnecting from the server
+#### ✂️ Disconnecting from the server
 
-```javascript
-new Vue({
-  methods: {
-    disconnect() {
-      this.$cable.connection.disconnect();
-    },
-  },
-});
+```typescript
+<script setup>
+const disconnect = () => {
+  this.$cable.connection.disconnect();
+}
+</script>
 ```
 
 #### 💎 Performing an action on your Action Cable server
 
 Requires that you have a method defined in your Rails Action Cable channel whose name matches the action property passed in.
 
-```javascript
-new Vue({
-  channels: {
-    ChatChannel: {
-      connected() {
-        console.log("Connected to the chat channel");
-      },
-      received(data) {
-        console.log("Message received");
-      },
+```typescript
+<script setup>
+import { onMounted } from "vue";
+
+const sendMessage = () => {
+  this.$cable.perform({
+    channel: "ChatChannel",
+    action: "send_message",
+    data: {
+      content: "Hi",
+    },
+  });
+};
+
+const channels = {
+  ChatChannel: {
+    connected() {
+      console.log("Connected to the chat channel");
+    },
+    received(data) {
+      console.log("Message received");
     },
   },
-  methods: {
-    sendMessage() {
-      this.$cable.perform({
-        channel: "ChatChannel",
-        action: "send_message",
-        data: {
-          content: "Hi",
-        },
-      });
-    },
-  },
-  mounted() {
-    this.$cable.subscribe({
-      channel: "ChatChannel",
-    });
-  },
+};
+
+onMounted(() => {
+  this.$cable.registerChannels(channels);
+  this.$cable.subscribe({
+    channel: "ChatChannel",
+  });
 });
+</script>
 ```
 
-#### 🐬 Usage with Vuex
+#### 🐬 Usage with Vuex (Vue 2.x)
 
 ActionCableVue has support for Vuex. All you have to do is setup your store correctly and pass it in during the ActionCableVue plugin setup.
 
@@ -434,9 +479,58 @@ Vue.use(ActionCableVue, {
 });
 ```
 
-#### 💪 Usage with Nuxt.JS
+#### 💪 Usage with Nuxt
 
-ActionCableVue works just fine with Nuxt.JS. All you need to do is set it up as a client side plugin.
+ActionCableVue works just fine with Nuxt 2 or 3. All you need to do is set it up as a client side plugin.
+
+##### Nuxt 3
+
+```javascript
+// /plugins/actioncablevue.client.js
+import ActionCableVue from "actioncable-vue";
+
+export default defineNuxtPlugin(({ vueApp }) => {
+  const config = useRuntimeConfig();
+
+  vueApp.use(ActionCableVue, {
+    debug: true,
+    debugLevel: "all",
+    connectionUrl: config.public.WEBSOCKET_HOST,
+    connectImmediately: true,
+  });
+});
+
+
+// /pages/chat.vue
+<script setup>
+const { vueApp } = useNuxtApp();
+
+let $cable;
+const channels = {
+  ChatChannel: {
+    connected() {
+      console.log("connected");
+    },
+  }
+};
+
+onMounted(() => {
+  $cable = vueApp.config.globalProperties.$cable;
+
+  $cable.registerChannels(channels, vueApp);
+  $cable.subscribe({
+    channel: "ChatChannel",
+  });
+});
+
+onUnmounted(() => {
+  $cable.unregisterChannels(channels, vueApp);
+  $cable.unsubscribe("ChatChannel");
+});
+</script>
+```
+
+##### Nuxt 2
 
 ```javascript
 // /plugins/actioncable-vue.js
@@ -452,14 +546,7 @@ if (process.client) {
     connectImmediately: true,
   });
 }
-```
 
-Don't forget to register your plugin.
-
-```javascript
 // nuxt.config.js
-/*
- ** Plugins to load before mounting the App
- */
 plugins: [{ src: "@/plugins/actioncable-vue", ssr: false }];
 ```
